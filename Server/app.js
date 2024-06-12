@@ -15,7 +15,7 @@ const JWT_SECRET =
   "hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe";
 
 const mongoUrl =
-  "mongodb://localhost:27017";
+  "mongodb+srv://atifnaquee09:atif123@cluster0.k4xi53q.mongodb.net/";
 
 mongoose
   .connect(mongoUrl, {
