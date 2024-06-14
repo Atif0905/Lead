@@ -40,7 +40,7 @@ app.use("/leads", leadsRoutes);
 
 // User routes
 app.post("/register", async (req, res) => {
-  const { fname, lname, email, password, userType } = req.body;
+  const { fname, lname, email, password, userType, key } = req.body;
 
   const encryptedPassword = await bcrypt.hash(password, 10);
   try {
@@ -55,6 +55,7 @@ app.post("/register", async (req, res) => {
       email,
       password: encryptedPassword,
       userType,
+      key,
     });
     res.send({ status: "ok" });
   } catch (error) {
@@ -164,4 +165,17 @@ app.get("/paginatedUsers", async (req, res) => {
   }
   results.result = allUser.slice(startIndex, lastIndex);
   res.json(results);
+});
+
+
+
+app.get("/allUserData", async (req, res) => {
+  try {
+    // Fetch all users, subusers, executives from the database
+    const allUsers = await User.find({ userType: { $in: ["User", "SubUser", "Executive"] } });
+    res.json({ status: "ok", data: allUsers });
+  } catch (error) {
+    console.error("Error fetching all user data:", error);
+    res.status(500).json({ status: "error", message: "Failed to fetch all user data" });
+  }
 });

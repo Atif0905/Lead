@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
 import AdminHome from "./adminHome";
 import UserHome from "./userHome";
 import SubUserHome from "./subUserHome";
@@ -10,6 +9,8 @@ export default function UserDetails() {
   const [userData, setUserData] = useState(null);
   const [userType, setUserType] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [allUserData, setAllUserData] = useState(null); // State to store all users, subusers, executives data
+  const [isAdminDashboard, setIsAdminDashboard] = useState(false); // State to toggle between admin dashboard and user/subuser/executive homes
 
   useEffect(() => {
     fetch("http://localhost:5000/userData", {
@@ -35,25 +36,82 @@ export default function UserDetails() {
           setUserData(data.data);
           setUserType(data.data.userType);
           setIsLoading(false);
+  
+          // Fetch all users, subusers, executives data if user is Admin
+          if (data.data.userType === "Admin") {
+            fetch("http://localhost:5000/allUserData", {
+              method: "GET",
+              crossDomain: true,
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                "Access-Control-Allow-Origin": "*",
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                setAllUserData(data);
+              })
+              .catch((error) => {
+                console.error("Error fetching all user data:", error);
+              });
+          }
         }
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
       });
   }, []);
+  
+  const toggleAdminDashboard = () => {
+    setIsAdminDashboard(!isAdminDashboard);
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  switch (userType) {
-    case "Admin":
-      return <AdminHome />;
-    case "User":
-      return <UserHome userData={userData} />;
-    case "SubUser":
-      return <SubUserHome userData={userData} />;
-    case "Executive":
-      return <ExecutiveHome userData={userData} />;
-    default:
-      console.error("Invalid user type");
-      return null;
-  }
+  return (
+    <div className="user-details-container">
+      {isAdminDashboard && userType === "Admin" ? (
+        <div>
+          <h1>Admin Dashboard</h1>
+          {/* Display all users, subusers, executives data */}
+          {allUserData && (
+            <ul>
+              {allUserData.users.map((user) => (
+                <li key={user.id}>{user.name} - {user.type}</li>
+              ))}
+              {allUserData.subusers.map((subuser) => (
+                <li key={subuser.id}>{subuser.name} - {subuser.type}</li>
+              ))}
+              {allUserData.executives.map((executive) => (
+                <li key={executive.id}>{executive.name} - {executive.type}</li>
+              ))}
+            </ul>
+          )}
+          <button onClick={toggleAdminDashboard}>Back to My Dashboard</button>
+        </div>
+      ) : (
+        <>
+          {userType === "Admin" && (
+            <AdminHome />
+          )}
+          {userType === "User" && (
+            <UserHome userData={userData} />
+          )}
+          {userType === "SubUser" && (
+            <SubUserHome userData={userData} />
+          )}
+          {userType === "Executive" && (
+            <ExecutiveHome userData={userData} />
+          )}
+          {userType === "" && (
+            <div>Error: Invalid user type</div>
+          )}
+         
+        </>
+      )}
+    </div>
+  );
 }
