@@ -8,6 +8,7 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [userType, setUserType] = useState("");
   const [secretKey, setSecretKey] = useState("");
+  const [key, setkey] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -32,6 +33,7 @@ export default function SignUp() {
         lname,
         password,
         userType,
+        key,
       }),
     })
       .then((res) => res.json())
@@ -92,7 +94,6 @@ export default function SignUp() {
               />
             </div>
           ) : null}
-
           <div className="mb-3">
             <label>First name</label>
             <input
@@ -132,7 +133,17 @@ export default function SignUp() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-
+          {userType === "User" || userType === "SubUser" || userType === "Executive" ? (
+  <div className="mb-3">
+    <label>Key</label>
+    <input
+      type="text"
+      className="form-control"
+      placeholder="Enter key"
+      onChange={(e) => setkey(e.target.value)}
+    />
+  </div>
+) : null}
           <div className="d-grid">
             <button type="submit" className="btn btn-primary">
               Register
