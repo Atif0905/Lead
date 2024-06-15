@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../index.css";
-
+import './Signin.css'
 export default function SignUp() {
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
@@ -48,44 +48,15 @@ export default function SignUp() {
   };
 
   return (
-    <div className="auth-wrapper">
-      <div className="auth-inner">
+    <div className="">
+      <img src="./Signinimg.webp" loading="lazy" className="signinimg" alt=""/>
+      <img src="./mobilesigninimg.webp" loading="lazy" className="mobilesigninimg" alt="img"/>
+      <div className="logindiv">
         <form onSubmit={handleSubmit}>
-          <h3>Register</h3>
-          <div>
-            Register As:
-            <input
-              type="radio"
-              name="UserType"
-              value="User"
-              onChange={(e) => setUserType(e.target.value)}
-            />
-            User
-            <input
-              type="radio"
-              name="UserType"
-              value="Admin"
-              onChange={(e) => setUserType(e.target.value)}
-            />
-            Admin
-            <input
-              type="radio"
-              name="UserType"
-              value="SubUser"
-              onChange={(e) => setUserType(e.target.value)}
-            />
-            SubUser
-            <input
-              type="radio"
-              name="UserType"
-              value="Executive"
-              onChange={(e) => setUserType(e.target.value)}
-            />
-            Executive
-          </div>
+          <h3 className="Signinhead">SIGN UP</h3>
           {userType === "Admin" ? (
             <div className="mb-3">
-              <label>Secret Key</label>
+              <label className="labeltext">Secret Key</label>
               <input
                 type="text"
                 className="form-control"
@@ -95,40 +66,40 @@ export default function SignUp() {
             </div>
           ) : null}
           <div className="mb-3">
-            <label>First name</label>
+            <label className="labeltext">First name</label>
             <input
               type="text"
-              className="form-control"
+              className="formcontrol"
               placeholder="First name"
               onChange={(e) => setFname(e.target.value)}
             />
           </div>
 
           <div className="mb-3">
-            <label>Last name</label>
+            <label className="labeltext">Last name</label>
             <input
               type="text"
-              className="form-control"
+              className="formcontrol"
               placeholder="Last name"
               onChange={(e) => setLname(e.target.value)}
             />
           </div>
 
           <div className="mb-3">
-            <label>Email address</label>
+            <label className="labeltext">Email address</label>
             <input
               type="email"
-              className="form-control"
+              className="formcontrol"
               placeholder="Enter email"
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
           <div className="mb-3">
-            <label>Password</label>
+            <label className="labeltext">Password</label>
             <input
               type="password"
-              className="form-control"
+              className="formcontrol"
               placeholder="Enter password"
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -143,9 +114,49 @@ export default function SignUp() {
       onChange={(e) => setkey(e.target.value)}
     />
   </div>
+  
 ) : null}
+<div className="d-flex justify-content-between">
+            <h5>Register As:</h5>
+            <div>
+            <input
+              type="radio"
+              name="UserType"
+              value="User"
+              onChange={(e) => setUserType(e.target.value)}
+            />
+            User
+            </div>
+            <div>
+            <input
+              type="radio"
+              name="UserType"
+              value="Admin"
+              onChange={(e) => setUserType(e.target.value)}
+            />
+            Admin
+            </div>
+            <div>
+            <input
+              type="radio"
+              name="UserType"
+              value="SubUser"
+              onChange={(e) => setUserType(e.target.value)}
+            />
+            SubUser
+            </div>
+            <div>
+            <input
+              type="radio"
+              name="UserType"
+              value="Executive"
+              onChange={(e) => setUserType(e.target.value)}
+            />
+            Executive
+            </div>
+          </div>
           <div className="d-grid">
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="login-button">
               Register
             </button>
           </div>
@@ -153,7 +164,7 @@ export default function SignUp() {
             Already registered <a href="/login">Login?</a>
           </p>
         </form>
+        </div>
       </div>
-    </div>
   );
 }

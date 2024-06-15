@@ -1,6 +1,7 @@
 import React, { Component, useState } from "react";
 import "../App.css";
 import { Navigate } from "react-router-dom";
+import './Signin.css'
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,26 +44,28 @@ export default function Login() {
   }
 
   return (
-    <div className="auth-wrapper">
-      <div className="auth-inner">
+    <div className="">
+    <img src="./Signinimg.webp" loading="lazy" className="signinimg" alt=""/>
+    <img src="./mobilesigninimg.webp" loading="lazy" className="mobilesigninimg" alt="img"/>
+    <div className="logindiv">
         <form onSubmit={handleSubmit}>
-          <h3>Login</h3>
+          <h3 className="Signinhead">LOGIN</h3>
 
           <div className="mb-3">
-            <label>Email address</label>
+            <label className="labeltext">Email address</label>
             <input
               type="email"
-              className="form-control"
+              className="formcontrol"
               placeholder="Enter email"
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
           <div className="mb-3">
-            <label>Password</label>
+            <label className="labeltext">Password</label>
             <input
               type="password"
-              className="form-control"
+              className="formcontrol"
               placeholder="Enter password"
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -82,7 +85,7 @@ export default function Login() {
           </div>
 
           <div className="d-grid">
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="login-button">
               Submit
             </button>
           </div>
