@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../index.css";
-
+import './Signin.css'
 export default function SignUp() {
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
@@ -46,19 +46,64 @@ export default function SignUp() {
   };
 
   return (
-    <div className="auth-wrapper">
-      <div className="auth-inner">
+    <div className="">
+      <img src="./Signinimg.webp" loading="lazy" className="signinimg" alt=""/>
+      <img src="./mobilesigninimg.webp" loading="lazy" className="mobilesigninimg" alt="img"/>
+      <div className="logindiv">
         <form onSubmit={handleSubmit}>
-          <h3>Register</h3>
+          <h3 className="Signinhead">SIGN UP</h3>
+          
+          <div className="mb-3 labeltext">
+            <label>First name</label>
+            <input
+              type="text"
+              className="formcontrol"
+              placeholder="First name"
+              onChange={(e) => setFname(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3 labeltext">
+            <label>Last name</label>
+            <input
+              type="text"
+              className="formcontrol"
+              placeholder="Last name"
+              onChange={(e) => setLname(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3 labeltext">
+            <label>Email address</label>
+            <input
+              type="email"
+              className="formcontrol"
+              placeholder="Enter email"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3 labeltext">
+            <label>Password</label>
+            <input
+              type="password"
+              className="formcontrol"
+              placeholder="Enter password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
           <div>
             Register As:
-            <input
+            <div className="d-flex justify-content-between">
+            <div><input
               type="radio"
               name="UserType"
               value="User"
               onChange={(e) => setUserType(e.target.value)}
             />
             User
+            </div>
+            <div>
             <input
               type="radio"
               name="UserType"
@@ -66,6 +111,10 @@ export default function SignUp() {
               onChange={(e) => setUserType(e.target.value)}
             />
             Admin
+            </div>
+            </div>
+            <div className="d-flex justify-content-between">
+              <div>
             <input
               type="radio"
               name="UserType"
@@ -73,6 +122,8 @@ export default function SignUp() {
               onChange={(e) => setUserType(e.target.value)}
             />
             SubUser
+            </div>
+            <div>
             <input
               type="radio"
               name="UserType"
@@ -80,67 +131,30 @@ export default function SignUp() {
               onChange={(e) => setUserType(e.target.value)}
             />
             Executive
+            </div>
+            </div>
           </div>
           {userType === "Admin" ? (
             <div className="mb-3">
               <label>Secret Key</label>
               <input
                 type="text"
-                className="form-control"
+                className="formcontrol"
                 placeholder="Secret Key"
                 onChange={(e) => setSecretKey(e.target.value)}
               />
             </div>
           ) : null}
 
-          <div className="mb-3">
-            <label>First name</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="First name"
-              onChange={(e) => setFname(e.target.value)}
-            />
-          </div>
-
-          <div className="mb-3">
-            <label>Last name</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Last name"
-              onChange={(e) => setLname(e.target.value)}
-            />
-          </div>
-
-          <div className="mb-3">
-            <label>Email address</label>
-            <input
-              type="email"
-              className="form-control"
-              placeholder="Enter email"
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-
-          <div className="mb-3">
-            <label>Password</label>
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Enter password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-
-          <div className="d-grid">
-            <button type="submit" className="btn btn-primary">
+<div className="d-grid">
+            <button type="submit" className="login-button mt-3">
               Register
             </button>
           </div>
           <p className="forgot-password text-right">
             Already registered <a href="/login">Login?</a>
           </p>
+          
         </form>
       </div>
     </div>

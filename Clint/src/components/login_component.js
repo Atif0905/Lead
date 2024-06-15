@@ -1,6 +1,7 @@
 import React, { Component, useState } from "react";
 import "../App.css";
 import { Navigate } from "react-router-dom";
+import './Signin.css'
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,9 +32,8 @@ export default function Login() {
           window.localStorage.setItem("token", data.data);
           window.localStorage.setItem("userType", data.userType);
           window.localStorage.setItem("loggedIn", true);
-          
+
           if (data.userType == "Admin") {
-            
             return (window.location.href = "./admin-dashboard");
           } else {
             window.location.href = "./userDetails";
@@ -43,27 +43,29 @@ export default function Login() {
   }
 
   return (
-    <div className="auth-wrapper">
-      <div className="auth-inner">
+    <div className="">
+    <img src="./Signinimg.webp" loading="lazy" className="signinimg" alt=""/>
+    <img src="./mobilesigninimg.webp" loading="lazy" className="mobilesigninimg" alt="img"/>
+    <div className="logindiv">
         <form onSubmit={handleSubmit}>
-          <h3>Login</h3>
+          <h3 className="Signinhead">LOGIN</h3>
 
-          <div className="mb-3">
-            <label>Email address</label>
+          <div className="mb-3 labeltext">
+            <label>EMAIL ADDRESS</label>
             <input
               type="email"
-              className="form-control"
+              className="formcontrol"
               placeholder="Enter email"
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
-          <div className="mb-3">
-            <label>Password</label>
+          <div className="mb-3 labeltext">
+            <label>PASSWORD</label>
             <input
               type="password"
-              className="form-control"
-              placeholder="Enter password"
+              className="formcontrol"
+              placeholder="**********"
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
@@ -82,8 +84,8 @@ export default function Login() {
           </div>
 
           <div className="d-grid">
-            <button type="submit" className="btn btn-primary">
-              Submit
+            <button type="submit" className="login-button">
+              Login
             </button>
           </div>
           <p className="forgot-password text-right">
@@ -91,6 +93,6 @@ export default function Login() {
           </p>
         </form>
       </div>
-    </div>
+      </div>
   );
 }

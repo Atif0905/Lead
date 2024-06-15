@@ -4,7 +4,7 @@ import AdminHome from "./adminHome";
 import UserHome from "./userHome";
 import SubUserHome from "./subUserHome";
 import ExecutiveHome from "./executiveHome";
-import "../App.css";
+import "../App.css"; 
 
 export default function UserDetails() {
   const [userData, setUserData] = useState(null);

@@ -23,10 +23,9 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <Navbar isLoggedIn={isLoggedIn} userType={userType} />
+        {/* <Navbar isLoggedIn={isLoggedIn} userType={userType} /> */}
 
         <Routes>
-          {/* unauthorized route */}
           {!isLoggedIn && (
             <>
               <Route path="/login" element={<Login />} />
@@ -35,7 +34,6 @@ function App() {
             </>
           )}
 
-          {/* ProtectedRoutes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/login" element={<Navigate to="/" />} />
             <Route path="/register" element={<Navigate to="/" />} />

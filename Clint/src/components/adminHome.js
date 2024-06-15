@@ -4,16 +4,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "../App.css";
 
 export default function AdminHome() {
-  // State hooks to manage user data and search query
   const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Fetch all users whenever the search query changes
   useEffect(() => {
     getAllUser();
   }, [searchQuery]);
-
-  // Function to fetch all users from the backend
   const getAllUser = () => {
     fetch(`http://localhost:5000/getAllUser?search=${searchQuery}`, {
       method: "GET",
@@ -24,14 +19,10 @@ export default function AdminHome() {
         setData(data.data);
       });
   };
-
-  // Function to log out and clear local storage
   const logOut = () => {
     window.localStorage.clear();
     window.location.href = "./login";
   };
-
-  // Function to delete a user
   const deleteUser = (id, name) => {
     if (window.confirm(`Are you sure you want to delete ${name}?`)) {
       fetch("http://localhost:5000/deleteUser", {
@@ -47,12 +38,10 @@ export default function AdminHome() {
         .then((res) => res.json())
         .then((data) => {
           alert(data.data);
-          getAllUser(); // Refresh the list after deletion
+          getAllUser(); 
         });
     }
   };
-
-  // Function to handle the search input
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
