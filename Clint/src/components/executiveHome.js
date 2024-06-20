@@ -2,6 +2,7 @@ import React from 'react'
 import "./Home.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import Excecutivesidebar from '../Sidebar/ExcecutiveSidebar';
 const executiveHome = ({ userData }) => {
     const logOut = () => {
         window.localStorage.clear();
@@ -9,13 +10,12 @@ const executiveHome = ({ userData }) => {
       };
   return (
     <div>
+      <Excecutivesidebar/>
       <div className="main-content">
         <div className=''>
           <h1 className='Homehead'>Excecutive Board</h1>
           <div className='d-flex Homesearch'> <FontAwesomeIcon icon={faMagnifyingGlass} className='searchicon'/> <input type='text' placeholder='Search' className='Homesearch'/></div>
-          <button onClick={logOut} className="btn btn-primary ">
-            Log Out
-          </button>
+          
         </div>
         <div className='boxcontainer mt-3'>
             <div className='Homebox'>
