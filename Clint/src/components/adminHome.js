@@ -4,24 +4,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "../App.css";
 import UploadLeads from "./Leads/UploadLeads";
 import ViewLeads from "./Leads/ViewLeads";
-// import AdminDashboard from "./"; // Import other dashboards as needed
 import UserDashboard from "./userHome";
 import SubUserDashboard from "./subUserHome";
 import ExecutiveDashboard from "./executiveHome";
 
 export default function AdminHome() {
-  // State hooks to manage user data, search query, and selected user type
   const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedUserType, setSelectedUserType] = useState("Admin");
-
-  // Fetch all users whenever the search query or user type changes
   useEffect(() => {
     getAllUser();
   }, [searchQuery, selectedUserType]);
-
-  // Function to fetch all users from the backend
   const getAllUser = () => {
     fetch(`http://localhost:5000/getAllUser?search=${searchQuery}`, {
       method: "GET",
@@ -41,14 +35,10 @@ export default function AdminHome() {
         setIsLoading(false);
       });
   };
-
-  // Function to log out and clear local storage
   const logOut = () => {
     window.localStorage.clear();
     window.location.href = "./login";
   };
-
-  // Function to delete a user
   const deleteUser = (id, name) => {
     if (window.confirm(`Are you sure you want to delete ${name}?`)) {
       fetch("http://localhost:5000/deleteUser", {
@@ -64,7 +54,7 @@ export default function AdminHome() {
         .then((res) => res.json())
         .then((data) => {
           alert(data.data);
-          getAllUser(); // Refresh the list after deletion
+          getAllUser(); 
         })
         .catch((error) => {
           console.error("Error deleting user:", error);
@@ -72,12 +62,9 @@ export default function AdminHome() {
     }
   };
 
-  // Function to handle the search input
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
-
-  // Function to handle dropdown change
   const handleUserTypeChange = (e) => {
     setSelectedUserType(e.target.value);
   };
@@ -86,7 +73,6 @@ export default function AdminHome() {
     return <div>Loading...</div>;
   }
 
-  // Render dashboard based on selected user type
   let dashboardComponent;
   switch (selectedUserType) {
     case "User":

@@ -1,0 +1,53 @@
+.Homehead {
+    font-family: Open Sans;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 27.24px;
+    text-align: left;
+    color: #0d5a65;
+  }
+  .Homesearch {
+    width: 213px;
+    height: 30px;
+    border: none;
+    border-radius: 4px;
+    background-color: #EEEEEE;
+    outline: none;
+  }
+  .Homesearch::placeholder{
+  color: black;
+  }
+  .searchicon{
+      width: 12.87px;
+  height: 12.88px;
+  margin-top: 10px;
+  margin-left: 12px;
+  }
+  .boxcontainer {
+      max-width: 100%;
+      overflow-x: auto;
+      height: 400px;
+      padding: 20px 5px;
+      width: 100%;
+      display: flex;
+      flex-wrap: nowrap;
+  }
+  
+  .Homebox {
+      width: 213px;
+      height: 300px;
+      border-radius: 8px;
+      border: 1px solid #FFFFFF;
+      box-shadow: 0px 0px 4px 3px #000AFF40;
+      margin-right: 20px;
+      flex: 0 0 auto;
+  }
+  
+  .boxheading{
+      font-family: Open Sans;
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 27.24px;
+  text-align: center;
+  
+  }
