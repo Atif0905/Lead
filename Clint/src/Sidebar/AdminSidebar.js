@@ -1,8 +1,12 @@
 import './Sidebar.css';
 import React from "react";
-const Excecutivesidebar = () => {
+const Adminsidebar = () => {
+
+
+
   return (
     <div>
+    
     <div className='excecutiveside'>
         <img src='./grouplogo.webp' className='sidebarlogo mb-3' alt=''/>
             <div className="d-flex sideanchor "><img src="./dashboardicon.webp" className="sidebaricon" alt="icon"/><li className=''>Dashboard</li></div>
@@ -18,4 +22,4 @@ const Excecutivesidebar = () => {
   )
 }
 
-export default Excecutivesidebar
+export default Adminsidebar

@@ -4,10 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import Excecutivesidebar from '../Sidebar/ExcecutiveSidebar';
 const executiveHome = ({ userData }) => {
-    const logOut = () => {
-        window.localStorage.clear();
-        window.location.href = "./login";
-      };
   return (
     <div>
       <Excecutivesidebar/>

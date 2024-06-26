@@ -5,7 +5,6 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const Lead = require('./Lead');
 
-// Multer setup for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
@@ -13,11 +12,10 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     cb(null, file.originalname);
   },
-});
+}); 
 
 const upload = multer({ storage });
 
-// Route to upload leads
 router.post('/upload', upload.single('file'), (req, res) => {
   const results = [];
 
@@ -37,7 +35,6 @@ router.post('/upload', upload.single('file'), (req, res) => {
     });
 });
 
-// Additional CRUD operations for leads
 router.get('/', async (req, res) => {
   try {
     const leads = await Lead.find();
@@ -48,14 +45,15 @@ router.get('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-  const { status } = req.body;
+  const { status, assignedto } = req.body;
   try {
-    await Lead.findByIdAndUpdate(req.params.id, { status });
+    await Lead.findByIdAndUpdate(req.params.id, { status, assignedto });
     res.send('Lead status updated');
   } catch (error) {
     res.status(500).send('Server error');
   }
 });
+
 
 router.delete('/:id', async (req, res) => {
   try {
