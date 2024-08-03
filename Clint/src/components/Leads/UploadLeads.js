@@ -6,7 +6,7 @@ const UploadLeads = () => {
   const [file, setFile] = useState(null);
 
   const handleFileUpload = (event) => {
-    console.log('Selected file:', event.target.files[0]); // Log file information
+    console.log('Selected file:', event.target.files[0]); 
     setFile(event.target.files[0]);
   };
 
@@ -20,7 +20,7 @@ const UploadLeads = () => {
     formData.append('file', file);
 
     for (let pair of formData.entries()) {
-      console.log(pair[0] + ', ' + pair[1]); // Log FormData content
+      console.log(pair[0] + ', ' + pair[1]); 
     }
 
     try {
