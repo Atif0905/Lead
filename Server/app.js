@@ -10,8 +10,6 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: false }));
 const jwt = require("jsonwebtoken");
 
-
-
 const JWT_SECRET = process.env.JWT_SECRET;
 const mongoUrl = process.env.MONGO_URL;
 

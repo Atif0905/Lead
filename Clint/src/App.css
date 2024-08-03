@@ -1,7 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
-.App {
-  text-align: center;
-}
+
 
 .App-logo {
   height: 40vmin;
@@ -14,5 +12,5 @@
   }
 }
 .main-content{
-  margin-left: 15%;
+  margin-left: 7%;
 }
