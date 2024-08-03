@@ -7,7 +7,20 @@ import SubUserDashboard from "./subUserHome";
 import ExecutiveDashboard from "./executiveHome";
 import Adminsidebar from "../Sidebar/AdminSidebar";
 
+
 export default function AdminHome() {
+  const [userData , setUserData] = useState("");
+  useEffect(() => {
+    fetch("http://localhost:5000/getAllUser")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "ok") {
+          setUserData(data)
+          console.log(data)
+        }
+      })
+      .catch((error) => console.error("Error fetching options:", error));
+  }, []);
   const [selectedUserType, setSelectedUserType] = useState("");
   let dashboardComponent;
   switch (selectedUserType) {
@@ -26,8 +39,32 @@ export default function AdminHome() {
   }
 
   return (
-    <div  >
-      <Adminsidebar/>
+    <div>
+      { userData && (
+        <div>                    
+          <table >
+            <thead>
+              <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>First Name</th>
+                <th>User Type</th>
+                </tr>
+            </thead>
+            {userData.map((secretKey, index) => (
+              <tbody key={index}>
+                <tr>
+                  <td>{secretKey.fname}</td>
+                </tr>
+              </tbody>
+              ))}
+          </table>
+        </div>
+      )
+
+      }
+      {/* <Adminsidebar/>
       <div className="main-content" >
         {dashboardComponent}
       <div style={{ marginTop: 20 }}>
@@ -37,7 +74,7 @@ export default function AdminHome() {
         <UploadLeads />
       </div>
       
-    </div>
+    </div> */}
     </div>
   );
 }
