@@ -40,7 +40,7 @@ app.use("/leads", leadsRoutes);
 
 // User routes
 app.post("/register", async (req, res) => {
-  const { fname, lname, email, password, userType, key } = req.body;
+  const { fname, lname, email, password, userType, key , key1 } = req.body;
 
   const encryptedPassword = await bcrypt.hash(password, 10);
   try {
@@ -56,6 +56,7 @@ app.post("/register", async (req, res) => {
       password: encryptedPassword,
       userType,
       key,
+      key1
     });
     res.send({ status: "ok" });
   } catch (error) {
