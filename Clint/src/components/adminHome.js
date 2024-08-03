@@ -6,6 +6,9 @@ import UserDashboard from "./userHome";
 import SubUserDashboard from "./subUserHome";
 import ExecutiveDashboard from "./executiveHome";
 import Adminsidebar from "../Sidebar/AdminSidebar";
+import Deals from "./Deals/Deals";
+import ImportData from "./Tools/ImportData";
+
 
 
 export default function AdminHome() {
@@ -67,12 +70,18 @@ export default function AdminHome() {
       {/* <Adminsidebar/>
       <div className="main-content" >
         {dashboardComponent}
-      <div style={{ marginTop: 20 }}>
+      {/* <div style={{ marginTop: 20 }}>
         <ViewLeads />
-      </div>
-      <div style={{ marginTop: 20 }}>
+      </div> */}
+      {/* <div style={{ marginTop: 20 }}>
         <UploadLeads />
+      </div> */}
+      <div style={{ marginTop: 20 }}>
+     <Deals />
       </div>
+        {/* <div style={{ }}>
+    <ImportData />
+      </div> */}
       
     </div> */}
     </div>

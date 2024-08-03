@@ -4,6 +4,15 @@ import UserHome from "./userHome";
 import SubUserHome from "./subUserHome";
 import ExecutiveHome from "./executiveHome";
 import "../App.css";
+import { CiSearch } from "react-icons/ci";
+import { FaPlus } from "react-icons/fa6";
+import { MdMyLocation } from "react-icons/md";
+import { FaEuroSign } from "react-icons/fa";
+import { PiHashStraightFill } from "react-icons/pi";
+import { BsPersonFillExclamation } from "react-icons/bs";
+import { GoOrganization } from "react-icons/go";
+import { BiSolidNotepad } from "react-icons/bi";
+import { LiaBoxOpenSolid } from "react-icons/lia";
 
 export default function UserDetails() {
   const [userData, setUserData] = useState(null);
@@ -12,6 +21,8 @@ export default function UserDetails() {
   const [allUserData, setAllUserData] = useState(null);
   const [isAdminDashboard, setIsAdminDashboard] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  
 
   useEffect(() => {
     const token = window.localStorage.getItem("token");
@@ -62,6 +73,10 @@ export default function UserDetails() {
 
   const toggleAdminDashboard = () => setIsAdminDashboard(!isAdminDashboard);
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+  const toggleNavDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
+
   const logOut = () => {
     window.localStorage.clear();
     window.location.href = "./login";
@@ -115,8 +130,53 @@ export default function UserDetails() {
   
   const renderDropdown = () => (
     <div className="sidebarabovediv">
-      <div className="d-flex justify-content-end">
-        <div className="dropdown" onClick={toggleDropdown}>
+      <div className="d-flex justify-content-between">
+        <div className="navtitle_div mt-2">
+          <h5 className="nav_title">deals</h5>
+          </div>
+        <div className="d-flex mt-2">
+          <div className="search_div">
+          <CiSearch  className="search_icon ms-2" />
+          <input className="searchfield" type="text" placeholder="Search"/>
+          </div>
+          <div className="plus_div ms-3" onClick={toggleNavDropdown }>
+          <FaPlus className="plus_icon"  style={{ transform: showDropdown ? 'rotate(45deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}/>
+          {showDropdown && (
+          <div className="dropdown_nav">
+           <div className="nav_items mt-2">
+           <MdMyLocation className="nav_icons"/>
+           <p className="navitem_txt mb-1">Lead</p>
+           </div>
+           <div className="nav_items">
+           <FaEuroSign className="nav_icons" />
+           <p className="navitem_txt mb-1">Deals</p>
+           </div>
+           <div className=" nav_items">
+           <PiHashStraightFill className="nav_icons"/>
+           <p className="navitem_txt mb-1">Activity</p>
+           </div>
+           <div className=" nav_items">
+           <BsPersonFillExclamation className="nav_icons"/>
+           <p className="navitem_txt mb-1">Person</p>
+           </div>
+           <div className=" nav_items">
+           <GoOrganization className="nav_icons"/>
+           <p className="navitem_txt mb-1">Organization</p>
+           </div>
+           <div className=" nav_items">
+           <BiSolidNotepad className="nav_icons"/>
+           <p className="navitem_txt mb-1">Note</p>
+           </div>
+           <div className=" nav_items mb-2">
+           <LiaBoxOpenSolid className="nav_icons"/>
+           <p className="navitem_txt mb-1">Product</p>
+           </div>
+           </div>
+        
+        )}
+          </div>
+          </div>
+        <div className="dropdown mt-2" onClick={toggleDropdown}>
           <p className="sidebarusername" style={dropdownStyle}>{initials.toUpperCase()}</p>
           {isDropdownOpen && (
             <div className="dropdown-menu">
