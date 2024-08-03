@@ -44,15 +44,8 @@ export default function AdminHome() {
         <div>                    
           <table >
             <thead>
-              <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>First Name</th>
-                <th>User Type</th>
-                </tr>
             </thead>
-            {userData.map((secretKey, index) => (
+            {userData.data.map((secretKey, index) => (
               <tbody key={index}>
                 <tr>
                   <td>{secretKey.fname}</td>
@@ -64,7 +57,7 @@ export default function AdminHome() {
       )
 
       }
-      {/* <Adminsidebar/>
+      <Adminsidebar/>
       <div className="main-content" >
         {dashboardComponent}
       <div style={{ marginTop: 20 }}>
@@ -74,7 +67,7 @@ export default function AdminHome() {
         <UploadLeads />
       </div>
       
-    </div> */}
+    </div>
     </div>
   );
 }
