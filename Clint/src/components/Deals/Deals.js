@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import axios from 'axios';
 import AddDeals from './AddDeals';
 import ImportResult from './ImportResult';
 import './Deals.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
-import AddPerson from './AddPerson';
-import AddOrg from './AddOrg';
-import ScheduleActivity from './ScheduleActivity';
+import { FaUserAlt } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa6";
+import AssignPopup from './AssignPopup';
 
 const ItemTypes = {
   CARD: 'card',
 };
 
-const DealCard = ({ id, text, moveCard, setDragging }) => {
+const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status,assignedto }) => {
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.CARD,
     item: { id },
@@ -34,13 +35,18 @@ const DealCard = ({ id, text, moveCard, setDragging }) => {
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
       <div className='dealcard-content'>
-        {text}
+        <p>{text}</p>
+        <p>{name}</p>
+        <p>{assignedto}</p>
+      </div>
+      <div className='dealcard_icons'>
+        <FaUserAlt className='deals_usericon' onClick={() => toggleAssign(id)} />
       </div>
     </div>
   );
 };
 
-const DealBox = ({ stage, deals, moveCard, setDragging }) => {
+const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd, toggleAssign }) => {
   const [, drop] = useDrop({
     accept: ItemTypes.CARD,
     drop: (item) => moveCard(item.id, stage),
@@ -50,56 +56,97 @@ const DealBox = ({ stage, deals, moveCard, setDragging }) => {
     <div ref={drop} className='Dealbox'>
       <h3 className='dealheading ms-2'>{stage}</h3>
       {deals
-        .filter((deal) => deal.stage === stage)
+        .filter((deal) => deal.status === stage)
         .map((deal) => (
-          <DealCard key={deal.id} id={deal.id} text={deal.text} moveCard={moveCard} setDragging={setDragging} />
+          <DealCard
+            key={deal.id}
+            id={deal.id}
+            name={deal.name}
+            assignedto={deal.assignedto}
+            status={deal.status}
+            text={deal.text}
+            email={deal.email}
+            title={deal.title}
+            moveCard={moveCard}
+            setDragging={setDragging}
+            toggleAssign={toggleAssign}
+          />
         ))}
+      <div className='adddeal_button' onClick={togglePopadd}>
+        <FaPlus />
+      </div>
     </div>
   );
 };
 
 const Deals = () => {
+  const [isAssignLead, setIsAssignLead] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isUserDropdown, setIsUserDropdown] = useState(false);
   const [isTeamDropdown, setIsTeamDropdown] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [deals, setDeals] = useState([
-    { id: 1, text: 'Deal 1', stage: 'Lead In' },
-    { id: 2, text: 'Deal 2', stage: 'Contact Made' },
-    { id: 3, text: 'Deal 3', stage: 'Lead In' },
-    { id: 4, text: 'Deal 4', stage: 'Switch Off' },
-  ]);
+  const [deals, setDeals] = useState([]);
+  const [leads, setLeads] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedLeadId, setSelectedLeadId] = useState(null);
 
   useEffect(() => {
-    if (isPopupVisible) {
-      document.body.classList.add('no-scroll');
-    } else {
-      document.body.classList.remove('no-scroll');
-    }
-
-    return () => {
-      document.body.classList.remove('no-scroll');
+    const fetchLeads = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get('http://localhost:5000/leads');
+        setLeads(response.data);
+        const formattedDeals = response.data.map(lead => ({
+          id: lead._id,
+          name: lead.name,
+          text: lead.number,
+          title: lead.title,
+          email: lead.email,
+          status: lead.status,
+          stage: 'Lead In', // Or some initial stage
+          assignedto: lead.assignedto || [],
+        }));
+        setDeals(formattedDeals);
+      } catch (error) {
+        console.error('Error fetching leads:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
-  }, [isPopupVisible]);
 
-  const togglePopup = () => setIsPopupVisible(!isPopupVisible);
+    fetchLeads();
+  }, []);
+
+  const togglePopadd = () => setIsPopupVisible(!isPopupVisible);
+
+  const toggleAssign = (leadId) => {
+    console.log('Selected Lead ID:', leadId); // Debug log
+    setSelectedLeadId(leadId); // Set the selected lead ID
+    setIsAssignLead(true);
+  };
+
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
     setIsDropdownOpen(false);
   };
+
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
   const toggleUserDropdown = () => setIsUserDropdown(!isUserDropdown);
   const toggleTeamDropdown = () => setIsTeamDropdown(!isTeamDropdown);
 
-  const moveCard = (draggedId, droppedStage) => {
-    const draggedDeal = deals.find((deal) => deal.id === draggedId);
-    if (draggedDeal) {
+  const moveCard = async (draggedId, droppedStage) => {
+    try {
+      const response = await axios.put(`http://localhost:5000/leads/move/${draggedId}`, { newStatus: droppedStage });
+      const updatedLead = response.data;
+
       const updatedDeals = deals.map((deal) =>
-        deal.id === draggedId ? { ...deal, stage: droppedStage } : deal
+        deal.id === draggedId ? { ...deal, status: droppedStage } : deal
       );
       setDeals(updatedDeals);
+    } catch (error) {
+      console.error('Error moving card:', error);
     }
   };
 
@@ -119,7 +166,7 @@ const Deals = () => {
             </div>
           </div>
           <div className='buttdiv2'>
-            <div className='deal_butt1' onClick={togglePopup}>
+            <div className='deal_butt1' onClick={togglePopadd}>
               <p className='deal_butt1_txt'>
                 + <span>Deal</span>
               </p>
@@ -147,10 +194,10 @@ const Deals = () => {
                 <p className='ruptxt mt-1'>₨1,720,000·8 deals</p>
               </div>
               <div className='users_button me-3'>
-                <div className='users_butt1' >
+                <div className='users_butt1'>
                   <img className='adminmaleimg' src='./AdministratorMale.webp' alt='sdd' />
                   <p className='adminname'>Shiv K. Singh</p>
-                  <img className='arrowblackimg' src='./arrowblack.webp' alt='ff'  onClick={toggleUserDropdown}/>
+                  <img className='arrowblackimg' src='./arrowblack.webp' alt='ff' onClick={toggleUserDropdown} />
                 </div>
                 {isUserDropdown && (
                   <div className='users_dropdown'>
@@ -168,7 +215,7 @@ const Deals = () => {
               <div className='users_button d-flex align-items-center justify-content-around me-3'>
                 <img className='teamlogo' src='./Teamlogo.webp' alt='dcd' />
                 <p className='teamtext'>Team 1</p>
-                <img className='arrowblackimg' src='./arrowblack.webp' alt='fgg' onClick={toggleTeamDropdown}/>
+                <img className='arrowblackimg' src='./arrowblack.webp' alt='fgg' onClick={toggleTeamDropdown} />
                 {isTeamDropdown && (
                   <div className='users_dropdown'>
                     <ul>
@@ -179,31 +226,33 @@ const Deals = () => {
                   </div>
                 )}
               </div>
-        
             </div>
-        
           </div>
         </div>
 
         <div className='dealscontainer mt-2'>
           {['Lead In', 'Contact Made', 'Switch Off', 'Wrong Number', 'Call Back', 'Interested', 'Not Interested', 'Broker'].map((stage) => (
-            <DealBox key={stage} stage={stage} deals={deals} moveCard={moveCard} setDragging={setIsDragging} />
+            <DealBox
+              key={stage}
+              stage={stage}
+              deals={deals}
+              moveCard={moveCard}
+              setDragging={setIsDragging}
+              togglePopadd={togglePopadd}
+              toggleAssign={toggleAssign}
+            />
           ))}
         </div>
-
         {isPopupVisible && (
           <div className='popup'>
             <div className='popup_content'>
               <div className='d-flex align-items-center justify-content-between adddeal_div'>
                 <h2 className='add_deal'>Add Deals</h2>
-                <FontAwesomeIcon  className='close_img' icon={faX} onClick={togglePopup}  />
+                <FontAwesomeIcon className='close_img' icon={faX} onClick={togglePopadd} />
               </div>
               <AddDeals />
-              {/* <AddPerson/> */}
-              {/* <AddOrg /> */}
-              {/* <ScheduleActivity /> */}
               <div className='bottomdeal_div'>
-                <button className='cancel_btn me-2' onClick={togglePopup}>Cancel</button>
+                <button className='cancel_btn me-2' onClick={togglePopadd}>Cancel</button>
                 <button className='save_btn'>Save</button>
               </div>
             </div>
@@ -215,25 +264,34 @@ const Deals = () => {
             <div className='modal_content'>
               <div className='d-flex align-items-center justify-content-between importdeal_div'>
                 <h2 className='import_deal'>Import results</h2>
-                <FontAwesomeIcon  className='close_img' icon={faX} onClick={toggleModal} />
+                <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleModal} />
               </div>
               <ImportResult />
-              {/* <div className='bottomimport_div'>
-                <button className='cancel_btn1 me-2' onClick={toggleModal}>Cancel</button>
-                <button className='save_btn1'>Import</button>
-              </div> */}
             </div>
           </div>
         )}
+
+        {isAssignLead && (
+          <div className='modal'>
+            <div className='modal_content'>
+              <div className='d-flex align-items-center justify-content-between importdeal_div'>
+                <h2 className='import_deal'>Assign Leads</h2>
+                <FontAwesomeIcon className='close_img' icon={faX} onClick={() => setIsAssignLead(false)} />
+              </div>
+              <AssignPopup leadId={selectedLeadId} setIsAssignLead={setIsAssignLead} deals={deals} setDeals={setDeals} />
+            </div>
+          </div>
+        )}
+
+        {isDragging && (
+          <div className='buttons_div p-2'>
+            <button className='dlt_btn'>DELETE</button>
+            <button className='lost_btn'>LOST</button>
+            <button className='won_btn'>WON</button>
+            <button className='dlt_btn'>MOVE TO</button>
+          </div>
+        )}
       </div>
-      {isDragging && (
-        <div className='buttons_div p-2'>
-          <button className='dlt_btn'>DELETE</button>
-          <button className='lost_btn'>LOST</button>
-          <button className='won_btn'>WON</button>
-          <button className='dlt_btn'>MOVE TO</button>
-        </div>
-       )}
     </DndProvider>
   );
 };

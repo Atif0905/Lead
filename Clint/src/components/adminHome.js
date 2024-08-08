@@ -8,7 +8,7 @@ import ExecutiveDashboard from "./executiveHome";
 import Adminsidebar from "../Sidebar/AdminSidebar";
 import Deals from "./Deals/Deals";
 import ImportData from "./Tools/ImportData";
-
+import AssignPopup from "./Deals/AssignPopup";
 
 
 export default function AdminHome() {
@@ -43,7 +43,7 @@ export default function AdminHome() {
 
   return (
     <div>
-      { userData && (
+      {/* { userData && (
         <div>                    
           <table >
             <thead>
@@ -59,7 +59,7 @@ export default function AdminHome() {
         </div>
       )
 
-      }
+      } */}
       <Adminsidebar/>
       <div className="main-content" >
         {dashboardComponent}
@@ -69,8 +69,10 @@ export default function AdminHome() {
       {/* <div style={{ marginTop: 20 }}>
         <UploadLeads />
       </div> */}
-      <div style={{ marginTop: 20 }}>
+ 
+      <div>
      <Deals />
+     {/* <AssignPopup/> */}
       </div>
         {/* <div style={{ }}>
     <ImportData />
