@@ -17,10 +17,16 @@ const LeadSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: 'new'
+   required: true
+  },
+  title: {
+    type: String,
+    required: true
   },
   assignedto: {
-    type: String
+    type: String,
+    required: true
   }
-});
+}, { timestamps: true });
+
 module.exports = mongoose.model('Lead', LeadSchema);

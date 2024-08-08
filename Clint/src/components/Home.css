@@ -86,12 +86,12 @@ transform: translate(-50%, -50%);
   }
   .Dealbox {
     width: 253px;
-    height: 100vh;
+    height: auto;
     background-color: #0000000D;
     border-radius: 6px;
     margin-right: 20px;
     flex: 0 0 auto;
-    padding: 5px;
+    padding: 7px;
 }
 .dealheading{
 font-size: 20px;
@@ -106,6 +106,19 @@ color: #000000;
   box-shadow: 0px 0px 2px 2px #00000026;
   background-color: #FFFFFF;
   margin-bottom: 10%;
+  cursor: pointer;
+}
+.dealcard-content{
+  width: 100%;
+  height: 100px;
+  padding: 3%;
+}
+.dealcard_icons{
+ width: 100%;
+ height: 35px;
+ padding: 3%;
+ display: flex;
+ align-items: center;
 }
 .dealtext{
 font-size: 14px;
@@ -114,3 +127,13 @@ line-height: 16.1px;
 text-align: left;
 color: #787878;
 }
+.deals_usericon{
+  font-size: 26px;
+  cursor: pointer;
+}
+.assign_button{
+  font-size: 16px;
+  color: red;
+  cursor: pointer;
+}
+

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './Deals.css'
 
 export default function ImportResult() {
     const [fileType, setFileType] = useState('xlsx');
