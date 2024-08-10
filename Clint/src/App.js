@@ -10,11 +10,15 @@ import "./App.css";
 import Login from "./components/login_component";
 import SignUp from "./components/signup_component";
 import UserDetails from "./components/userDetails";
-import Navbar from "./components/Navbar";
 import AdminHome from "./components/adminHome";
 import Product from "./components/products";
 import About from "./components/about";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Leads from "./components/Leads";
+
+
+
+
 
 function App() {
   const isLoggedIn = window.localStorage.getItem("loggedIn"); // Check if logged in
@@ -51,12 +55,15 @@ function App() {
                 <Route path="/userDetails" element={<Navigate to="/" />} />
                 <Route path="/products" element={<Navigate to="/" />} />
                 <Route path="/admin-dashboard" element={<AdminHome />} />
+                <Route path="/adminleads" element={<Leads />} />
               </>
             )}
           </Route>
 
           <Route path="/about" element={<About />} />
           <Route path="*" element={<Navigate to="/" />} />
+        
+        
         </Routes>
       </div>
     </Router>

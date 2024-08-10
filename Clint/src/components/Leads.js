@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
-import "../App.css";
 import UserDashboard from "./userHome";
 import SubUserDashboard from "./subUserHome";
 import ExecutiveDashboard from "./executiveHome";
 import Adminsidebar from "../Sidebar/AdminSidebar";
 import Deals from "./Deals/Deals";
-import Leads from "./Leads";
+import UserDetails from "./userDetails";
 
-
-
-export default function AdminHome() {
+const Leads = () => {
   const [userData , setUserData] = useState("");
   useEffect(() => {
     fetch("http://localhost:5000/getAllUser")
@@ -34,42 +31,22 @@ export default function AdminHome() {
     case "Executive":
       dashboardComponent = <ExecutiveDashboard />;
       break;
-      case "Leads":
-        dashboardComponent = <Leads/>;
-        break;
     default:
       dashboardComponent = null;
       break;
   }
-
   return (
     <div>
-      {/* { userData && (
-        <div>                    
-          <table >
-            <thead>
-            </thead>
-            {userData.data.map((secretKey, index) => (
-              <tbody key={index}>
-                <tr>
-                  <td>{secretKey.fname}</td>
-                </tr>
-              </tbody>
-              ))}
-          </table>
-        </div>
-      )
-      } */}
-      <Adminsidebar/>
-      <div className="main-content" >
+      <Adminsidebar />
+       <div className="main-content" >
         {dashboardComponent}
-     
       <div>
-     <Deals />
+    <Deals />
       </div>
-       
-      
     </div>
+
     </div>
-  );
+  )
 }
+
+export default Leads

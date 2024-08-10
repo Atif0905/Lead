@@ -7,15 +7,15 @@ import ImportResult from './ImportResult';
 import './Deals.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
-import { FaUserAlt } from "react-icons/fa";
-import { FaPlus } from "react-icons/fa6";
+import { FaUserAlt, FaPlus } from "react-icons/fa";
 import AssignPopup from './AssignPopup';
+import { GoAlertFill } from "react-icons/go";
 
 const ItemTypes = {
   CARD: 'card',
 };
 
-const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status,assignedto }) => {
+const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status, assignedto }) => {
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.CARD,
     item: { id },
@@ -32,21 +32,23 @@ const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status,
     <div
       ref={drag}
       className='dealcard'
-      style={{ opacity: isDragging ? 0.5 : 1 }}
-    >
-      <div className='dealcard-content'>
-        <p>{text}</p>
-        <p>{name}</p>
-        <p>{assignedto}</p>
-      </div>
-      <div className='dealcard_icons'>
+      style={{ opacity: isDragging ? 0.5 : 1 }}>
+        <div>
+     
+        <p className='deal_head1'>{status}</p>
+        <p className='deal_head2'>{assignedto}</p>
+        <p className='deal_head3'>{text}</p>
+     
+      <div className='dealcard_icon'>
         <FaUserAlt className='deals_usericon' onClick={() => toggleAssign(id)} />
+        <GoAlertFill className='deals_alerticon' />
       </div>
+    </div>
     </div>
   );
 };
 
-const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd, toggleAssign }) => {
+const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd, toggleAssign ,  onDelete}) => {
   const [, drop] = useDrop({
     accept: ItemTypes.CARD,
     drop: (item) => moveCard(item.id, stage),
@@ -54,7 +56,10 @@ const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd, toggleAssi
 
   return (
     <div ref={drop} className='Dealbox'>
+      <div className='d-flex justify-content-between align-items-center'>
       <h3 className='dealheading ms-2'>{stage}</h3>
+      <button className='stage_dlt' onClick={() => onDelete(stage)}>Delete</button>
+      </div>
       {deals
         .filter((deal) => deal.status === stage)
         .map((deal) => (
@@ -76,10 +81,12 @@ const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd, toggleAssi
         <FaPlus />
       </div>
     </div>
+    
   );
 };
 
 const Deals = () => {
+  const [users, setUsers] = useState([]); 
   const [isAssignLead, setIsAssignLead] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -91,12 +98,35 @@ const Deals = () => {
   const [leads, setLeads] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedLeadId, setSelectedLeadId] = useState(null);
+  const [stages, setStages] = useState([
+    'Lead In', 
+    'Contact Made', 
+    'Switch Off', 
+    'Wrong Number', 
+    'Call Back', 
+    'Interested', 
+    'Not Interested', 
+    'Broker'
+  ]);
+  const [newStage, setNewStage] = useState('');
+  const [isAddingStage, setIsAddingStage] = useState(false);
+
+  // Load stages from local storage
+  useEffect(() => {
+    const savedStages = JSON.parse(localStorage.getItem('dealStages')) || stages;
+    setStages(savedStages);
+  }, []);
+
+  // Save stages to local storage
+  useEffect(() => {
+    localStorage.setItem('dealStages', JSON.stringify(stages));
+  }, [stages]);
 
   useEffect(() => {
     const fetchLeads = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get('http://localhost:5000/leads');
+        const response = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
         setLeads(response.data);
         const formattedDeals = response.data.map(lead => ({
           id: lead._id,
@@ -105,7 +135,7 @@ const Deals = () => {
           title: lead.title,
           email: lead.email,
           status: lead.status,
-          stage: 'Lead In', // Or some initial stage
+          stage: 'Lead In',
           assignedto: lead.assignedto || [],
         }));
         setDeals(formattedDeals);
@@ -116,14 +146,32 @@ const Deals = () => {
       }
     };
 
+    const fetchUsers = async () => {
+      setIsLoading(true);
+      try {
+        const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
+        if (usersResponse.data.status === "ok") {
+          const directors = usersResponse.data.data.filter(user => user.userType === 'User');
+          const subUsers = usersResponse.data.data.filter(user => user.userType === 'SubUser');
+          setUsers([...directors, ...subUsers]); 
+        } else {
+          console.error("Failed to fetch users:", usersResponse.data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchLeads();
+    fetchUsers();
   }, []);
 
   const togglePopadd = () => setIsPopupVisible(!isPopupVisible);
 
   const toggleAssign = (leadId) => {
-    console.log('Selected Lead ID:', leadId); // Debug log
-    setSelectedLeadId(leadId); // Set the selected lead ID
+    setSelectedLeadId(leadId);
     setIsAssignLead(true);
   };
 
@@ -138,7 +186,7 @@ const Deals = () => {
 
   const moveCard = async (draggedId, droppedStage) => {
     try {
-      const response = await axios.put(`http://localhost:5000/leads/move/${draggedId}`, { newStatus: droppedStage });
+      const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${draggedId}`, { newStatus: droppedStage });
       const updatedLead = response.data;
 
       const updatedDeals = deals.map((deal) =>
@@ -149,6 +197,27 @@ const Deals = () => {
       console.error('Error moving card:', error);
     }
   };
+
+  const handleAddStage = (e) => {
+    e.preventDefault();
+    if (newStage) {
+      const updatedStages = [...stages, newStage];
+      setStages(updatedStages);
+      setNewStage('');
+      setIsAddingStage(false);
+    }
+  };
+  
+  const handleDeleteStage = (stageToDelete) => {
+    if (window.confirm(`Are you sure you want to delete the stage "${stageToDelete}"?`)) {
+      const updatedStages = stages.filter(stage => stage !== stageToDelete);
+      setStages(updatedStages);
+      const updatedDeals = deals.filter(deal => deal.status !== stageToDelete);
+      setDeals(updatedDeals);
+    }
+  };
+
+  
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -188,61 +257,80 @@ const Deals = () => {
             <img className='pin_img me-1' src='./Pin.webp' alt='dsd' />
             <p className='pin_text mt-2'>Pin filters</p>
           </div>
-          <div>
-            <div className='d-flex mt-4'>
-              <div className='me-3'>
-                <p className='ruptxt mt-1'>₨1,720,000·8 deals</p>
+          <div className='d-flex mt-4'>
+            <div className='me-3'>
+              <p className='ruptxt mt-1'>₨1,720,000·8 deals</p>
+            </div>
+            <div className='users_button me-3'>
+              <div className='users_butt1'>
+                <img className='adminmaleimg' src='./AdministratorMale.webp' alt='sdd' />
+                <p className='adminname'>{users[0]?.fname || 'Loading...'}</p>
+                <img className='arrowblackimg' src='./arrowblack.webp' alt='ff' onClick={toggleUserDropdown} />
               </div>
-              <div className='users_button me-3'>
-                <div className='users_butt1'>
-                  <img className='adminmaleimg' src='./AdministratorMale.webp' alt='sdd' />
-                  <p className='adminname'>Shiv K. Singh</p>
-                  <img className='arrowblackimg' src='./arrowblack.webp' alt='ff' onClick={toggleUserDropdown} />
-                </div>
-                {isUserDropdown && (
-                  <div className='users_dropdown'>
-                    <ul>
-                      <li className='list'>name2</li>
-                      <li className='list'>admin2</li>
-                      <li className='list'>admin3</li>
-                    </ul>
+              {isUserDropdown && (
+                <div className='users_dropdown'>
+                  <div>
+                    {users.map((user) => (
+                      <p key={user.id} className='dir_list'>{user.fname} {user.lname}</p>
+                    ))}
                   </div>
-                )}
-                <div className='users_butt2'>
-                  <img className='callibrush' src='./CalliBrush.webp' alt='dd' />
                 </div>
+              )}
+              <div className='users_butt2'>
+                <img className='callibrush' src='./CalliBrush.webp' alt='dd' />
               </div>
-              <div className='users_button d-flex align-items-center justify-content-around me-3'>
-                <img className='teamlogo' src='./Teamlogo.webp' alt='dcd' />
-                <p className='teamtext'>Team 1</p>
-                <img className='arrowblackimg' src='./arrowblack.webp' alt='fgg' onClick={toggleTeamDropdown} />
-                {isTeamDropdown && (
-                  <div className='users_dropdown'>
-                    <ul>
-                      <li className='list'>team2</li>
-                      <li className='list'>team3</li>
-                      <li className='list'>team4</li>
-                    </ul>
+            </div>
+
+            <div className='users_button d-flex align-items-center justify-content-around me-3'>
+              <img className='teamlogo' src='./Teamlogo.webp' alt='dcd' />
+              <p className='teamtext'>{users[0]?.fname || 'Loading...'}</p>
+              <img className='arrowblackimg' src='./arrowblack.webp' alt='fgg' onClick={toggleTeamDropdown} />
+              {isTeamDropdown && (
+                <div className='users_dropdown'>
+                  <div>
+                    {users
+                      .filter(user => user.userType === 'SubUser')
+                      .map((user) => (
+                        <p key={user.id} className='dir_list'>{user.fname} {user.lname}</p>
+                      ))}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         <div className='dealscontainer mt-2'>
-          {['Lead In', 'Contact Made', 'Switch Off', 'Wrong Number', 'Call Back', 'Interested', 'Not Interested', 'Broker'].map((stage) => (
+          {stages.map((stage, index) => (
             <DealBox
-              key={stage}
+              key={index}
               stage={stage}
               deals={deals}
               moveCard={moveCard}
               setDragging={setIsDragging}
               togglePopadd={togglePopadd}
               toggleAssign={toggleAssign}
+              onDelete={handleDeleteStage}
             />
           ))}
+          <div className="add-stage-form mt-2">
+            {!isAddingStage ? (
+              <button className='add-stage-button' onClick={() => setIsAddingStage(true)}> <FaPlus /></button>
+            ) : (
+              <form onSubmit={handleAddStage} className="">
+                <input 
+                  type="text" 
+                  value={newStage} 
+                  onChange={(e) => setNewStage(e.target.value)} 
+                  placeholder="New Stage Name"
+                />
+                <button className='add' type="submit">Submit</button><br/>
+                <button type="button" onClick={() => setIsAddingStage(false)}>Cancel</button><br/>
+              </form>
+            )}
+          </div>
         </div>
+
         {isPopupVisible && (
           <div className='popup'>
             <div className='popup_content'>
@@ -278,7 +366,12 @@ const Deals = () => {
                 <h2 className='import_deal'>Assign Leads</h2>
                 <FontAwesomeIcon className='close_img' icon={faX} onClick={() => setIsAssignLead(false)} />
               </div>
-              <AssignPopup leadId={selectedLeadId} setIsAssignLead={setIsAssignLead} deals={deals} setDeals={setDeals} />
+              <AssignPopup 
+                leadId={selectedLeadId} 
+                setIsAssignLead={setIsAssignLead} 
+                deals={deals} 
+                setDeals={setDeals} 
+              />
             </div>
           </div>
         )}

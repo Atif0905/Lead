@@ -1,6 +1,5 @@
-import React, { Component, useState } from "react";
+import React, { useState } from "react";
 import "../App.css";
-import { Navigate } from "react-router-dom";
 import './Signin.css'
 export default function Login() {
   const [email, setEmail] = useState("");

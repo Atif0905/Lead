@@ -1,22 +1,52 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../App.css";
-export default function UserHome({ userData }) {
-  const logOut = () => {
-    window.localStorage.clear();
-    window.location.href = "./login";
-  };
+import DirectorSidebar from "../Sidebar/DirectorSidebar";
+import Deals from "./Deals/Deals";
+import UserDashboard from "./userHome";
+import SubUserDashboard from "./subUserHome";
+import ExecutiveDashboard from "./executiveHome";
+
+export default function UserHome() {
+  const [userData , setUserData] = useState("");
+  useEffect(() => {
+    fetch("http://localhost:5000/getAllUser")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "ok") {
+          setUserData(data)
+          console.log(data)
+        }
+      })
+      .catch((error) => console.error("Error fetching options:", error));
+  }, []);
+  const [selectedUserType, setSelectedUserType] = useState("");
+  let dashboardComponent;
+  switch (selectedUserType) {
+    case "User":
+      dashboardComponent = <UserDashboard />;
+      break;
+    case "SubUser":
+      dashboardComponent = <SubUserDashboard />;
+      break;
+    case "Executive":
+      dashboardComponent = <ExecutiveDashboard />;
+      break;
+    default:
+      dashboardComponent = null;
+      break;
+  }
+ 
   return (
-    <div className="auth-wrapper">
-      <div className="auth-inner">
-        <div>
-          Name<h1>{userData.fname}</h1>
-          Email <h1>{userData.email}</h1>
-          <br />
-          <button onClick={logOut} className="btn btn-primary">
-            Log Out
-          </button>
-        </div>
+    <div className="">
+      <DirectorSidebar />
+      <div className="main-content" >
+        {dashboardComponent}
+ 
+      <div>
+ <Deals />
+   
       </div>
+    </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
+import React from 'react'
 import './Sidebar.css';
-import React from "react";
 import { MdMyLocation } from "react-icons/md";
 import { AiFillDollarCircle } from "react-icons/ai";
 import { GoProjectSymlink } from "react-icons/go";
@@ -8,14 +8,12 @@ import { LuActivitySquare } from "react-icons/lu";
 import { MdContactPage } from "react-icons/md";
 import { GoGraph } from "react-icons/go";
 import { FaBoxArchive } from "react-icons/fa6";
-import { RiFileSettingsFill } from "react-icons/ri";
+import { RiFileSettingsFill } from "react-icons/ri"
 
-const Adminsidebar = () => {
-
+const DirectorSidebar = () => {
   return (
     <div>
-    
-    <div className='excecutiveside'>
+  <div className='excecutiveside'>
         {/* <img src='./grouplogo.webp' className='sidebarlogo mb-3' alt=''/>
             <div className="d-flex sideanchor "><img src="./dashboardicon.webp" className="sidebaricon" alt="icon"/><li className=''>Dashboard</li></div>
             <div className="d-flex sideanchor"><img src="./projectsicon.webp" className="sidebaricon" alt="icon"/><li>Project</li></div>
@@ -30,7 +28,7 @@ const Adminsidebar = () => {
             </div>
             <div className='d-flex iconss'>
             <div className='sideicon_div'>
-              <a href='/adminleads'>
+              <a href='/Leads'>
             <MdMyLocation className='side_icons' />
             </a>
             </div>
@@ -107,4 +105,4 @@ const Adminsidebar = () => {
   )
 }
 
-export default Adminsidebar
+export default DirectorSidebar

@@ -1,68 +1,68 @@
 .Homehead {
-    font-family: Open Sans;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 27.24px;
-    text-align: left;
-    color: #0d5a65;
-  }
-  .Homesearch {
-    width: 213px;
-    height: 30px;
-    border: none;
-    border-radius: 4px;
-    background-color: #EEEEEE;
-    outline: none;
-  }
-  .Homesearch::placeholder{
-  color: black;
-  }
-  .searchicon{
-      width: 12.87px;
-  height: 12.88px;
-  margin-top: 10px;
-  margin-left: 12px;
-  }
-  .boxcontainer {
-      max-width: 100%;
-      overflow-x: auto;
-      height: auto;
-      padding: 20px 5px;
-      width: 100%;
-      display: flex;
-      flex-wrap: nowrap;
-  }
-  
-  .Homebox {
-      width: 253px;
-      height: auto !important;
-      border-radius: 8px;
-      border: 1px solid #FFFFFF;
-      box-shadow: 0px 0px 4px 3px #000AFF40;
-      margin-right: 20px;
-      flex: 0 0 auto;
-      padding: 5px;
-  }
-  
-  .boxheading{
-      font-family: Open Sans;
+  font-family: Open Sans;
   font-size: 20px;
-  font-weight: 650;
+  font-weight: 600;
   line-height: 27.24px;
-  text-align: center;
-  }
-  .leadsdiv{
-    position: relative;
+  text-align: left;
+  color: #0d5a65;
+}
+.Homesearch {
+  width: 213px;
+  height: 30px;
+  border: none;
+  border-radius: 4px;
+  background-color: #EEEEEE;
+  outline: none;
+}
+.Homesearch::placeholder{
+color: black;
+}
+.searchicon{
+    width: 12.87px;
+height: 12.88px;
+margin-top: 10px;
+margin-left: 12px;
+}
+.boxcontainer {
+    max-width: 100%;
+    overflow-x: auto;
+    height: auto;
+    padding: 20px 5px;
     width: 100%;
-    height: 49px;
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.Homebox {
+    width: 253px;
+    height: auto !important;
     border-radius: 8px;
-    border: 1px;
-    margin-bottom: 5px;
-    background: #81C5E2E5;
-    border: 1px solid #787878;
-  }
-  .leadsnumber{
+    border: 1px solid #FFFFFF;
+    box-shadow: 0px 0px 4px 3px #000AFF40;
+    margin-right: 20px;
+    flex: 0 0 auto;
+    padding: 5px;
+}
+
+.boxheading{
     font-family: Open Sans;
+font-size: 20px;
+font-weight: 650;
+line-height: 27.24px;
+text-align: center;
+}
+.leadsdiv{
+  position: relative;
+  width: 100%;
+  height: 49px;
+  border-radius: 8px;
+  border: 1px;
+  margin-bottom: 5px;
+  background: #81C5E2E5;
+  border: 1px solid #787878;
+}
+.leadsnumber{
+  font-family: Open Sans;
 font-size: 20px;
 font-weight: 600;
 line-height: 27.24px;
@@ -72,26 +72,26 @@ cursor: pointer;
 top: 50%;
 left: 50%;
 transform: translate(-50%, -50%);
-  }
+}
 
-  .dealscontainer{
-    max-width: 100%;
-    overflow-x: auto;
-    scrollbar-width: none;
-    height: auto;
-    padding: 20px 0px;
-    width: 100%;
-    display: flex;
-    flex-wrap: nowrap;
-  }
-  .Dealbox {
-    width: 253px;
-    height: auto;
-    background-color: #0000000D;
-    border-radius: 6px;
-    margin-right: 20px;
-    flex: 0 0 auto;
-    padding: 7px;
+.dealscontainer{
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  height: auto;
+  padding: 20px 0px;
+  width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+}
+.Dealbox {
+  width: 253px;
+  height: auto;
+  background-color: #0000000D;
+  border-radius: 6px;
+  margin-right: 20px;
+  flex: 0 0 auto;
+  padding: 7px;
 }
 .dealheading{
 font-size: 20px;
@@ -101,24 +101,48 @@ text-align: left;
 color: #000000;
 }
 .dealcard{
-  width: 100%;
-  height: 135px;
-  box-shadow: 0px 0px 2px 2px #00000026;
-  background-color: #FFFFFF;
-  margin-bottom: 10%;
-  cursor: pointer;
+width: 100%;
+height: 150px;
+box-shadow: 0px 0px 2px 2px #00000026;
+background-color: #FFFFFF;
+margin-bottom: 10%;
+cursor: pointer;
+padding: 10px;
+display: flex;
+align-items: center;
+/* justify-content: center; */
 }
-.dealcard-content{
-  width: 100%;
-  height: 100px;
-  padding: 3%;
+.deal_head1{
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 18.52px;
+  text-align: left;
+color: #000000;  
 }
-.dealcard_icons{
- width: 100%;
- height: 35px;
- padding: 3%;
- display: flex;
- align-items: center;
+.deal_head2{
+font-size: 12px;
+font-weight: 400;
+line-height: 13.8px;
+text-align: left;
+color: #787878;
+}
+.deal_head3{
+font-size: 12px;
+font-weight: 700;
+line-height: 13.8px;
+text-align: left;
+color: #787878;
+}
+/* .dealcard-content{
+width: 100%;
+height: 100px;
+
+} */
+.dealcard_icon {
+  width: 100%;
+display: flex;
+align-items: center;
+justify-content: space-between;
 }
 .dealtext{
 font-size: 14px;
@@ -128,12 +152,30 @@ text-align: left;
 color: #787878;
 }
 .deals_usericon{
+font-size: 26px;
+cursor: pointer;
+}
+.deals_alerticon{
   font-size: 26px;
-  cursor: pointer;
+cursor: pointer;
+box-shadow: 0px 4px 4px 0px #DDB438CC;
 }
 .assign_button{
-  font-size: 16px;
+font-size: 16px;
+color: red;
+cursor: pointer;
+border: none;
+background-color: transparent;
+}
+.add-stage-button{
+  width: 253px;
+  height: 34px;
+  border: none;
+  background-color: #cecece;
+  border-radius: 6px;
+}
+.stage_dlt{
   color: red;
-  cursor: pointer;
+  border: none;
 }
 

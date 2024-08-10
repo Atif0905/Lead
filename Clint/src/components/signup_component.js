@@ -150,7 +150,7 @@ export default function SignUp() {
                 <option>Select Option</option>
                 {keyData.map((secretKey, index) => (
                   <option key={index} value={secretKey.key}>
-                    {secretKey.key}
+                    {secretKey.fname} {secretKey.lname}
                   </option>
                 ))}
               </select>
@@ -179,7 +179,7 @@ export default function SignUp() {
                     <option>Select Option</option>
                     {userData.map((secretKey, index) => (
                       <option key={index} value={secretKey.key1}>
-                        {secretKey.key1}
+                        {secretKey.fname}  {secretKey.lname}
                       </option>
                     ))}
                   </select>

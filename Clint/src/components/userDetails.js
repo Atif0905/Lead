@@ -13,6 +13,7 @@ import { BsPersonFillExclamation } from "react-icons/bs";
 import { GoOrganization } from "react-icons/go";
 import { BiSolidNotepad } from "react-icons/bi";
 import { LiaBoxOpenSolid } from "react-icons/lia";
+import Leads from "./Leads";
 
 export default function UserDetails() {
   const [userData, setUserData] = useState(null);
@@ -125,7 +126,7 @@ export default function UserDetails() {
     borderRadius: "50%",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center", // Center the content vertically and horizontally
+    justifyContent: "center",
   };
   
   const renderDropdown = () => (
@@ -195,6 +196,7 @@ export default function UserDetails() {
   const renderUserHome = () => {
     const userHomeComponents = {
       Admin: <AdminHome />,
+      Leads: <Leads />,
       User: <UserHome userData={userData} />,
       SubUser: <SubUserHome userData={userData} />,
       Executive: <ExecutiveHome userData={userData} />

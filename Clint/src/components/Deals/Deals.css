@@ -3,6 +3,7 @@
   .dealcard:hover .adddeal_button {
     display: block !important; 
   }
+  
   .adddeal_button{
     width: 100%;
     height: 34px;
@@ -13,7 +14,10 @@
    align-items: center;
    /* display: none; */
   }
-  
+  .dir_list{
+    font-size: 16px;
+    cursor: pointer;
+  }
   .buttdiv1{
     width: 180px;
     height: 42px;
@@ -154,7 +158,6 @@ line-height: 16.1px;
 text-align: left;
 color: #787878;
 }
-
 .popup {
   position: fixed;
   top: 0;
