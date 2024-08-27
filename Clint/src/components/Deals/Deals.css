@@ -1,19 +1,6 @@
 
   /* Deals css */
-  .dealcard:hover .adddeal_button {
-    display: block !important; 
-  }
-  
-  .adddeal_button{
-    width: 100%;
-    height: 34px;
-   background-color: #cecece;
-   border-radius: 6px;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   /* display: none; */
-  }
+
   .dir_list{
     font-size: 16px;
     cursor: pointer;
@@ -145,6 +132,7 @@ color: #787878;
   .callibrush{
     width: 22px;
     height: 22px;
+    cursor: pointer;
   }
 .teamlogo{
   width: 22px;
@@ -203,8 +191,7 @@ text-align: left;
 color: #000000;
 }
 .close_img{
-  height: 34px;
-  width: 34px;
+  font-size: 24px;
 }
 .adddeal_div{
   padding: 20px;
@@ -333,11 +320,11 @@ color: #211C52;
     justify-content: center;
     position: absolute;
     background-color: #f1f1f1;
-    width: 117px;
+    width: 120px;
     height: 50px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
-    top: 100%;
+    top:130%;
   }
   .users_dropdown{
     display: flex;
@@ -349,7 +336,7 @@ color: #211C52;
     height: auto;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
-    top: 30%;
+    top: 20%;
   }
   .import_txt{
     margin-top: 10px;
@@ -487,147 +474,20 @@ border: none;
   clip-path: polygon(0% 0%, 100% 0%, 100.1% 47%, 100% 100%, 0% 100.3%, 19.2% 48.5%);
   border-radius: 10px;
 }
-
-
-
-
- /* Schedule Activity css */
- .call_div{
-  width: 100%;
-  height: 42px;
-  border: 1px solid #2B74DA;
+.add_leads_cont{
   display: flex;
   align-items: center;
-  border-radius: 6px;
- }
- .call_txt{
-  margin-top: 10px;
-font-size: 25px;
-font-weight: 500;
-line-height: 28.93px;
-text-align: left;
-padding-left: 2%;
-color: #21232C;
- }
- .icons_div{
- height: 37px;
- border: 1px solid #000000;
- border-radius: 6px;
- }
- .icon_img{
-  width: 20px;
-  height: 20px;
- }
- .time_div{
-  width: 100%;
-  height: 40px;
-  display: grid;
-  grid-template-columns: 3% 22% 22% 3% 22% 22%;
-  grid-gap:10px
- }
- .clock_img{
-  width: 32px;
-  height: 32px;
- }
- .date_div{
-  width: 100%;
-  border-radius: 6px;
- }
- .input_filed1{
-  width: 100%;
-  height: 100%;
-  border-radius: 6px;
-  border: 1px solid #787878;
-  padding-left: 2%;
-  padding-right: 2%;
- }
- .priority_div{
-  width: 100%;
-  height: 40px;
-  display: grid;
-  grid-template-columns: 3% 22%;
-  grid-gap:10px
- }
- .prior_input {
-  width: 100%;
-  height: 100%;
-  border-radius: 6px;
-  border: 1px solid #787878;
-  cursor: pointer;
- }
- .proirdown-menu{
-  position: relative;
-  top: 5%;
-  left: 0;
-  background-color: white;
-  border: 1px solid #ccc;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
- }
-.loctxt{
-font-size: 18px;
-font-weight: 500;
-line-height: 20.83px;
-text-align: left;
-color: #0D68C9;
+  justify-content: center;
+  position: absolute;
+  background-color: #f1f1f1;
+  width: 300px;
+  height: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  top: 130%;
 }
-.input_yellow{
+.input_assign{
   width: 100%;
-  height: 100%;
-  background-color: #FFF6D6;
 }
-.note_div{
-  width: 100%;
-  height:181px;
-  display: grid;
-  grid-template-columns: 3% 95%;
-  grid-gap:10px;
-}
-.call_container{
-  width: 100%;
-  display: grid;
-  grid-template-columns: 3% 95%;
-  grid-gap:10px;
-}
-.icons_container{
-  width: 100%;
-  display: grid;
-  grid-template-columns: 3% 30%;
-  grid-gap:10px;
-  margin-top: 15px;
-}
-.admin_div{
-  width: 100%;
-  display: grid;
-  grid-template-columns: 3% 95%;
-  grid-gap:10px;
-}
-.admin_input{
-  width: 100%;
-  height: 42px;
-  border: 1px solid #787878;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content:space-between;
-  padding-left: 2%;
-  padding-right: 2%;
-}
-.note_txt{
-font-size: 15px;
-font-weight: 400;
-line-height: 17.36px;
-text-align: left;
-color: #787878;
-margin-left: 4%;
-}
-.admin_input1{
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-.admin_input1:focus {
-  border: none;         
-  outline: none; 
-}
- 
+
+

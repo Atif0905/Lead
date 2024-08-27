@@ -7,15 +7,16 @@ import ImportResult from './ImportResult';
 import './Deals.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
-import { FaUserAlt, FaPlus } from "react-icons/fa";
+import { FaUserAlt, FaPlus } from 'react-icons/fa';
 import AssignPopup from './AssignPopup';
-import { GoAlertFill } from "react-icons/go";
+import { GoAlertFill } from 'react-icons/go';
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 const ItemTypes = {
   CARD: 'card',
 };
 
-const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status, assignedto }) => {
+const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status, assignedto, onDelete,handleDeleteDeal }) => {
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.CARD,
     item: { id },
@@ -33,22 +34,28 @@ const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status,
       ref={drag}
       className='dealcard'
       style={{ opacity: isDragging ? 0.5 : 1 }}>
-        <div>
-     
+      <div className='dealcard_content'>
         <p className='deal_head1'>{status}</p>
         <p className='deal_head2'>{assignedto}</p>
-        <p className='deal_head3'>{text}</p>
-     
-      <div className='dealcard_icon'>
-        <FaUserAlt className='deals_usericon' onClick={() => toggleAssign(id)} />
-        <GoAlertFill className='deals_alerticon' />
+        <div className='d-flex justify-content-between'>
+          <p className='deal_head3'>{text}</p> 
+          
+        </div>
+        <div className='dealcard_icon'>
+          <FaUserAlt className='deals_usericon' onClick={() => toggleAssign(id)} />
+            <div>
+          
+          <GoAlertFill className='deals_alerticon' />
+          <RiDeleteBin6Line className='ms-3 deals_dlticon'  onClick={() => handleDeleteDeal(id)} />
+          
+          </div>
+        </div>
       </div>
-    </div>
     </div>
   );
 };
 
-const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd, toggleAssign ,  onDelete}) => {
+const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd, toggleAssign, onDelete, handleDeleteDeal }) => {
   const [, drop] = useDrop({
     accept: ItemTypes.CARD,
     drop: (item) => moveCard(item.id, stage),
@@ -57,8 +64,8 @@ const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd, toggleAssi
   return (
     <div ref={drop} className='Dealbox'>
       <div className='d-flex justify-content-between align-items-center'>
-      <h3 className='dealheading ms-2'>{stage}</h3>
-      <button className='stage_dlt' onClick={() => onDelete(stage)}>Delete</button>
+        <h3 className='dealheading ms-2'>{stage}</h3>
+        <button className='stage_dlt' onClick={() => onDelete(stage)}>Delete</button>
       </div>
       {deals
         .filter((deal) => deal.status === stage)
@@ -74,14 +81,15 @@ const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd, toggleAssi
             title={deal.title}
             moveCard={moveCard}
             setDragging={setDragging}
-            toggleAssign={toggleAssign}
+            toggleAssign={toggleAssign} 
+            onDelete={onDelete}
+            handleDeleteDeal={handleDeleteDeal}  
           />
         ))}
       <div className='adddeal_button' onClick={togglePopadd}>
         <FaPlus />
       </div>
     </div>
-    
   );
 };
 
@@ -111,13 +119,11 @@ const Deals = () => {
   const [newStage, setNewStage] = useState('');
   const [isAddingStage, setIsAddingStage] = useState(false);
 
-  // Load stages from local storage
   useEffect(() => {
     const savedStages = JSON.parse(localStorage.getItem('dealStages')) || stages;
     setStages(savedStages);
   }, []);
 
-  // Save stages to local storage
   useEffect(() => {
     localStorage.setItem('dealStages', JSON.stringify(stages));
   }, [stages]);
@@ -150,15 +156,15 @@ const Deals = () => {
       setIsLoading(true);
       try {
         const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
-        if (usersResponse.data.status === "ok") {
+        if (usersResponse.data.status === 'ok') {
           const directors = usersResponse.data.data.filter(user => user.userType === 'User');
           const subUsers = usersResponse.data.data.filter(user => user.userType === 'SubUser');
           setUsers([...directors, ...subUsers]); 
         } else {
-          console.error("Failed to fetch users:", usersResponse.data.message);
+          console.error('Failed to fetch users:', usersResponse.data.message);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching users:', error);
       } finally {
         setIsLoading(false);
       }
@@ -207,7 +213,7 @@ const Deals = () => {
       setIsAddingStage(false);
     }
   };
-  
+
   const handleDeleteStage = (stageToDelete) => {
     if (window.confirm(`Are you sure you want to delete the stage "${stageToDelete}"?`)) {
       const updatedStages = stages.filter(stage => stage !== stageToDelete);
@@ -217,7 +223,19 @@ const Deals = () => {
     }
   };
 
-  
+  const handleDeleteDeal = async (dealId) => {
+    console.log('Deleting deal with id:', dealId); // Add this line for debugging
+    try {
+      await axios.delete(`${process.env.REACT_APP_PORT}/leads/delete`, {
+        data: { id: dealId }
+      });
+      const updatedDeals = deals.filter((deal) => deal.id !== dealId);
+      setDeals(updatedDeals);
+    } catch (error) {
+      console.error('Error deleting deal:', error);
+    }
+  };
+
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -225,13 +243,13 @@ const Deals = () => {
         <div className='d-flex'>
           <div className='buttdiv1'>
             <div className='cont_butt'>
-              <img className='bar_chat' src='./bar_img.webp' alt='dd' />
+              <img className='bar_chat' src='./bar_img.webp' alt='bar img' />
             </div>
             <div className='bar_butt'>
-              <img className='bar_chat' src='./Content.webp' alt='dd' />
+              <img className='bar_chat' src='./Content.webp' alt='content img' />
             </div>
             <div className='cont_butt'>
-              <img className='bar_chat' src='./Rupee.webp' alt='dd' />
+              <img className='bar_chat' src='./Rupee.webp' alt='rupee img' />
             </div>
           </div>
           <div className='buttdiv2'>
@@ -240,13 +258,12 @@ const Deals = () => {
                 + <span>Deal</span>
               </p>
             </div>
-
             <div className='deal_butt2' onClick={toggleDropdown}>
-              <img className='arrow_down' src='./arrowdown.webp' alt='dd' />
+              <img className='arrow_down' src='./arrowdown.webp' alt='arrow down' />
             </div>
             {isDropdownOpen && (
               <div className='dropdown-content' onClick={toggleModal}>
-                <p className='import_txt'> + Import data</p>
+                <p className='import_txt'>+ Import data</p>
               </div>
             )}
           </div>
@@ -254,7 +271,7 @@ const Deals = () => {
 
         <div className='d-flex align-items-center justify-content-between'>
           <div className='d-flex mt-4'>
-            <img className='pin_img me-1' src='./Pin.webp' alt='dsd' />
+            <img className='pin_img me-1' src='./Pin.webp' alt='pin' />
             <p className='pin_text mt-2'>Pin filters</p>
           </div>
           <div className='d-flex mt-4'>
@@ -263,37 +280,33 @@ const Deals = () => {
             </div>
             <div className='users_button me-3'>
               <div className='users_butt1'>
-                <img className='adminmaleimg' src='./AdministratorMale.webp' alt='sdd' />
+                <img className='adminmaleimg' src='./AdministratorMale.webp' alt='admin' />
                 <p className='adminname'>{users[0]?.fname || 'Loading...'}</p>
-                <img className='arrowblackimg' src='./arrowblack.webp' alt='ff' onClick={toggleUserDropdown} />
+                <img className='arrowblackimg' src='./arrowblack.webp' alt='arrow black' onClick={toggleUserDropdown} />
               </div>
               {isUserDropdown && (
                 <div className='users_dropdown'>
-                  <div>
-                    {users.map((user) => (
-                      <p key={user.id} className='dir_list'>{user.fname} {user.lname}</p>
-                    ))}
-                  </div>
+                  {users.map((user) => (
+                    <p key={user.id} className='dir_list'>{user.fname} {user.lname}</p>
+                  ))}
                 </div>
               )}
               <div className='users_butt2'>
-                <img className='callibrush' src='./CalliBrush.webp' alt='dd' />
+                <img className='callibrush' src='./CalliBrush.webp' alt='brush' />
               </div>
             </div>
 
             <div className='users_button d-flex align-items-center justify-content-around me-3'>
-              <img className='teamlogo' src='./Teamlogo.webp' alt='dcd' />
+              <img className='teamlogo' src='./Teamlogo.webp' alt='team logo' />
               <p className='teamtext'>{users[0]?.fname || 'Loading...'}</p>
-              <img className='arrowblackimg' src='./arrowblack.webp' alt='fgg' onClick={toggleTeamDropdown} />
+              <img className='arrowblackimg' src='./arrowblack.webp' alt='arrow black' onClick={toggleTeamDropdown} />
               {isTeamDropdown && (
                 <div className='users_dropdown'>
-                  <div>
-                    {users
-                      .filter(user => user.userType === 'SubUser')
-                      .map((user) => (
-                        <p key={user.id} className='dir_list'>{user.fname} {user.lname}</p>
-                      ))}
-                  </div>
+                  {users
+                    .filter(user => user.userType === 'SubUser')
+                    .map((user) => (
+                      <p key={user.id} className='dir_list'>{user.fname} {user.lname}</p>
+                    ))}
                 </div>
               )}
             </div>
@@ -311,21 +324,22 @@ const Deals = () => {
               togglePopadd={togglePopadd}
               toggleAssign={toggleAssign}
               onDelete={handleDeleteStage}
+              handleDeleteDeal={handleDeleteDeal}
             />
           ))}
           <div className="add-stage-form mt-2">
             {!isAddingStage ? (
               <button className='add-stage-button' onClick={() => setIsAddingStage(true)}> <FaPlus /></button>
             ) : (
-              <form onSubmit={handleAddStage} className="">
+              <form onSubmit={handleAddStage}>
                 <input 
                   type="text" 
                   value={newStage} 
                   onChange={(e) => setNewStage(e.target.value)} 
                   placeholder="New Stage Name"
                 />
-                <button className='add' type="submit">Submit</button><br/>
-                <button type="button" onClick={() => setIsAddingStage(false)}>Cancel</button><br/>
+                <button className='add' type="submit">Submit</button>
+                <button type="button" onClick={() => setIsAddingStage(false)}>Cancel</button>
               </form>
             )}
           </div>
@@ -351,7 +365,7 @@ const Deals = () => {
           <div className='modal'>
             <div className='modal_content'>
               <div className='d-flex align-items-center justify-content-between importdeal_div'>
-                <h2 className='import_deal'>Import results</h2>
+                <h2 className='import_deal'>Import Results</h2>
                 <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleModal} />
               </div>
               <ImportResult />

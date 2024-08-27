@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import AdminHome from "./adminHome";
-import UserHome from "./userHome";
-import SubUserHome from "./subUserHome";
-import ExecutiveHome from "./executiveHome";
+import axios from "axios";
 import "../App.css";
 import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa6";
@@ -23,7 +20,6 @@ export default function UserDetails() {
   const [isAdminDashboard, setIsAdminDashboard] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  
 
   useEffect(() => {
     const token = window.localStorage.getItem("token");
@@ -34,17 +30,10 @@ export default function UserDetails() {
       return;
     }
 
-    fetch("http://localhost:5000/userData", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({ token }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    axios
+      .post(`${process.env.REACT_APP_PORT}/userData`, { token })
+      .then((response) => {
+        const data = response.data;
         if (data.data === "token expired") {
           alert("Token expired, login again");
           window.localStorage.clear();
@@ -55,16 +44,9 @@ export default function UserDetails() {
           setIsLoading(false);
 
           if (data.data.userType === "Admin") {
-            fetch("http://localhost:5000/allUserData", {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                "Access-Control-Allow-Origin": "*",
-              },
-            })
-              .then((res) => res.json())
-              .then((data) => setAllUserData(data))
+            axios
+              .get(`${process.env.REACT_APP_PORT}/allUserData`)
+              .then((response) => setAllUserData(response.data))
               .catch((error) => console.error("Error fetching all user data:", error));
           }
         }
@@ -195,17 +177,17 @@ export default function UserDetails() {
 
   const renderUserHome = () => {
     const userHomeComponents = {
-      Admin: <AdminHome />,
+     
       Leads: <Leads />,
-      User: <UserHome userData={userData} />,
-      SubUser: <SubUserHome userData={userData} />,
-      Executive: <ExecutiveHome userData={userData} />
+      // User: <UserHome userData={userData} />,
+      // SubUser: <SubUserHome userData={userData} />,
+      // Executive: <ExecutiveHome userData={userData} />
     };
 
     return (
       <>
         {renderDropdown()}
-        {userHomeComponents[userType] || <div>Error: Invalid user type</div>}
+        {userHomeComponents[userType] || <div></div>}
       </>
     );
   };

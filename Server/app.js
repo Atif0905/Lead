@@ -76,7 +76,7 @@ app.post("/login-user", async (req, res) => {
     });
 
     if (res.status(201)) {
-      return res.json({ status: "ok", data: token });
+      return res.json({ status: "ok", data: token, userType: user.userType, userId: user._id });
     } else {
       return res.json({ error: "error" });
     }
@@ -167,8 +167,6 @@ app.get("/paginatedUsers", async (req, res) => {
   res.json(results);
 });
 
-
-
 app.get("/allUserData", async (req, res) => {
   try {
     // Fetch all users, subusers, executives from the database
@@ -179,3 +177,5 @@ app.get("/allUserData", async (req, res) => {
     res.status(500).json({ status: "error", message: "Failed to fetch all user data" });
   }
 });
+
+

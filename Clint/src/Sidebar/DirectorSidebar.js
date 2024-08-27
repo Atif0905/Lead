@@ -11,24 +11,16 @@ import { FaBoxArchive } from "react-icons/fa6";
 import { RiFileSettingsFill } from "react-icons/ri"
 
 const DirectorSidebar = () => {
+  
   return (
     <div>
   <div className='excecutiveside'>
-        {/* <img src='./grouplogo.webp' className='sidebarlogo mb-3' alt=''/>
-            <div className="d-flex sideanchor "><img src="./dashboardicon.webp" className="sidebaricon" alt="icon"/><li className=''>Dashboard</li></div>
-            <div className="d-flex sideanchor"><img src="./projectsicon.webp" className="sidebaricon" alt="icon"/><li>Project</li></div>
-            <div className="d-flex sideanchor"><img src="./dashboardicon.webp" className="sidebaricon" alt="icon"/><li>Dashboard</li></div>
-            <div className="d-flex sideanchor"><img src="./projectsicon.webp" className="sidebaricon" alt="icon"/><li>Project</li></div>
-            <div className="d-flex sideanchor"><img src="./dashboardicon.webp" className="sidebaricon" alt="icon"/><li>Dashboard</li></div>
-            <div className="d-flex sideanchor"><img src="./projectsicon.webp" className="sidebaricon" alt="icon"/><li>Project</li></div>
-            <div className="d-flex sideanchor"><img src="./dashboardicon.webp" className="sidebaricon" alt="icon"/><li>Dashboard</li></div>
-            <div className="d-flex sideanchor"><img src="./projectsicon.webp" className="sidebaricon" alt="icon"/><li>Project</li></div> */}
             <div>
               <img className='sidebarlogo' src='./group white.webp' alt='logo' />
             </div>
             <div className='d-flex iconss'>
             <div className='sideicon_div'>
-              <a href='/Leads'>
+              <a href='/dir1leads'>
             <MdMyLocation className='side_icons' />
             </a>
             </div>
@@ -78,7 +70,9 @@ const DirectorSidebar = () => {
             </div>
             <div className='d-flex iconss'>
             <div className='sideicon_div'>
+              <a href='/directorhome'>
             <GoGraph className='side_icons' />
+            </a>
             </div>
             <div className='icons_item'>
               <p className='sideitems_text'>Insights</p>

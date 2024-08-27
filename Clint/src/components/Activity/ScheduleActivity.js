@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faComments, faPhone, faUtensils, faMinus, faCalendarDay, faCaretDown, faEllipsisH ,  faMoneyCheck, faFile, faCircleUser,  faLink  } from '@fortawesome/free-solid-svg-icons';
+import {  faUtensils, faMinus, faCalendarDay, faCaretDown, faEllipsisH ,  faMoneyCheck, faFile, faCircleUser,  faLink  } from '@fortawesome/free-solid-svg-icons';
 import { faFontAwesome } from '@fortawesome/free-brands-svg-icons';
 import { HiOutlineInboxArrowDown } from "react-icons/hi2";
 import { MdOutlineAddTask } from "react-icons/md";
 import { FaClock } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
 import { FaBuildingCircleArrowRight } from "react-icons/fa6";
-import './Deals.css';
+import { BiSolidPhoneCall } from "react-icons/bi";
+import { FcCollaboration } from "react-icons/fc";
+import { IoIosTimer } from "react-icons/io";
+import '../Deals/Deals.css'
 
 const ScheduleActivity = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [editItem, setEditItem] = useState(null); // Tracks which item is being edited
+  const [editItem, setEditItem] = useState(null);
   const [location, setLocation] = useState('');
   const [videoCall, setVideoCall] = useState('');
   const [description, setDescription] = useState('');
+  const [currentText, setCurrentText] = useState('Call');
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -35,25 +39,29 @@ const ScheduleActivity = () => {
     setEditItem(null);
   };
 
+  const handleIconClick = (text) => {
+    setCurrentText(text);
+  };
+
   return (
     <form>
-      <div className='container p-3'>
+      <div className='container activity_container'>
 
           <div className='call_container mt-3'>
             <div></div>
             <div className='call_div'>
-              <h4 className='call_txt'>Call</h4>
+            <h4 className='call_txt'>{currentText}</h4> 
             </div>
             </div>
             <div className='icons_container'>
               <div className=''></div>
               <div className='d-flex justify-content-around icons_div'>
-                <div className=' d-flex align-items-center'><FontAwesomeIcon className='icon_img' icon={faPhone} /></div>
-                <div className='d-flex align-items-center'><FontAwesomeIcon className='icon_img' icon={faComments} /></div>
-                <div className='d-flex align-items-center'><MdOutlineAddTask className='icon_img' /></div>
-                <div className='d-flex align-items-center'><FontAwesomeIcon className='icon_img' icon={faFontAwesome} /></div>
-                <div className='d-flex align-items-center'><HiOutlineInboxArrowDown className='icon_img'/></div>
-                <div className='d-flex align-items-center'><FontAwesomeIcon className='icon_img' icon={faUtensils} /></div>
+                <div className=' d-flex align-items-center'><BiSolidPhoneCall  className='icon_img' onClick={() => handleIconClick('Call')}/></div>
+                <div className='d-flex align-items-center'><FcCollaboration className='icon_img' onClick={() => handleIconClick('Meeting')}/></div>
+                <div className='d-flex align-items-center'><IoIosTimer  className='icon_img' onClick={() => handleIconClick('Task')}/></div>
+                <div className='d-flex align-items-center'><FontAwesomeIcon className='icon_img' icon={faFontAwesome}  onClick={() => handleIconClick('Deadline')}/></div>
+                <div className='d-flex align-items-center'><HiOutlineInboxArrowDown className='icon_img'  onClick={() => handleIconClick('Email')}/></div>
+                <div className='d-flex align-items-center'><FontAwesomeIcon className='icon_img' icon={faUtensils}  onClick={() => handleIconClick('Lunch')}/></div>
               </div>
             </div>
             <div className='mt-3 time_div'>

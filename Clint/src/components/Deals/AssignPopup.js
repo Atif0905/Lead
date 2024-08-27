@@ -31,23 +31,23 @@ const AssignPopup = ({ leadId, setIsAssignLead, deals, setDeals }) => {
   }, [leadId]);
 
   const handleAssign = async (user) => {
-    console.log('Assigning lead ID:', leadId, 'to user:', `${user.fname} ${user.lname}`);
+    console.log('Assigning lead ID:', leadId, 'to user:', `${user.key}`);
   
     try {
       // Show the success alert before making the API call
-      alert(`Assigned successfully to: ${user.fname} ${user.lname}`);
+      alert(`Assigned successfully to: ${user.key}`);
   
       const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${leadId}`, {
-        assignedto: `${user.fname} ${user.lname}`
+        assignedto: `${user.key}`
       });
   
       console.log('API response:', response);
   
       if (response.status === 200 && response.data.status === "ok") {
-        setAssignedDirector(`${user.fname} ${user.lname}`);
+        setAssignedDirector(`${user.key}`);
   
         const updatedDeals = deals.map((deal) =>
-          deal.id === leadId ? { ...deal, assignedto: `${user.fname} ${user.lname}` } : deal
+          deal.id === leadId ? { ...deal, assignedto: `${user.key}` } : deal
         );
         setDeals(updatedDeals);  // This updates the deals array and re-renders the components
         setIsAssignLead(false);   // Close the popup
@@ -67,7 +67,7 @@ const AssignPopup = ({ leadId, setIsAssignLead, deals, setDeals }) => {
       <div className='p-3'>
         {users.map((user) => (
           <div key={user.id} className='d-flex justify-content-between'>
-            <p>Name: {user.fname} {user.lname}</p>
+            <p>Name: {user.key}</p>
             <button 
               className='assign_button'  
               onClick={async () => {
