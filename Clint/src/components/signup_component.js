@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "../index.css";
 import "./Signin.css";
 
@@ -17,15 +18,15 @@ export default function SignUp() {
   const [keyData, setKeyData] = useState("");
   
   useEffect(() => {
-    fetch("http://localhost:5000/getAllUser")
-      .then((res) => res.json())
-      .then((data) => {
+    axios.get(`${process.env.REACT_APP_PORT}/getAllUser`)
+      .then((response) => {
+        const data = response.data;
         if (data.status === "ok") {
           const subUserData = data.data.filter(user => user.userType === "SubUser");
-          setUserData(subUserData)
+          setUserData(subUserData);
           setOptions(subUserData); 
           const UserData = data.data.filter(user => user.userType === "User");
-          setKeyData(UserData)
+          setKeyData(UserData);
           setOptions1(UserData);
         }
       })
@@ -39,34 +40,27 @@ export default function SignUp() {
       return;
     }
     console.log(fname, lname, email, password, key1);
-    fetch("http://localhost:5000/register", {
-      method: "POST",
-      crossDomain: true,
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        fname,
-        email,
-        lname,
-        password,
-        userType,
-        key,
-        key1,
-      }),
+    axios.post("http://localhost:5000/register", {
+      fname,
+      email,
+      lname,
+      password,
+      userType,
+      key,
+      key1,
     })
-      .then((res) => res.json())
-      .then((data) => {
+      .then((response) => {
+        const data = response.data;
         console.log(data, "userRegister");
         if (data.status === "ok") {
           alert("Registration Successful");
         } else {
           alert("Something went wrong");
         }
-      });
+      })
+      .catch((error) => console.error("Error during registration:", error));
   };
+
   return (
     <div className="">
       <img src="./Signinimg.webp" loading="lazy" className="signinimg" alt="" />
@@ -150,7 +144,7 @@ export default function SignUp() {
                 <option>Select Option</option>
                 {keyData.map((secretKey, index) => (
                   <option key={index} value={secretKey.key}>
-                    {secretKey.key}
+                    {secretKey.fname} {secretKey.lname}
                   </option>
                 ))}
               </select>
@@ -179,7 +173,7 @@ export default function SignUp() {
                     <option>Select Option</option>
                     {userData.map((secretKey, index) => (
                       <option key={index} value={secretKey.key1}>
-                        {secretKey.key1}
+                        {secretKey.fname}  {secretKey.lname}
                       </option>
                     ))}
                   </select>

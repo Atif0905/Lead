@@ -3,9 +3,8 @@ const router = express.Router();
 const multer = require('multer');
 const csv = require('csv-parser');
 const fs = require('fs');
-const Lead = require('../modal/Lead');
+const Lead = require('../modal/Lead')
 
-// Multer setup for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
@@ -17,7 +16,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Route to upload leads data
 router.post('/upload', upload.single('file'), async (req, res) => {
   try {
     console.log('File received:', req.file); // Log file information for debugging
@@ -68,7 +66,6 @@ router.post('/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// Route to get all leads
 router.get('/', async (req, res) => {
   try {
     const leads = await Lead.find();
@@ -79,37 +76,79 @@ router.get('/', async (req, res) => {
   }
 });
 
-
 router.put('/move/:id', async (req, res) => {
   const { id } = req.params;
-  const { newStatus, assignedto } = req.body; // Add assignedto along with newStatus
+  const { newStatus, assignedto } = req.body;
 
   if (!newStatus && !assignedto) {
-    return res.status(400).send('New status or assignedto field is required'); // Update error message
+    return res.status(400).send('New status or assignedto field is required');
   }
 
   try {
-    const updateFields = {}; // Create an object to hold the fields to update
+    const updateFields = {};
 
     if (newStatus) {
-      updateFields.status = newStatus; // Add status to the updateFields object
+      updateFields.status = newStatus;
     }
 
     if (assignedto) {
-      updateFields.assignedto = assignedto; // Add assignedto to the updateFields object
+      updateFields.assignedto = assignedto;
     }
 
     const updatedLead = await Lead.findByIdAndUpdate(id, updateFields, { new: true });
 
     if (!updatedLead) {
-      return res.status(404).send('Lead not found'); // Ensure lead is found
+      return res.status(404).send('Lead not found');
     }
 
-    res.json(updatedLead); // Return the updated lead
+    res.json(updatedLead);
   } catch (error) {
-    console.error(`Error updating lead: ${error.message}`); // Generalize error message
-    res.status(500).send('Error updating lead'); // Generalize error message
+    console.error(`Error updating lead: ${error.message}`);
+    res.status(500).send('Error updating lead');
   }
 });
+
+router.delete('/delete', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedLead = await Lead.findByIdAndDelete(id);
+
+    if (!deletedLead) {
+      return res.status(404).send('Lead not found');
+    }
+
+    res.json({ message: 'Lead deleted successfully', lead: deletedLead });
+  } catch (error) {
+    console.error(`Error deleting lead: ${error.message}`);
+    res.status(500).send('Error deleting lead');
+  }
+});
+
+router.post('/create', async (req, res) => {
+  try {
+    const { name, email, number, status, title, assignedto } = req.body;
+
+    if (!name || !email || !number) {
+      return res.status(400).send('Name, email, and number are required.');
+    }
+
+    const newLead = new Lead({
+      name,
+      email,
+      number,
+      status,
+      title,
+      assignedto,
+    });
+
+    const savedLead = await newLead.save();
+    res.status(201).json(savedLead);
+  } catch (error) {
+    console.error(`Error creating lead: ${error.message}`);
+    res.status(500).send('Error creating lead');
+  }
+});
+
 
 module.exports = router;

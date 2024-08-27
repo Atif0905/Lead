@@ -1,22 +1,19 @@
-import React, { Component, useEffect, useState } from "react";
-import "../App.css";
-export default function UserHome({ userData }) {
-  const logOut = () => {
-    window.localStorage.clear();
-    window.location.href = "./login";
-  };
+import React from 'react'
+import DirectorSidebar from '../Sidebar/DirectorSidebar';
+import UserDetails from './userDetails';
+import DirectorDashboard from './Dashboard/DirectorDashboard';
+
+const UserHome = () => {
+
   return (
-    <div className="auth-wrapper">
-      <div className="auth-inner">
-        <div>
-          Name<h1>{userData.fname}</h1>
-          Email <h1>{userData.email}</h1>
-          <br />
-          <button onClick={logOut} className="btn btn-primary">
-            Log Out
-          </button>
-        </div>
+      <div>
+        <DirectorSidebar/>
+        <UserDetails/>
+        <div className='main-content'>
+     <DirectorDashboard/>
       </div>
     </div>
-  );
+  )
 }
+
+export default UserHome

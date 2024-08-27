@@ -1,16 +1,18 @@
-import React, { Component, useState } from "react";
+import React, { useState } from "react";
+
 import "../App.css";
-import { Navigate } from "react-router-dom";
-import './Signin.css'
+import './Signin.css';
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
 
   function handleSubmit(e) {
     e.preventDefault();
 
     console.log(email, password);
-    fetch("http://localhost:5000/login-user", {
+    fetch(`${process.env.REACT_APP_PORT}/login-user`, {
       method: "POST",
       crossDomain: true,
       headers: {
@@ -25,29 +27,40 @@ export default function Login() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data, "userRegister");
-        if (data.status == "ok") {
-          console.log(data.userType);
-          alert("login successful");
+        console.log("Response data:", data); // Log the entire data object
+
+        if (data.status === "ok") {
+          console.log("User Type:", data.userType);
+          console.log("User Id:", data.userId)
+
+          const userId = data.userId;
+
+          alert("Login successful");
           window.localStorage.setItem("token", data.data);
           window.localStorage.setItem("userType", data.userType);
-          window.localStorage.setItem("loggedIn", true);
+          window.localStorage.setItem("userId", data.userId);
+          window.localStorage.setItem("loggedIn", "true");
           
-          if (data.userType == "Admin") {
-            
-            return (window.location.href = "./admin-dashboard");
-          } else {
-            window.location.href = "./userDetails";
+          // Dynamic routing based on userType and user _id
+          if (data.userType === "Admin") {
+             window.location.href = `/admin-dashboard/${userId}`;
+          } else if (data.userType === "User") {
+             window.location.href = `/directorhome/${userId}`;
+          } else if (data.userType === "SubUser") {
+             window.location.href =  `/subuserhome/${userId}`;
+          } else if (data.userType === "Executive") {
+              window.location.href = `/executivehome/${userId}`;
           }
-        }
+        } 
       });
+      
   }
 
   return (
     <div className="">
-    <img src="./Signinimg.webp" loading="lazy" className="signinimg" alt=""/>
-    <img src="./mobilesigninimg.webp" loading="lazy" className="mobilesigninimg" alt="img"/>
-    <div className="logindiv">
+      <img src="./Signinimg.webp" loading="lazy" className="signinimg" alt="" />
+      <img src="./mobilesigninimg.webp" loading="lazy" className="mobilesigninimg" alt="img" />
+      <div className="logindiv">
         <form onSubmit={handleSubmit}>
           <h3 className="Signinhead">LOGIN</h3>
 

@@ -1,5 +1,5 @@
+import React from 'react'
 import './Sidebar.css';
-import React from "react";
 import { MdMyLocation } from "react-icons/md";
 import { AiFillDollarCircle } from "react-icons/ai";
 import { GoProjectSymlink } from "react-icons/go";
@@ -8,21 +8,19 @@ import { LuActivitySquare } from "react-icons/lu";
 import { MdContactPage } from "react-icons/md";
 import { GoGraph } from "react-icons/go";
 import { FaBoxArchive } from "react-icons/fa6";
-import { RiFileSettingsFill } from "react-icons/ri";
+import { RiFileSettingsFill } from "react-icons/ri"
 
-const Adminsidebar = () => {
-
+const DirectorSidebar = () => {
+  
   return (
     <div>
-    
-    <div className='excecutiveside'>
-       
+  <div className='excecutiveside'>
             <div>
               <img className='sidebarlogo' src='./group white.webp' alt='logo' />
             </div>
             <div className='d-flex iconss'>
             <div className='sideicon_div'>
-              <a href='/adminleads'>
+              <a href='/dir1leads'>
             <MdMyLocation className='side_icons' />
             </a>
             </div>
@@ -40,9 +38,7 @@ const Adminsidebar = () => {
             </div>
             <div className='d-flex iconss'>
             <div className='sideicon_div'>
-              <a href='./projects'>
             <GoProjectSymlink className='side_icons' />
-            </a>
             </div>
             <div className='icons_item'>
               <p className='sideitems_text'>Projects</p>
@@ -58,9 +54,7 @@ const Adminsidebar = () => {
             </div>
             <div className='d-flex iconss'>
             <div className='sideicon_div'>
-            <a href='/adminactivity'>
             <LuActivitySquare className='side_icons' />
-            </a>
             </div>
             <div className='icons_item'>
               <p className='sideitems_text'>Activities</p>
@@ -76,7 +70,7 @@ const Adminsidebar = () => {
             </div>
             <div className='d-flex iconss'>
             <div className='sideicon_div'>
-              <a href='./'>
+              <a href='/directorhome'>
             <GoGraph className='side_icons' />
             </a>
             </div>
@@ -105,4 +99,4 @@ const Adminsidebar = () => {
   )
 }
 
-export default Adminsidebar
+export default DirectorSidebar

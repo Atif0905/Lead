@@ -1,26 +1,20 @@
 import React from 'react'
+import TeamleadSidebar from '../Sidebar/TeamleadSidebar'
+import UserDetails from './userDetails'
+import SubuserDashboard from './Dashboard/SubuserDashboard'
 
-const subUserHome = ({ userData }) => {
-    const logOut = () => {
-        window.localStorage.clear();
-        window.location.href = "./login";
-      };
+const SubUserHome = () => {
   return (
-    <div>
-       <div className="auth-wrapper">
-      <div className="auth-inner">
-        <div>
-          Name<h1>{userData.fname}</h1>
-          Email <h1>{userData.email}</h1>
-          <br />
-          <button onClick={logOut} className="btn btn-primary">
-            Log Out
-          </button>
-        </div>
-      </div>
-    </div>
-    </div>
+    <div className="">
+    <TeamleadSidebar/>
+    <UserDetails/>
+     <div className="main-content" >
+    <SubuserDashboard/> 
+ 
+    
+   </div>
+   </div>
   )
 }
 
-export default subUserHome
+export default SubUserHome
