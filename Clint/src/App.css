@@ -6,10 +6,15 @@
   pointer-events: none;
 }
 
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
+}
+a {
+  color: inherit;
+  text-decoration: none;
 }
 .main-content{
   position: relative;

@@ -4,6 +4,7 @@ const multer = require('multer');
 const csv = require('csv-parser');
 const fs = require('fs');
 const Lead = require('../modal/Lead')
+const Deal = require('../modal/Deal')
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -108,7 +109,7 @@ router.put('/move/:id', async (req, res) => {
   }
 });
 
-router.delete('/delete', async (req, res) => {
+router.delete('/delete/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -118,10 +119,10 @@ router.delete('/delete', async (req, res) => {
       return res.status(404).send('Lead not found');
     }
 
-    res.json({ message: 'Lead deleted successfully', lead: deletedLead });
+    res.status(200).json({ message: 'Lead deleted successfully' });
   } catch (error) {
     console.error(`Error deleting lead: ${error.message}`);
-    res.status(500).send('Error deleting lead');
+    res.status(500).json({ error: 'Error deleting lead' });
   }
 });
 
@@ -150,5 +151,46 @@ router.post('/create', async (req, res) => {
   }
 });
 
+router.post('/deals', async (req, res) => {
+  try {
+    const { name, organization, title, value, date, owner, visibleto, persontitle, contactperson, email, phone, work1, work2 } = req.body;
+
+    if (!name || !organization) {
+      return res.status(400).send('Name and organization are required.');
+    }
+
+    const newDeal = new Deal({
+      name, 
+      organization, 
+      title, 
+      value, 
+      date, 
+      owner, 
+      visibleto, 
+      persontitle, 
+      contactperson, 
+      email, 
+      phone, 
+      work1, 
+      work2
+    });
+
+    const savedDeal = await newDeal.save();
+    res.status(201).json(savedDeal);
+  } catch (error) {
+    console.error(`Error creating deals: ${error.message}`);
+    res.status(500).send('Error creating deals');
+  }
+});
+
+router.get('/deals', async (req, res) => {
+  try {
+    const deals = await Deal.find();
+    res.status(200).json(deals); 
+  } catch (error) {
+    console.error(`Error fetching deals: ${error.message}`);
+    res.status(500).send('Error fetching deals');
+  }
+});
 
 module.exports = router;

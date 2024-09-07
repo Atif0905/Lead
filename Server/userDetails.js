@@ -7,6 +7,7 @@ const CounterSchema = new mongoose.Schema({
 
 const Counter = mongoose.model("Counter", CounterSchema);
 
+
 const UserDetailsSchema = new mongoose.Schema(
   {
     fname: String,
@@ -16,25 +17,24 @@ const UserDetailsSchema = new mongoose.Schema(
     userType: String,
     key: String,
     key1: String,
-    id: String,  // Add a field for the ID
+    id: String,  
   },
   {
     collection: "UserInfo",
   }
 );
 
-// Method to generate the ID for executives
+
 UserDetailsSchema.methods.generateId = function (scenarioNumber) {
   if (this.userType === 'Executive') {
     return `WIC0${scenarioNumber}`;
   }
-  return this._id.toString(); // Use default _id for non-executives
+  return this._id.toString(); 
 };
 
 UserDetailsSchema.pre('save', async function (next) {
   if (this.isNew && this.userType === 'Executive') {
     try {
-      // Find the counter document and increment the value atomically
       const counter = await Counter.findOneAndUpdate(
         { name: 'executiveScenarioNumber' },
         { $inc: { value: 1 } },
@@ -50,7 +50,4 @@ UserDetailsSchema.pre('save', async function (next) {
 });
 
 mongoose.model("UserInfo", UserDetailsSchema);
-
-
-
 

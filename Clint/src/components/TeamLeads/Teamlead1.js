@@ -2,16 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import axios from 'axios';
-import '../Deals/Deals.css'
+import '../Leads/Deals.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import { FaUserAlt, FaPlus } from 'react-icons/fa';
 import { GoAlertFill } from 'react-icons/go';
-import ImportResult from '../Deals/ImportResult';
-import AddDeals from '../Deals/AddDeals';
+import ImportResult from '../Leads/ImportResult';
+import AddDeals from '../Leads/AddDeals';
 import AssignPopup3 from './AssignPopup3';
-import TeamleadSidebar from '../../Sidebar/TeamleadSidebar';
-import UserDetails from '../userDetails';
 import Addleads from '../DirectorLeads/Addleads';
 
 const ItemTypes = {
@@ -91,7 +89,7 @@ const ItemTypes = {
 
 const Teamlead1 = () => {
     const [users, setUsers] = useState([]); 
-    const [isAddLeads, setIsAddLeads] = useState([]);
+    const [isAddLeads, setIsAddLeads] = useState(false);
     const [currentUserKey, setCurrentUserKey] = useState(null);
     const [filteredSubUser, setFilteredSubUser] = useState(null);
     const [assignedTo, setAssignedTo] = useState('');
@@ -139,7 +137,7 @@ const Teamlead1 = () => {
                   const subUsers = usersResponse.data.data.filter(user => user.userType === 'SubUser');
                   setUsers([...directors, ...subUsers]);
 
-                  const currentUserKey = subUsers[0]?.key1 || '';  // Modify as per your logic to select the current user
+                  const currentUserKey = subUsers[0]?.key1 || ''; 
                   setCurrentUserKey(currentUserKey);
 
 
@@ -183,7 +181,6 @@ const Teamlead1 = () => {
       setAssignedTo(assignedTo);
       const selectedDeal = deals.find(deal => deal.id === leadId);
       if (selectedDeal) {
-        // Filter subUsers based on the assignedto value of the selected deal
         const subUser = users.find(user => user.userType === 'Executive' && user.key === selectedDeal.assignedto);
         setFilteredSubUser(subUser);
       }
@@ -246,22 +243,20 @@ const Teamlead1 = () => {
     };
   
     return (
-      <>
-      <TeamleadSidebar/>
-      <UserDetails/>
+    
       <div className="main-content">
       <DndProvider backend={HTML5Backend}>
         <div className='mt-4 ps-3'>
           <div className='d-flex'>
             <div className='buttdiv1'>
               <div className='cont_butt'>
-                <img className='bar_chat' src='./bar_img.webp' alt='bar img' />
+                <img className='bar_chat' src='/bar_img.webp' alt='bar img' />
               </div>
               <div className='bar_butt'>
-                <img className='bar_chat' src='./Content.webp' alt='content img' />
+                <img className='bar_chat' src='/Content.webp' alt='content img' />
               </div>
               <div className='cont_butt'>
-                <img className='bar_chat' src='./Rupee.webp' alt='rupee img' />
+                <img className='bar_chat' src='/Rupee.webp' alt='rupee img' />
               </div>
             </div>
             <div className='buttdiv2'>
@@ -271,7 +266,7 @@ const Teamlead1 = () => {
                 </p>
               </div>
               <div className='deal_butt2' onClick={toggleDropdown}>
-                <img className='arrow_down' src='./arrowdown.webp' alt='arrow down' />
+                <img className='arrow_down' src='/arrowdown.webp' alt='arrow down' />
               </div>
               {isDropdownOpen && (
                 <div className='dropdown-content'>
@@ -286,7 +281,7 @@ const Teamlead1 = () => {
   
           <div className='d-flex align-items-center justify-content-between'>
             <div className='d-flex mt-4'>
-              <img className='pin_img me-1' src='./Pin.webp' alt='pin' />
+              <img className='pin_img me-1' src='/Pin.webp' alt='pin' />
               <p className='pin_text mt-2'>Pin filters</p>
             </div>
             <div className='d-flex mt-4'>
@@ -295,9 +290,9 @@ const Teamlead1 = () => {
               </div>
               <div className='users_button me-3'>
                 <div className='users_butt1'>
-                  <img className='adminmaleimg' src='./AdministratorMale.webp' alt='admin' />
+                  <img className='adminmaleimg' src='/AdministratorMale.webp' alt='admin' />
                   <p className='adminname'>{users[0]?.fname || 'Loading...'}</p>
-                  <img className='arrowblackimg' src='./arrowblack.webp' alt='arrow black' onClick={toggleUserDropdown} />
+                  <img className='arrowblackimg' src='/arrowblack.webp' alt='arrow black' onClick={toggleUserDropdown} />
                 </div>
                 {isUserDropdown && (
                   <div className='users_dropdown'>
@@ -307,14 +302,14 @@ const Teamlead1 = () => {
                   </div>
                 )}
                 <div className='users_butt2'>
-                  <img className='callibrush' src='./CalliBrush.webp' alt='brush' />
+                  <img className='callibrush' src='/CalliBrush.webp' alt='brush' />
                 </div>
               </div>
   
               <div className='users_button d-flex align-items-center justify-content-around me-3'>
-                <img className='teamlogo' src='./Teamlogo.webp' alt='team logo' />
+                <img className='teamlogo' src='/Teamlogo.webp' alt='team logo' />
                 <p className='teamtext'>{users[0]?.fname || 'Loading...'}</p>
-                <img className='arrowblackimg' src='./arrowblack.webp' alt='arrow black' onClick={toggleTeamDropdown} />
+                <img className='arrowblackimg' src='/arrowblack.webp' alt='arrow black' onClick={toggleTeamDropdown} />
                 {isTeamDropdown && (
                   <div className='users_dropdown'>
                     {users
@@ -431,7 +426,7 @@ const Teamlead1 = () => {
         </div>
       </DndProvider>
       </div>
-      </>
+    
   )
 }
 

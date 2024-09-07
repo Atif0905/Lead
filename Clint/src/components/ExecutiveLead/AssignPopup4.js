@@ -49,8 +49,8 @@ const AssignPopup4 = ({ leadId, setIsAssignLead, deals, setDeals }) => {
           const updatedDeals = deals.map((deal) =>
             deal.id === leadId ? { ...deal, assignedto: `${user.fname} ${user.lname}` } : deal
           );
-          setDeals(updatedDeals);  // This updates the deals array and re-renders the components
-          setIsAssignLead(false);   // Close the popup
+          setDeals(updatedDeals);  
+          setIsAssignLead(false);  
         } else {
           console.error("Failed to update lead:", response.data);
           alert(`Failed to assign: ${response.data.message || 'Unknown error occurred'}`);

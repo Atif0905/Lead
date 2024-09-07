@@ -10,7 +10,8 @@ import { BsPersonFillExclamation } from "react-icons/bs";
 import { GoOrganization } from "react-icons/go";
 import { BiSolidNotepad } from "react-icons/bi";
 import { LiaBoxOpenSolid } from "react-icons/lia";
-import Leads from "./Leads";
+import AdminLead from "./AdminLead";
+
 
 export default function UserDetails() {
   const [userData, setUserData] = useState(null);
@@ -178,7 +179,7 @@ export default function UserDetails() {
   const renderUserHome = () => {
     const userHomeComponents = {
      
-      Leads: <Leads />,
+      Leads: <AdminLead/>,
       // User: <UserHome userData={userData} />,
       // SubUser: <SubUserHome userData={userData} />,
       // Executive: <ExecutiveHome userData={userData} />

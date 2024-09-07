@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import './Dashboard.css'
 import { MdMyLocation } from "react-icons/md";
@@ -9,52 +10,46 @@ import { FaCircleUser } from "react-icons/fa6";
 import { IoMdShare } from "react-icons/io";
 import { FaEllipsisH } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
+import { useParams } from 'react-router-dom'; 
+import {
+  setUsers, setTotalLeads, setLeads,
+} from '../../redux/actions';
 
 const DirectorDashboard = () => {
-  const [totalLeads, setTotalLeads] = useState(0);
-  const [users, setUsers] = useState([]);
-  const [leads, setLeads] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { userId } = useParams(); 
+  const dispatch = useDispatch();
+  const {
+    users, totalLeads, leads,
+  } = useSelector((state) => state);
 
 
   useEffect(() => {
-    const fetchLeadsAndUsers = async () => {
-      setIsLoading(true);
+    const fetchUserAndLeads = async () => {
       try {
-        // Fetch users
         const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
         if (usersResponse.data.status === 'ok') {
           const usersData = usersResponse.data.data;
-          const directors = usersData.filter(user => user.userType === 'User');
-          const subUsers = usersData.filter(user => user.userType === 'SubUser');
-          setUsers([...directors, ...subUsers]);
-
-          // Assuming you want to filter leads assigned to a specific user
-          const currentUserKey = directors[0]?.key || '';  // Modify as per your logic to select the current user
-
-          // Fetch leads
+          dispatch(setUsers(usersData));
+  
+          const currentUser = usersData.find(user => user._id === userId);
+          const currentUserKey = currentUser?.key;
+  
           const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
           const allLeads = leadsResponse.data;
-
-          // Filter leads assigned to the current user
           const filteredLeads = allLeads.filter(lead => lead.assignedto === currentUserKey);
-
-          setLeads(filteredLeads);
-          setTotalLeads(filteredLeads.length);
+  
+          dispatch(setLeads(filteredLeads));
+          dispatch(setTotalLeads(filteredLeads.length));
         } else {
-          console.error('Failed to fetch users:', usersResponse.data.message);
+          console.error('Error fetching users: ', usersResponse.data.message);
         }
       } catch (error) {
-        console.error('Error fetching users or leads:', error);
-      } finally {
-        setIsLoading(false);
+        console.error('Error fetching data:', error);
       }
     };
-
-    fetchLeadsAndUsers();
-  }, []);
-
-
+  
+    fetchUserAndLeads();
+  }, [userId]);
 
   return (
     <div className='dashboard_maindiv'>
@@ -102,7 +97,7 @@ const DirectorDashboard = () => {
   <MdMyLocation className='value_icon' />
     <h3 className='leadhead ms-2'>Lead created by user</h3>
     </div>
-    <p className='value_txt'>{totalLeads > 0 ? `${totalLeads} LEADS` : "(NO VALUE)"}</p>
+    <p className='value_txt'>{totalLeads || '0'} LEADS</p>
     </div>
     <div className='dash_div2'>
       <div>
