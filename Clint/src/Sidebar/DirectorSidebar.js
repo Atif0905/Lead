@@ -11,16 +11,17 @@ import { FaBoxArchive } from "react-icons/fa6";
 import { RiFileSettingsFill } from "react-icons/ri"
 
 const DirectorSidebar = () => {
+  const userId = window.localStorage.getItem("userId");
   
   return (
     <div>
   <div className='excecutiveside'>
             <div>
-              <img className='sidebarlogo' src='./group white.webp' alt='logo' />
+              <img className='sidebarlogo' src='/group white.webp' alt='logo' />
             </div>
             <div className='d-flex iconss'>
             <div className='sideicon_div'>
-              <a href='/dir1leads'>
+            <a href={`/dir1leads/${userId}`}>
             <MdMyLocation className='side_icons' />
             </a>
             </div>

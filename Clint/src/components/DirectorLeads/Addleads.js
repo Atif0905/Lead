@@ -35,7 +35,6 @@ const Addleads = () => {
       });
     } catch (error) {
       console.error('Error creating lead:', error);
-      // Optionally, display an error message
     }
   };
 

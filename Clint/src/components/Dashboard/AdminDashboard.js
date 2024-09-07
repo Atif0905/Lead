@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import './Dashboard.css'
 import { MdMyLocation } from "react-icons/md";
@@ -10,18 +11,22 @@ import { IoMdShare } from "react-icons/io";
 import { FaEllipsisH } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
 import UserPopup from './UserPopup';
+import {
+  setUsers, setSubUsers, setTotalLeads, setSelectedUser, setExecutives,
+} from '../../redux/actions';
+
 
 const AdminDashboard = () => {
-  const [users, setUsers] = useState([]);
-  const [subUsers, setSubUsers] = useState([]);
-  const [executives, setExecutives] = useState([]);
-  const [totalLeads, setTotalLeads] = useState(0);
+  const dispatch = useDispatch();
+  const {
+    users, subUsers, totalLeads, selectedUser, executives,
+  } = useSelector((state) => state);
+
+
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
 
 
-  
   const toggleDropdown = () => {
     setIsDropdownVisible(!isDropdownVisible);
   };
@@ -40,7 +45,7 @@ const AdminDashboard = () => {
     const fetchLeads = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
-        setTotalLeads(response.data.length);
+        dispatch(setTotalLeads(response.data.length));
       } catch (error) {
         console.error(`Error fetching leads: ${error.message}`);
       }
@@ -51,11 +56,11 @@ const AdminDashboard = () => {
         const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
         if (usersResponse.data.status === 'ok') {
           const usersData = usersResponse.data.data;
-          setUsers(usersData); // Set all users initially
+          dispatch(setUsers(usersData)); // Set all users initially
           const subUsersData = usersData.filter(user => user.userType === 'SubUser');
           const executivesData = usersData.filter(user => user.userType === 'Executive');
-          setSubUsers(subUsersData); // Set subUsers
-          setExecutives(executivesData); 
+          dispatch(setSubUsers(subUsersData)); // Set subUsers
+          dispatch(setExecutives(executivesData)); 
         } else {
           console.error('Failed to fetch users:', usersResponse.data.message);
         }

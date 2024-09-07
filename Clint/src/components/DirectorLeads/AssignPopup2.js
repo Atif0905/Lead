@@ -11,8 +11,11 @@ const AssignPopup2 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo }) 
             try {
                 const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
                 if (usersResponse.data.status === "ok") {
-                    const teamleads = usersResponse.data.data.filter(user => user.userType === 'SubUser');
-                    setUsers(teamleads);
+                    // Filter users where userType is 'SubUser' and user.key matches assignedTo
+                    const matchingUsers = usersResponse.data.data.filter(user => 
+                        user.userType === 'SubUser' && user.key === assignedTo
+                    );
+                    setUsers(matchingUsers);
                 } else {
                     console.error("Failed to fetch users:", usersResponse.data.message);
                 }
@@ -24,7 +27,7 @@ const AssignPopup2 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo }) 
         };
 
         fetchData();
-    }, []);
+    }, [assignedTo]);
 
     const handleAssign = async (user) => {
         try {
@@ -49,26 +52,30 @@ const AssignPopup2 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo }) 
         }
     };
 
-    // Filter to show only the user whose key matches assignedTo
-    const currentAssignedUser = users.find(user => user.key === assignedTo);
-
     return (
         <div className='container'>
             <h2>Assign</h2>
             <div className='p-3'>
-                <div className='d-flex justify-content-between'>
-                    <p>Name: {currentAssignedUser ? currentAssignedUser.key1 : 'None'}</p>
-                    <div>
-                        <button 
-                            className='assign_button'  
-                            onClick={async () => {
-                                await handleAssign(currentAssignedUser);
-                        setIsAssignLead(false);
-                         }}>
-                            Assign to
-                        </button>
-                    </div>
-                </div>
+                {isLoading ? (
+                    <p>Loading...</p>
+                ) : users.length > 0 ? (
+                    users.map((user) => (
+                        <div key={user.key1} className='d-flex justify-content-between'>
+                            <p>Name: {user.key1}</p>
+                            <div>
+                                <button 
+                                    className='assign_button'
+                                    onClick={async () => {
+                                        await handleAssign(user);
+                                    }}>
+                                    Assign to
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p>No matching SubUsers found.</p>
+                )}
             </div>
         </div>
     );

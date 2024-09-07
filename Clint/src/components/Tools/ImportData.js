@@ -7,6 +7,7 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 
 const ImportData = () => {
   return (
+    <div className='main-content'>
     <div className='tools-maindiv'>
         <div className='tools_sidebar'>
 <div className='d-flex data_div align-items-center'>
@@ -68,7 +69,7 @@ const ImportData = () => {
 
 
 </div>
- 
+</div>
   )
 }
 

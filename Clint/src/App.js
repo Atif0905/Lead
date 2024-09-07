@@ -14,7 +14,6 @@ import AdminHome from "./components/adminHome";
 import Product from "./components/products";
 import About from "./components/about";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Leads from "./components/Leads";
 import UserHome from "./components/userHome";
 import DirectorDashboard from "./components/Dashboard/DirectorDashboard";
 import DirectorLead1 from "./components/DirectorLeads/DirectorLead1";
@@ -22,6 +21,14 @@ import SubUserHome from "./components/subUserHome";
 import Teamlead1 from "./components/TeamLeads/Teamlead1";
 import ExecutiveHome from "./components/executiveHome";
 import ExecutiveLead1 from "./components/ExecutiveLead/ExecutiveLead1";
+import Adminsidebar from "./Sidebar/AdminSidebar";
+import DirectorSidebar from "./Sidebar/DirectorSidebar";
+import TeamleadSidebar from "./Sidebar/TeamleadSidebar";
+import Excecutivesidebar from "./Sidebar/ExcecutiveSidebar";
+import AdminLead from "./components/AdminLead";
+import Deals from "./components/Deals/Deals";
+import ImportData from "./components/Tools/ImportData";
+
 
 function App() {
   const isLoggedIn = window.localStorage.getItem("loggedIn") === "true";
@@ -32,6 +39,31 @@ function App() {
   return (
     <Router>
       <div className="App">
+      {userType === "Admin" && (
+          <>
+            <Adminsidebar /> 
+            <UserDetails /> 
+          </>
+        )}
+          {userType === "User" && (
+          <>
+            <DirectorSidebar /> 
+            <UserDetails /> 
+          </>
+        )}
+  {userType === "SubUser" && (
+          <>
+            <TeamleadSidebar/> 
+            <UserDetails /> 
+          </>
+        )}
+          {userType === "Executive" && (
+          <>
+            <Excecutivesidebar/> 
+            <UserDetails /> 
+          </>
+        )}
+
         <Routes>
           {!isLoggedIn ? (
             <>
@@ -42,47 +74,44 @@ function App() {
             </>
           ) : (
             <>
-              {/* Protected Routes */}
+            
               <Route element={<ProtectedRoute />}>
-                {/* Admin Routes */}
                 {userType === "Admin" && (
                   <>
                   <Route path="/" element={<Navigate to={`/admin-dashboard/${userId}`} />} />
                     <Route path="/admin-dashboard/:userId" element={<AdminHome />} />
-                    <Route path="/adminleads" element={<Leads />} />
+                    <Route path="/adminleads/:userId" element={<AdminLead/>} />
+                    <Route path="/dir1leads/:userId" element={<DirectorLead1 />} />
+                    <Route path="/adddeals" element={<Deals/>} />
+                    <Route path="/toolsimport" element={<ImportData/>} />
                   </>
                 )}
                 
-                {/* User Routes */}
                 {userType === "User" && (
                   <>
                     <Route path="/" element={<Navigate to={`/directorhome/${userId}`} />} />
                     <Route path="/directorhome/:userId" element={<UserHome />} />
                     <Route path="/dir-dashboard" element={<DirectorDashboard />} />
-                    <Route path="/dir1leads" element={<DirectorLead1 />} />
+                    <Route path="/dir1leads/:userId" element={<DirectorLead1 />} />
                   </>
                 )}
 
-                {/* SubUser Routes */}
                 {userType === "SubUser" && (
                   <>
                     <Route path="/" element={<Navigate to={`/subuserhome/${userId}`} />} />
                     <Route path="/subuserhome/:userId" element={<SubUserHome />} />
-                    <Route path="/teamlead1" element={<Teamlead1 />} />
+                    <Route path="/teamlead1/:userId" element={<Teamlead1 />} />
                   </>
                 )}
 
-                {/* Executive Routes */}
                 {userType === "Executive" && (
                   <>
                     <Route path="/" element={<Navigate to={`/executivehome/${userId}`} />} />
                     <Route path="/executivehome/:userId" element={<ExecutiveHome />} />
-                    <Route path="/executivelead1" element={<ExecutiveLead1 />} />
+                    <Route path="/executivelead1/:userId" element={<ExecutiveLead1 />} />
                   </>
                 )}
 
-                {/* Common Routes */}
-                <Route path="/userDetails" element={<UserDetails />} />
                 <Route path="/products" element={<Product />} />
               </Route>
             </>
@@ -91,7 +120,8 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
-      </div>
+        </div>
+    
     </Router>
   );
 }

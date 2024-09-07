@@ -2,16 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import axios from 'axios';
-import '../Deals/Deals.css'
+import '../Leads/Deals.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import { FaUserAlt, FaPlus } from 'react-icons/fa';
 import { GoAlertFill } from 'react-icons/go';
-import ImportResult from '../Deals/ImportResult';
-import AddDeals from '../Deals/AddDeals';
-import UserDetails from '../userDetails';
+import ImportResult from '../Leads/ImportResult';
+import AddDeals from '../Leads/AddDeals';
 import AssignPopup4 from './AssignPopup4';
-import Excecutivesidebar from '../../Sidebar/ExcecutiveSidebar';
+
 
 const ItemTypes = {
     CARD: 'card',
@@ -234,9 +233,7 @@ const ExecutiveLead1 = () => {
     }
   };
 return(
-<>
-<Excecutivesidebar/>
-<UserDetails/>
+
 <div className="main-content">
       <DndProvider backend={HTML5Backend}>
         <div className='mt-4 ps-3'>
@@ -401,7 +398,7 @@ return(
         </div>
       </DndProvider>
       </div>
-</>
+
 )
 }
 export default ExecutiveLead1

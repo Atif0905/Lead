@@ -34,9 +34,7 @@ const AssignPopup = ({ leadId, setIsAssignLead, deals, setDeals }) => {
     console.log('Assigning lead ID:', leadId, 'to user:', `${user.key}`);
   
     try {
-      // Show the success alert before making the API call
       alert(`Assigned successfully to: ${user.key}`);
-  
       const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${leadId}`, {
         assignedto: `${user.key}`
       });

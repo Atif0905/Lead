@@ -11,6 +11,7 @@ import { FaBoxArchive } from "react-icons/fa6";
 import { RiFileSettingsFill } from "react-icons/ri";
 
 const Adminsidebar = () => {
+  const userId = window.localStorage.getItem("userId");
 
   return (
     <div>
@@ -18,11 +19,11 @@ const Adminsidebar = () => {
     <div className='excecutiveside'>
        
             <div>
-              <img className='sidebarlogo' src='./group white.webp' alt='logo' />
+              <img className='sidebarlogo' src='/group white.webp' alt='logo' />
             </div>
             <div className='d-flex iconss'>
             <div className='sideicon_div'>
-              <a href='/adminleads'>
+              <a href={`/adminleads/${userId}`}>
             <MdMyLocation className='side_icons' />
             </a>
             </div>
@@ -32,7 +33,9 @@ const Adminsidebar = () => {
               </div>
               <div className='d-flex iconss'>
             <div className='sideicon_div'>
+              <a href='/adddeals'>
             <AiFillDollarCircle className='side_icons' />
+            </a>
             </div>
             <div className='icons_item'>
               <p className='sideitems_text'>Deals</p>
@@ -94,7 +97,9 @@ const Adminsidebar = () => {
             </div>
             <div className='d-flex iconss'>
             <div className='sideicon_div'>
+              <a href='/toolsimport'>
             <RiFileSettingsFill  className='side_icons' />
+            </a>
             </div>
             <div className='icons_item'>
               <p className='sideitems_text'>Setting</p>
