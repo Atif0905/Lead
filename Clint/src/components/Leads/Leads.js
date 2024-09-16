@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import axios from 'axios';
-import AddDeals from './AddDeals';
-import ImportResult from './ImportResult';
 import './Deals.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
@@ -17,25 +15,21 @@ import {
   setDeals,
   setUsers,
   setSubUsers,
+  setIsPopupVisible,
   setIsLoading,
   setStages,
   setNewStage,
   setIsAddingStage,
   setSelectedLeadId,
   setIsAssignLead,
-  setIsPopupVisible,
-  setIsModalOpen,
-  setIsDropdownOpen,
-  setIsUserDropdown,
-  setIsTeamDropdown,
 } from '../../redux/actions';
-
+import AddDeals from './AddDeals';
 
 const ItemTypes = {
   CARD: 'card',
 };
 
-const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status, assignedto, onDelete, handleDeleteDeal }) => {
+const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status, assignedto, onDelete, handleDeleteDeal , togglePopadd}) => {
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.CARD,
     item: { id },
@@ -52,7 +46,9 @@ const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status,
     <div
       ref={drag}
       className='dealcard'
-      style={{ opacity: isDragging ? 0.5 : 1 }}>
+      style={{ opacity: isDragging ? 0.5 : 1 }}
+      onClick={() => togglePopadd(id)}
+      >
       <div className='dealcard_content'>
         <p className='deal_head1'>{status}</p>
         <p className='deal_head2'>{assignedto}</p>
@@ -60,18 +56,26 @@ const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status,
           <p className='deal_head3'>{text}</p> 
         </div>
         <div className='dealcard_icon'>
-          <FaUserAlt className='deals_usericon' onClick={() => toggleAssign(id)} />
+          <FaUserAlt className='deals_usericon'  onClick={(e) => {
+            e.stopPropagation();
+            toggleAssign(id);
+          }}/>
               <div>
             <GoAlertFill className='deals_alerticon' />
-            <RiDeleteBin6Line className='ms-3 deals_dlticon'  onClick={() => handleDeleteDeal(id)}/>
+            <RiDeleteBin6Line className='ms-3 deals_dlticon' 
+             onClick={(e) => {
+              e.stopPropagation(); 
+              handleDeleteDeal(id);
+            }}/>
             </div>
         </div>
       </div>
     </div>
+  
   );
 };
 
-const DealBox = ({ stage, deals,  moveCard, setDragging, togglePopadd, toggleAssign, onDelete, handleDeleteDeal }) => {
+const DealBox = ({ stage, deals,  moveCard, setDragging, toggleAssign, onDelete, handleDeleteDeal, togglePopadd  }) => {
   const [, drop] = useDrop({
     accept: ItemTypes.CARD,
     drop: (item) => moveCard(item.id, stage),
@@ -98,12 +102,13 @@ const DealBox = ({ stage, deals,  moveCard, setDragging, togglePopadd, toggleAss
             moveCard={moveCard}
             setDragging={setDragging}
             toggleAssign={toggleAssign} 
+            togglePopadd={togglePopadd}
             onDelete={onDelete}
             handleDeleteDeal={handleDeleteDeal}  
           />
         ))}
 
-      <div className='adddeal_button' onClick={togglePopadd}>
+      <div className='adddeal_button'>
         <FaPlus />
       </div>
     </div>
@@ -119,25 +124,16 @@ const Leads = () => {
     subUsers,
     deals,
     isLoading,
+    isPopupVisible,
     stages,
     newStage,
     isAddingStage,
     selectedLeadId,
     isAssignLead,
-    isPopupVisible,
-    isModalOpen,
-    isDropdownOpen,
-    isUserDropdown,
-    isTeamDropdown
   } = useSelector((state) => state);
 
   const [isDragging, setIsDragging] = useState(false);
-  // const [isAssignLead, setIsAssignLead] = useState(false);
-  // const [isPopupVisible, setIsPopupVisible] = useState(false);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // const [isUserDropdown, setIsUserDropdown] = useState(false);
-  // const [isTeamDropdown, setIsTeamDropdown] = useState(false);
+ 
 
   useEffect(() => {
     const savedStages = JSON.parse(localStorage.getItem('dealStages')) || stages;
@@ -171,6 +167,18 @@ const Leads = () => {
       }
     };
 
+    const fetchDeals = async () => {
+      dispatch(setIsLoading(true));
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_PORT}/leads/deals`);
+        console.log('Fetched deals:', response.data);
+      } catch (error) {
+        console.error('Error fetching deals:', error);
+      } finally {
+        dispatch(setIsLoading(false));
+      }
+    };
+
     const fetchUsers = async () => {
       dispatch(setIsLoading(true));
       try {
@@ -190,29 +198,19 @@ const Leads = () => {
     };
     
     fetchLeads();
+    fetchDeals(); 
     fetchUsers();
   }, [userId]);
-
-  const togglePopadd = () => 
-   dispatch(setIsPopupVisible(!isPopupVisible));
 
   const toggleAssign = (leadId) => {
   dispatch(setSelectedLeadId(leadId));
    dispatch(setIsAssignLead(true));
   };
 
-  const toggleModal = () => {
-   dispatch(setIsModalOpen(!isModalOpen));
-   dispatch( setIsDropdownOpen(false));
+  const togglePopadd = (leadId) => {
+    dispatch(setSelectedLeadId(leadId));  
+    dispatch(setIsPopupVisible(true));  
   };
-
-  const toggleDropdown = () =>
-   dispatch(setIsDropdownOpen(!isDropdownOpen));
-  const toggleUserDropdown = () =>
-    dispatch(setIsUserDropdown(!isUserDropdown));
-  const toggleTeamDropdown = () => 
- dispatch(setIsTeamDropdown(!isTeamDropdown));
-
   const moveCard = async (draggedId, droppedStage) => {
     try {
       const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${draggedId}`, { newStatus: droppedStage });
@@ -257,92 +255,10 @@ const Leads = () => {
     }
   };
 
-  const handleDirectorClick = (userId) => {
-    navigate(`/dir1leads/${userId}`);
-  };
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div className='mt-4 ps-3'>
-        <div className='d-flex'>
-          <div className='buttdiv1'>
-            <div className='cont_butt'>
-              <img className='bar_chat' src='/bar_img.webp' alt='bar img' />
-            </div>
-            <div className='bar_butt'>
-              <img className='bar_chat' src='/Content.webp' alt='content img' />
-            </div>
-            <div className='cont_butt'>
-              <img className='bar_chat' src='/Rupee.webp' alt='rupee img' />
-            </div>
-          </div>
-          <div className='buttdiv2'>
-            <div className='deal_butt1' onClick={togglePopadd}>
-              <p className='deal_butt1_txt'>
-                + <span>Deal</span>
-              </p>
-            </div>
-            <div className='deal_butt2' onClick={toggleDropdown}>
-              <img className='arrow_down' src='/arrowdown.webp' alt='arrow down' />
-            </div>
-            {isDropdownOpen && (
-              <div className='dropdown-content' onClick={toggleModal}>
-                <p className='import_txt'>+ Import data</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className='d-flex align-items-center justify-content-between'>
-          <div className='d-flex mt-4'>
-            <img className='pin_img me-1' src='/Pin.webp' alt='pin' />
-            <p className='pin_text mt-2'>Pin filters</p>
-          </div>
-          <div className='d-flex mt-4'>
-            <div className='me-3'>
-              <p className='ruptxt mt-1'>₨1,720,000·8 deals</p>
-            </div>
-            <div className='users_button me-3'>
-              <div className='users_butt1'>
-                <img className='adminmaleimg' src='/AdministratorMale.webp' alt='admin' />
-                <p className='adminname'>{users[0]?.fname || 'Loading...'}</p>
-                <img className='arrowblackimg' src='/arrowblack.webp' alt='arrow black' onClick={toggleUserDropdown} />
-              </div>
-              {isUserDropdown && (
-                <div className='users_dropdown'>
-                  <div>
-                  {users.map(user => (
-                <div  key={user.key} onClick={() => handleDirectorClick(user._id)}>
-                <p className='dir_list'> {user.fname} {user.lname}</p> 
-                </div>
-              ))}
-                  </div>
-                </div>
-              )}
-              <div className='users_butt2'>
-                <img className='callibrush' src='/CalliBrush.webp' alt='brush' />
-              </div>
-            </div>
-
-            <div className='users_button d-flex align-items-center justify-content-around me-3'>
-              <img className='teamlogo' src='/Teamlogo.webp' alt='team logo' />
-              <p className='teamtext'>{subUsers[0]?.fname || 'Loading...'}</p>
-              <img className='arrowblackimg' src='/arrowblack.webp' alt='arrow black' onClick={toggleTeamDropdown} />
-              {isTeamDropdown && (
-                <div className='subusers_dropdown'>
-                  <div>
-                  {subUsers.map(subUser => (
-                <div key={subUser.key} onClick={() => handleDirectorClick(subUser)}>
-                 <p className='dir_list'>{subUser.fname} {subUser.lname}</p> 
-                </div>
-              ))}
-                    </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
         <div className='dealscontainer mt-2'>
           {stages.map((stage, index) => (
             <DealBox
@@ -351,12 +267,13 @@ const Leads = () => {
               deals={deals}
               moveCard={moveCard}
               setDragging={setIsDragging}
-              togglePopadd={togglePopadd}
               toggleAssign={toggleAssign}
+              togglePopadd={togglePopadd}
               onDelete={handleDeleteStage}
               handleDeleteDeal={handleDeleteDeal}
             />
           ))}
+           
           <div className="add-stage-form mt-2">
             {!isAddingStage ? (
               <button className='add-stage-button' onClick={() => dispatch(setIsAddingStage(true))}> <FaPlus /></button>
@@ -374,35 +291,19 @@ const Leads = () => {
             )}
           </div>
         </div>
-
         {isPopupVisible && (
-          <div className='popup'>
-            <div className='popup_content'>
-              <div className='d-flex align-items-center justify-content-between adddeal_div'>
-                <h2 className='add_deal'>Add Deals</h2>
-                <FontAwesomeIcon className='close_img' icon={faX} onClick={togglePopadd} />
-              </div>
-              <AddDeals />
-              {/* <div className='bottomdeal_div'>
-                <button className='cancel_btn me-2' onClick={togglePopadd}>Cancel</button>
-                <button className='save_btn'>Save</button>
-              </div> */}
+        <div className='popup'>
+          <div className='popup_content'>
+            <div className='d-flex align-items-center justify-content-between adddeal_div'>
+              <h2 className='add_deal'>Add Deals</h2>
+              <FontAwesomeIcon className='close_img' icon={faX} onClick={() => dispatch(setIsPopupVisible(false))}  />
             </div>
+            <AddDeals
+             leadId={selectedLeadId}
+             setIsPopupVisible={setIsPopupVisible} />
           </div>
-        )}
-
-        {isModalOpen && (
-          <div className='modal'>
-            <div className='modal_content'>
-              <div className='d-flex align-items-center justify-content-between importdeal_div'>
-                <h2 className='import_deal'>Import Results</h2>
-                <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleModal} />
-              </div>
-              <ImportResult />
-            </div>
-          </div>
-        )}
-
+        </div>
+      )}
         {isAssignLead && (
           <div className='modal'>
             <div className='modal_content'>
@@ -419,7 +320,6 @@ const Leads = () => {
             </div>
           </div>
         )}
-
         {isDragging && (
           <div className='buttons_div p-2'>
             <button className='dlt_btn'>DELETE</button>

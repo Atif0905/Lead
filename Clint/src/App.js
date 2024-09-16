@@ -28,6 +28,10 @@ import Excecutivesidebar from "./Sidebar/ExcecutiveSidebar";
 import AdminLead from "./components/AdminLead";
 import Deals from "./components/Deals/Deals";
 import ImportData from "./components/Tools/ImportData";
+import Leads from "./components/Leads/Leads";
+import DirectorLead from "./components/DirectorLead";
+
+
 
 
 function App() {
@@ -43,6 +47,7 @@ function App() {
           <>
             <Adminsidebar /> 
             <UserDetails /> 
+            
           </>
         )}
           {userType === "User" && (
@@ -81,9 +86,11 @@ function App() {
                   <Route path="/" element={<Navigate to={`/admin-dashboard/${userId}`} />} />
                     <Route path="/admin-dashboard/:userId" element={<AdminHome />} />
                     <Route path="/adminleads/:userId" element={<AdminLead/>} />
+                    <Route path="/leads/:userId" element={<Leads/>}/>
                     <Route path="/dir1leads/:userId" element={<DirectorLead1 />} />
                     <Route path="/adddeals" element={<Deals/>} />
                     <Route path="/toolsimport" element={<ImportData/>} />
+                  
                   </>
                 )}
                 
@@ -93,6 +100,7 @@ function App() {
                     <Route path="/directorhome/:userId" element={<UserHome />} />
                     <Route path="/dir-dashboard" element={<DirectorDashboard />} />
                     <Route path="/dir1leads/:userId" element={<DirectorLead1 />} />
+                    <Route path="/dirlead/:userId" element={<DirectorLead/>}/>
                   </>
                 )}
 

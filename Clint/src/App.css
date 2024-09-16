@@ -28,3 +28,6 @@ line-height: 27.77px;
 text-align: left;
 color: #000000;
 }
+a{
+  color: inherit !important;
+}

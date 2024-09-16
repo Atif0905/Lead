@@ -3,29 +3,57 @@ const mongoose = require('mongoose');
 const LeadSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: false
   },
   email: {
     type: String,
-    required: true,
-    unique: true
+    required: false,
+    unique: false, 
   },
   number: {
     type: String,
-    required: true,
-    unique: true
+    required: false,
   },
   status: {
     type: String,
-   required: true
+   required: false
   },
   title: {
     type: String,
-    required: true
+    required: false
   },
   assignedto: {
     type: String,
-    required: true
+   required: false
+  },
+  contactperson1: {
+    type: String,
+    required: false
+  },
+  budget: {
+    type: String,
+    required: false
+  },
+  pipeline: {
+    type: String,
+    required: false
+  },
+  property: {
+    type: String,
+    required: false
+  },
+  username: {
+    type: String,
+    required: false
+  },
+  contactperson2: {
+    type: String,
+  },
+  contactnumber: {
+    type: String,
+  },
+  comment: {
+    type: String,
   }
 }, { timestamps: true });
 

@@ -128,12 +128,11 @@ router.delete('/delete/:id', async (req, res) => {
 
 router.post('/create', async (req, res) => {
   try {
-    const { name, email, number, status, title, assignedto } = req.body;
+    const { name, email, number, status, title, assignedto,  } = req.body;
 
-    if (!name || !email || !number) {
-      return res.status(400).send('Name, email, and number are required.');
+    if (!status) {
+      return res.status(400).send('status');
     }
-
     const newLead = new Lead({
       name,
       email,
@@ -141,6 +140,7 @@ router.post('/create', async (req, res) => {
       status,
       title,
       assignedto,
+     
     });
 
     const savedLead = await newLead.save();
@@ -151,45 +151,31 @@ router.post('/create', async (req, res) => {
   }
 });
 
-router.post('/deals', async (req, res) => {
-  try {
-    const { name, organization, title, value, date, owner, visibleto, persontitle, contactperson, email, phone, work1, work2 } = req.body;
+router.put('/update/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status, contactperson1, budget, pipeline, property, username, contactperson2, contactnumber, comment } = req.body;
 
-    if (!name || !organization) {
-      return res.status(400).send('Name and organization are required.');
+  try {
+    const updatedLead = await Lead.findByIdAndUpdate(id, {
+      status,
+      contactperson1,
+      budget,
+      pipeline,
+      property,
+      username,
+      contactperson2,
+      contactnumber,
+      comment
+    }, { new: true });
+
+    if (!updatedLead) {
+      return res.status(404).json({ message: 'Lead not found' });
     }
 
-    const newDeal = new Deal({
-      name, 
-      organization, 
-      title, 
-      value, 
-      date, 
-      owner, 
-      visibleto, 
-      persontitle, 
-      contactperson, 
-      email, 
-      phone, 
-      work1, 
-      work2
-    });
-
-    const savedDeal = await newDeal.save();
-    res.status(201).json(savedDeal);
+    res.json(updatedLead);
   } catch (error) {
-    console.error(`Error creating deals: ${error.message}`);
-    res.status(500).send('Error creating deals');
-  }
-});
-
-router.get('/deals', async (req, res) => {
-  try {
-    const deals = await Deal.find();
-    res.status(200).json(deals); 
-  } catch (error) {
-    console.error(`Error fetching deals: ${error.message}`);
-    res.status(500).send('Error fetching deals');
+    console.error('Error updating lead:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

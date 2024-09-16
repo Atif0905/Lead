@@ -21,7 +21,7 @@ const DirectorSidebar = () => {
             </div>
             <div className='d-flex iconss'>
             <div className='sideicon_div'>
-            <a href={`/dir1leads/${userId}`}>
+            <a href={`/dirlead/${userId}`}>
             <MdMyLocation className='side_icons' />
             </a>
             </div>

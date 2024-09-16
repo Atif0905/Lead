@@ -11,8 +11,11 @@ const AssignPopup3 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo }) 
             try {
                 const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
                 if (usersResponse.data.status === "ok") {
-                    const executives = usersResponse.data.data.filter(user => user.userType === 'Executive');
-                    setUsers(executives);
+                  
+                    const matchingUsers = usersResponse.data.data.filter(user => 
+                        user.userType === 'Executive' && user.key === assignedTo
+                    );
+                    setUsers(matchingUsers);
                 } else {
                     console.error("Failed to fetch users:", usersResponse.data.message);
                 }
@@ -24,19 +27,18 @@ const AssignPopup3 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo }) 
         };
 
         fetchData();
-    }, []);
+    }, [assignedTo]);
 
     const handleAssign = async (user) => {
         try {
-            alert(`Assigned successfully to: ${user.fname} ${user.lname}`);
+            alert(`Assigned successfully to: ${user.fname}`);
             const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${leadId}`, {
-                assignedto: `${user.key}`
+                assignedto: `${user.fname}`
             });
 
             if (response.status === 200 && response.data.status === "ok") {
-                // Update the deals state in the parent component
                 const updatedDeals = deals.map((deal) =>
-                    deal.id === leadId ? { ...deal, assignedto: `${user.key}` } : deal
+                    deal.id === leadId ? { ...deal, assignedto: `${user.fname}` } : deal
                 );
                 setDeals(updatedDeals);
                 setIsAssignLead(false);
@@ -50,28 +52,32 @@ const AssignPopup3 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo }) 
         }
     };
 
-    // Find the currently assigned user
-    const currentAssignedUser = users.find(user => user.key === assignedTo);
+   
 
     return (
         <div className='container'>
             <h2>Assign</h2>
             <div className='p-3'>
-                <div className='d-flex justify-content-between'>
-                    <p>Name: {currentAssignedUser ? `${currentAssignedUser.fname} ${currentAssignedUser.lname}` : 'None'}</p>
-                    <div>
-                        <button 
-                            className='assign_button'  
-                            onClick={async () => {
-                                
-                                    await handleAssign(currentAssignedUser);
-                                
-                                setIsAssignLead(false);
-                            }}>
-                            Assign to
-                        </button>
-                    </div>
-                </div>
+                {isLoading ? (
+                    <p>Loading...</p>
+                ) : users.length > 0 ? (
+                    users.map((user) => (
+                        <div key={user.key} className='d-flex justify-content-between'>
+                            <p>Name: {user.fname}</p>
+                            <div>
+                                <button 
+                                    className='assign_button'
+                                    onClick={async () => {
+                                        await handleAssign(user);
+                                    }}>
+                                    Assign to
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p>No matching SubUsers found.</p>
+                )}
             </div>
         </div>
     );

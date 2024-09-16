@@ -192,6 +192,7 @@ color: #000000;
 }
 .close_img{
   font-size: 24px;
+  cursor: pointer;
 }
 .adddeal_div{
   padding: 20px;
@@ -217,6 +218,15 @@ margin-bottom: 5px;
 .contact_field{
   width: 100%;
   height: 53px;
+  border: 1px solid #000000;
+margin-bottom: 10px;
+border-radius: 6px;
+padding-left: 2%;
+overflow: hidden;
+}
+.message_field{
+  width: 100%;
+  height: auto;
   border: 1px solid #000000;
 margin-bottom: 10px;
 border-radius: 6px;
@@ -324,7 +334,7 @@ color: #211C52;
     height: 50px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
-    top:130%;
+    top:50px;
   }
   .subusers_dropdown{
     display: flex;
@@ -460,32 +470,48 @@ color: #FFFFFF;
 background-color:#60CA3B;
 border: none;
  }
- .stages-container{
+ .stages-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 0px;
- }
- .stage1 {
- width: 110%;
-  height: 60px;
-  background-color: #b6b1b1;
-  clip-path: polygon(0% 0%, 82.1% 0%, 82.1% 0%, 100.1% 49.3%, 84.9% 100.3%, 85.1% 100.3%, 0% 100.3%);
-  border-radius: 10px;
-} 
-.stage2 {
+}
+
+.stage1, .stage2, .stage3, .stage4 {
   width: 110%;
   height: 60px;
+  border-radius: 10px;
   background-color: #b6b1b1;
+}
+
+.stage1 {
+  clip-path: polygon(0% 0%, 82.1% 0%, 82.1% 0%, 100.1% 49.3%, 84.9% 100.3%, 85.1% 100.3%, 0% 100.3%);
+}
+
+.stage2 {
+
   clip-path: polygon(0% 0%, 81.2% 0%, 100% 50%, 82% 100.3%, 0% 100%, 20.6% 46%);
-  border-radius: 10px;
 }
-.stage3{
-  width: 100%;
-  height: 60px;
-  background-color: #b6b1b1;
+.stage3 {
+
+  clip-path: polygon(0% 0%, 81.2% 0%, 100% 50%, 82% 100.3%, 0% 100%, 20.6% 46%);
+}
+.stage4 {
   clip-path: polygon(0% 0%, 100% 0%, 100.1% 47%, 100% 100%, 0% 100.3%, 19.2% 48.5%);
-  border-radius: 10px;
 }
+
+
+.stage1.hot {
+  background-color: red;
+}
+
+.stage2.cold {
+  background-color: blue;
+}
+
+.stage3.medium {
+  background-color: orange;
+}
+
 .add_leads_cont{
   display: flex;
   align-items: center;
