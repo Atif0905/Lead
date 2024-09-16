@@ -10,18 +10,26 @@ import { FaCircleUser } from "react-icons/fa6";
 import { IoMdShare } from "react-icons/io";
 import { FaEllipsisH } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
+import { FaCaretDown } from "react-icons/fa";
 import { useParams } from 'react-router-dom'; 
 import {
-  setUsers, setTotalLeads, setLeads,
+  setUsers, setTotalLeads, setLeads, setStages, 
 } from '../../redux/actions';
 
 const DirectorDashboard = () => {
   const { userId } = useParams(); 
+  const [isDropdownList, setIsDropdownList] = useState(null);
+
+  const toggleAdmin = (index) => {
+    setIsDropdownList(prevIndex => (prevIndex === index ? null : index));
+  };
+
   const dispatch = useDispatch();
   const {
-    users, totalLeads, leads,
+    users, totalLeads, leads,  stages=[],
   } = useSelector((state) => state);
 
+ 
 
   useEffect(() => {
     const fetchUserAndLeads = async () => {
@@ -51,11 +59,42 @@ const DirectorDashboard = () => {
     fetchUserAndLeads();
   }, [userId]);
 
+  const getLeadsCountByStage = (stage) => {
+    return leads.filter(lead => lead.status === stage).length;
+  };
+  const getLeadsPercentageByStage = (stage) => {
+    const stageCount = getLeadsCountByStage(stage);
+    return totalLeads > 0 ? ((stageCount / totalLeads) * 100).toFixed(2) : 0;
+  };
+
   return (
     <div className='dashboard_maindiv'>
         <div className='dashboard_sidebar'>
-          <div className='stick_div'>
-{/* <h6>wdwef</h6> */}
+        <div className='stick_div'>
+<div className='sidebar_lead_div'>
+  <p className='sidebar_txt'>Lead Created</p>
+  <FaCaretDown className='ms-1 admin_careticon' 
+   onClick={() =>toggleAdmin(1)}  />
+</div>
+{isDropdownList === 1 && (
+        <div className='admin_dropdown_menu'>
+          <p className='ms-1'>{totalLeads > 0 ? `${totalLeads} LEADS` : "(NO VALUE)"}</p>
+        </div>
+      )}
+<div className='sidebar_lead_div'>
+  <p className='sidebar_txt'>Lead Converted</p>
+  <FaCaretDown className='admin_careticon' 
+   onClick={() =>toggleAdmin(2)}  />
+</div>
+{isDropdownList === 2 && (
+        <div className='admin_dropdown_menu'>
+          {stages.map((stage, index) => (
+               <p key={index} className=''> 
+                 {stage} - {getLeadsPercentageByStage(stage)}%
+               </p>
+                 ))}
+        </div>
+      )}
           </div>
 
         </div>

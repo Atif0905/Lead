@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import './Dashboard.css'
 import { MdMyLocation } from "react-icons/md";
@@ -9,29 +10,90 @@ import { FaCircleUser } from "react-icons/fa6";
 import { IoMdShare } from "react-icons/io";
 import { FaEllipsisH } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
+import { FaCaretDown } from "react-icons/fa";
+import { useParams } from 'react-router-dom'; 
+import {
+  setUsers, setTotalLeads, setLeads, setStages, 
+} from '../../redux/actions';
 
 const ExecutiveDasboard = () => {
-    const [totalLeads, setTotalLeads] = useState(0);
+  const { userId } = useParams(); 
+  const [isDropdownList, setIsDropdownList] = useState(null);
+
+  const toggleAdmin = (index) => {
+    setIsDropdownList(prevIndex => (prevIndex === index ? null : index));
+  };
+
+    const dispatch = useDispatch();
+    const {
+      users, totalLeads, leads,  stages=[],
+    } = useSelector((state) => state);
 
     useEffect(() => {
-      const fetchLeads = async () => {
+      const fetchUserAndLeads = async () => {
         try {
-          const response = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
-          const directorLeads = response.data.filter(lead => lead.assignedto === 'Teamlead1 a');
-                setTotalLeads(directorLeads.length);
+          const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
+          if (usersResponse.data.status === 'ok') {
+            const usersData = usersResponse.data.data;
+            dispatch(setUsers(usersData));
+    
+            const currentUser = usersData.find(user => user._id === userId);
+            const currentUserKey = currentUser?.fname;
+    
+            const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
+            const allLeads = leadsResponse.data;
+            const filteredLeads = allLeads.filter(lead => lead.assignedto === currentUserKey);
+    
+            dispatch(setLeads(filteredLeads));
+            dispatch(setTotalLeads(filteredLeads.length));
+          } else {
+            console.error('Error fetching users: ', usersResponse.data.message);
+          }
         } catch (error) {
-          console.error(`Error fetching leads: ${error.message}`);
+          console.error('Error fetching data:', error);
         }
       };
-  
-      fetchLeads();
-    }, []);
+    
+      fetchUserAndLeads();
+    }, [userId]);
+
+    const getLeadsCountByStage = (stage) => {
+      return leads.filter(lead => lead.status === stage).length;
+    };
+    const getLeadsPercentageByStage = (stage) => {
+      const stageCount = getLeadsCountByStage(stage);
+      return totalLeads > 0 ? ((stageCount / totalLeads) * 100).toFixed(2) : 0;
+    };
+
   return (
     <div className='dashboard_maindiv'>
     <div className='dashboard_sidebar'>
-      <div className='stick_div'>
-{/* <h6>wdwef</h6> */}
-      </div>
+     <div className='stick_div'>
+<div className='sidebar_lead_div'>
+  <p className='sidebar_txt'>Lead Created</p>
+  <FaCaretDown className='ms-1 admin_careticon' 
+   onClick={() =>toggleAdmin(1)}  />
+</div>
+{isDropdownList === 1 && (
+        <div className='admin_dropdown_menu'>
+          <p className='ms-1'>{totalLeads > 0 ? `${totalLeads} LEADS` : "(NO VALUE)"}</p>
+        </div>
+      )}
+<div className='sidebar_lead_div'>
+  <p className='sidebar_txt'>Lead Converted</p>
+  <FaCaretDown className='admin_careticon' 
+   onClick={() =>toggleAdmin(2)}  />
+</div>
+{isDropdownList === 2 && (
+        <div className='admin_dropdown_menu'>
+          {stages.map((stage, index) => (
+               <p key={index} className=''> 
+                 {stage} - {getLeadsPercentageByStage(stage)}%
+               </p>
+                 ))}
+        </div>
+      )}
+          </div>
 
     </div>
     <div className='dashboard_contentdiv'>
@@ -72,7 +134,7 @@ const ExecutiveDasboard = () => {
 <MdMyLocation className='value_icon' />
 <h3 className='leadhead ms-2'>Lead created by user</h3>
 </div>
-<p className='value_txt'>{totalLeads > 0 ? `${totalLeads} LEADS` : "(NO VALUE)"}</p>
+<p className='value_txt'>{totalLeads || '0'} LEADS</p>
 </div>
 <div className='dash_div2'>
   <div>

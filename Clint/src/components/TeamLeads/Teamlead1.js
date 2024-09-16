@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import axios from 'axios';
@@ -11,12 +13,17 @@ import ImportResult from '../Leads/ImportResult';
 import AddDeals from '../Leads/AddDeals';
 import AssignPopup3 from './AssignPopup3';
 import Addleads from '../DirectorLeads/Addleads';
+import { RiDeleteBin6Line } from "react-icons/ri";
+import {
+  setUsers, setIsAddLeads, setDeals, setIsLoading, setStages, setNewStage,  setIsAddingStage,  setSelectedLeadId, setIsAssignLead,
+  setIsPopupVisible, setIsModalOpen, setIsDropdownOpen, setIsUserDropdown, setIsTeamDropdown,
+} from '../../redux/actions';
 
 const ItemTypes = {
     CARD: 'card',
   };
   
-  const DealCard = ({ id, text, moveCard, setDragging, toggleAssign2, name, status, assignedto, onDealDelete }) => {
+  const DealCard = ({ id, text, moveCard, setDragging, toggleAssign2, name, status, assignedto, onDealDelete, handleDeleteDeal }) => {
     const [{ isDragging }, drag] = useDrag({
       type: ItemTypes.CARD,
       item: { id },
@@ -39,18 +46,20 @@ const ItemTypes = {
           <p className='deal_head2'>{assignedto}</p>
           <div className='d-flex justify-content-between'>
             <p className='deal_head3'>{text}</p> 
-            {/* <button onClick={() => onDealDelete(id)}>Dlt-lead</button> */}
           </div>
           <div className='dealcard_icon'>
             <FaUserAlt className='deals_usericon' onClick={() => toggleAssign2(id, assignedto)} />
+             <div>
             <GoAlertFill className='deals_alerticon' />
+            <RiDeleteBin6Line className='ms-3 deals_dlticon'  onClick={() => handleDeleteDeal(id)}/>
+            </div>
           </div>
         </div>
       </div>
     );
   };
   
-  const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd, toggleAssign2, onDelete, onDealDelete, deleteDeal }) => {
+  const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd, toggleAssign2, onDelete, onDealDelete, deleteDeal, handleDeleteDeal }) => {
     const [, drop] = useDrop({
       accept: ItemTypes.CARD,
       drop: (item) => moveCard(item.id, stage),
@@ -77,7 +86,8 @@ const ItemTypes = {
               moveCard={moveCard}
               setDragging={setDragging}
               toggleAssign2={toggleAssign2}
-              onDealDelete={deleteDeal} 
+              onDealDelete={deleteDeal}  
+              handleDeleteDeal={handleDeleteDeal}
             />
           ))}
         <div className='adddeal_button' onClick={togglePopadd}>
@@ -88,38 +98,22 @@ const ItemTypes = {
   };
 
 const Teamlead1 = () => {
-    const [users, setUsers] = useState([]); 
-    const [isAddLeads, setIsAddLeads] = useState(false);
-    const [currentUserKey, setCurrentUserKey] = useState(null);
-    const [filteredSubUser, setFilteredSubUser] = useState(null);
-    const [assignedTo, setAssignedTo] = useState('');
-    const [isAssignLead, setIsAssignLead] = useState(false);
-    const [isPopupVisible, setIsPopupVisible] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isUserDropdown, setIsUserDropdown] = useState(false);
-    const [isTeamDropdown, setIsTeamDropdown] = useState(false);
-    const [isDragging, setIsDragging] = useState(false);
-    const [deals, setDeals] = useState([]);
-    const [leads, setLeads] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [selectedLeadId, setSelectedLeadId] = useState(null);
-    const [stages, setStages] = useState([
-      'Lead In', 
-      'Contact Made', 
-      'Switch Off', 
-      'Wrong Number', 
-      'Call Back', 
-      'Interested', 
-      'Not Interested', 
-      'Broker'
-    ]);
-    const [newStage, setNewStage] = useState('');
-    const [isAddingStage, setIsAddingStage] = useState(false);
+  const { userId } = useParams();
+  const dispatch = useDispatch();
+  const {
+    users, isAddLeads, deals,   isLoading,   stages, newStage,  isAddingStage,  selectedLeadId,  isAssignLead,  isPopupVisible,  isModalOpen, isDropdownOpen, isUserDropdown, isTeamDropdown
+  } = useSelector((state) => state);
+
+  const [currentUserKey, setCurrentUserKey] = useState(null);
+  const [filteredSubUser, setFilteredSubUser] = useState(null);
+  const [assignedTo, setAssignedTo] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const [leads, setLeads] = useState([]);
+ 
   
     useEffect(() => {
       const savedStages = JSON.parse(localStorage.getItem('dealStages')) || stages;
-      setStages(savedStages);
+      dispatch(setStages(savedStages));
     }, []);
   
     useEffect(() => {
@@ -128,76 +122,72 @@ const Teamlead1 = () => {
   
     useEffect(() => {
       const fetchLeadsAndUsers = async () => {
-          setIsLoading(true);
+          dispatch(setIsLoading(true));
           try {
               const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
               if (usersResponse.data.status === 'ok') {
                 const usersData = usersResponse.data.data;
-                  const directors = usersResponse.data.data.filter(user => user.userType === 'User');
-                  const subUsers = usersResponse.data.data.filter(user => user.userType === 'SubUser');
-                  setUsers([...directors, ...subUsers]);
+                  dispatch(setUsers(usersData));
 
-                  const currentUserKey = subUsers[0]?.key1 || ''; 
-                  setCurrentUserKey(currentUserKey);
-
+                  const currentUser = usersData.find(user => user._id === userId);
+            const currentUserKey = currentUser?.key1;
 
                   const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
                   const allLeads = leadsResponse.data;
-
-                
-                  const filteredLeads = allLeads.filter(lead => lead.assignedto === currentUserKey);
-
-                  setLeads(filteredLeads);
-                  const formattedDeals = filteredLeads.map(lead => ({
-                      id: lead._id,
-                      name: lead.name,
-                      text: lead.number,
-                      title: lead.title,
-                      email: lead.email,
-                      status: lead.status,
-                      stage: 'Lead In',
-                      assignedto: lead.assignedto || [],
-                  }));
-                  setDeals(formattedDeals);
+            const filteredLeads = allLeads.filter(lead => lead.assignedto === currentUserKey);
+  
+            setLeads(filteredLeads);
+  
+            const formattedDeals = filteredLeads.map(lead => ({
+              id: lead._id,
+              name: lead.name,
+              text: lead.number,
+              title: lead.title,
+              email: lead.email,
+              status: lead.status,
+              stage: 'Lead In',
+              assignedto: lead.assignedto || [],
+            }));
+                dispatch(setDeals(formattedDeals));
               } else {
                   console.error('Failed to fetch users:', usersResponse.data.message);
               }
           } catch (error) {
               console.error('Error fetching leads and users:', error);
           } finally {
-              setIsLoading(false);
+              dispatch(setIsLoading(false));
           }
       };
 
       fetchLeadsAndUsers();
-  }, []);
+  }, [userId]);
 
 
   
-    const togglePopadd = () => setIsPopupVisible(!isPopupVisible);
+    const togglePopadd = () => dispatch(setIsPopupVisible(!isPopupVisible));
   
     const toggleAssign2 = (leadId, assignedTo) => {
-      setSelectedLeadId(leadId);
+      dispatch(setSelectedLeadId(leadId));
       setAssignedTo(assignedTo);
       const selectedDeal = deals.find(deal => deal.id === leadId);
       if (selectedDeal) {
         const subUser = users.find(user => user.userType === 'Executive' && user.key === selectedDeal.assignedto);
         setFilteredSubUser(subUser);
       }
-      setIsAssignLead(true);
+      dispatch(setIsAssignLead(true));
     };
   
     const toggleModal = () => {
-      setIsModalOpen(!isModalOpen);
-      setIsDropdownOpen(false);
+      dispatch(setIsModalOpen(!isModalOpen));
+      dispatch(setIsDropdownOpen(false));
     };
     const toggleAssignLeads=() => {
-      setIsAddLeads(!isAddLeads);
-      setIsDropdownOpen(false);
+      dispatch(setIsAddLeads(!isAddLeads));
+      dispatch(setIsDropdownOpen(false));
     }
-    const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
-    const toggleUserDropdown = () => setIsUserDropdown(!isUserDropdown);
-    const toggleTeamDropdown = () => setIsTeamDropdown(!isTeamDropdown);
+    const toggleDropdown = () => dispatch(setIsDropdownOpen(!isDropdownOpen));
+    const toggleUserDropdown = () => dispatch(setIsUserDropdown(!isUserDropdown));
+    const toggleTeamDropdown = () => dispatch(setIsTeamDropdown(!isTeamDropdown));
   
     const moveCard = async (draggedId, droppedStage) => {
       try {
@@ -207,28 +197,28 @@ const Teamlead1 = () => {
         const updatedDeals = deals.map((deal) =>
           deal.id === draggedId ? { ...deal, status: droppedStage } : deal
         );
-        setDeals(updatedDeals);
+        dispatch(setDeals(updatedDeals));
       } catch (error) {
         console.error('Error moving card:', error);
       }
     };
-  
+
     const handleAddStage = (e) => {
       e.preventDefault();
       if (newStage) {
         const updatedStages = [...stages, newStage];
-        setStages(updatedStages);
-        setNewStage('');
-        setIsAddingStage(false);
+        dispatch(setStages(updatedStages));
+        dispatch(setNewStage(''));
+        dispatch(setIsAddingStage(false));
       }
     };
   
     const handleDeleteStage = (stageToDelete) => {
       if (window.confirm(`Are you sure you want to delete the stage "${stageToDelete}"?`)) {
         const updatedStages = stages.filter(stage => stage !== stageToDelete);
-        setStages(updatedStages);
+        dispatch(setStages(updatedStages));
         const updatedDeals = deals.filter(deal => deal.status !== stageToDelete);
-        setDeals(updatedDeals);
+        dispatch(setDeals(updatedDeals));
       }
     };
   
@@ -236,11 +226,23 @@ const Teamlead1 = () => {
       try {
         await axios.delete(`${process.env.REACT_APP_PORT}/deleteleads/${dealId}`);
         const updatedDeals = deals.filter(deal => deal.id !== dealId);
-        setDeals(updatedDeals);
+        dispatch(setDeals(updatedDeals));
       } catch (error) {
         console.error('Error deleting deal:', error);
       }
     };
+
+    const handleDeleteDeal = async (dealId) => {
+      try {
+        await axios.delete(`${process.env.REACT_APP_PORT}/leads/delete/${dealId}`);
+        
+        const updatedDeals = deals.filter((deal) => deal.id !== dealId);
+        dispatch(setDeals(updatedDeals));
+      } catch (error) {
+        console.error('Error deleting deal:', error);
+      }
+    };
+ 
   
     return (
     
@@ -336,21 +338,22 @@ const Teamlead1 = () => {
                 onDelete={handleDeleteStage}
                 onDealDelete={deleteDeal} 
                 users={users}  
+                handleDeleteDeal={handleDeleteDeal}
               />
             ))}
             <div className="add-stage-form mt-2">
               {!isAddingStage ? (
-                <button className='add-stage-button' onClick={() => setIsAddingStage(true)}> <FaPlus /></button>
+                <button className='add-stage-button' onClick={() => dispatch(setIsAddingStage(true))}> <FaPlus /></button>
               ) : (
                 <form onSubmit={handleAddStage}>
                   <input 
                     type="text" 
                     value={newStage} 
-                    onChange={(e) => setNewStage(e.target.value)} 
+                    onChange={(e) => dispatch(setNewStage(e.target.value))} 
                     placeholder="New Stage Name"
                   />
                   <button className='add' type="submit">Submit</button>
-                  <button type="button" onClick={() => setIsAddingStage(false)}>Cancel</button>
+                  <button type="button" onClick={() => dispatch(setIsAddingStage(false))}>Cancel</button>
                 </form>
               )}
             </div>
@@ -389,7 +392,7 @@ const Teamlead1 = () => {
               <div className='modal_content'>
                 <div className='d-flex align-items-center justify-content-between importdeal_div'>
                   <h2 className='import_deal'>Assign Leads</h2>
-                  <FontAwesomeIcon className='close_img' icon={faX} onClick={() => setIsAssignLead(false)} />
+                  <FontAwesomeIcon className='close_img' icon={faX} onClick={() => dispatch(setIsAssignLead(false))} />
                 </div>
                 <AssignPopup3
                   leadId={selectedLeadId} 

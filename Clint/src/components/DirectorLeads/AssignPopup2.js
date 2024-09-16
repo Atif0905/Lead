@@ -11,7 +11,7 @@ const AssignPopup2 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo }) 
             try {
                 const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
                 if (usersResponse.data.status === "ok") {
-                    // Filter users where userType is 'SubUser' and user.key matches assignedTo
+                  
                     const matchingUsers = usersResponse.data.data.filter(user => 
                         user.userType === 'SubUser' && user.key === assignedTo
                     );

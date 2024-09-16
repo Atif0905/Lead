@@ -1,65 +1,99 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import './Deals.css';
 import { FaUser } from "react-icons/fa";
-import { FaBuilding } from "react-icons/fa6";
 import axios from 'axios';
 
-const AddDeals = () => {
+const AddDeals = ({ leadId, setIsPopupVisible}) => {
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
-    name: '',
-    organization: '', 
-    title: '', 
-    value: '', 
-    date: '', 
-    owner: '', 
-    visibleto: '', 
-    persontitle: '', 
-    contactperson: '', 
-    email: '', 
-    phone: '', 
-    work1: '', 
-    work2: ''
+    status: '',
+    contactperson1: '', 
+    budget: '', 
+   pipeline: '', 
+    property: '', 
+    username: '', 
+    contactperson2: '', 
+    contactnumber: '', 
+    comment: '', 
   });
 
+  const [stageColor, setStageColor] = useState('');
+  
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value
     });
+    if (name === 'pipeline') {
+      switch (value) {
+        case 'Hot':
+          setStageColor('hot');
+          break;
+        case 'Cold':
+          setStageColor('cold');
+          break;
+        case 'Medium':
+          setStageColor('medium');
+          break;
+        default:
+          setStageColor('');
+      }
+    }
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
+ 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_PORT}/leads/deals`, formData); 
-      console.log('Deal created:', response.data);
-     
+      const response =  await axios.put(`${process.env.REACT_APP_PORT}/leads/update/${leadId}`, formData); 
+      console.log('Lead created:', response.data);
       setFormData({
-        name: '',
-        organization: '', 
-        title: '', 
-        value: '', 
-        date: '', 
-        owner: '', 
-        visibleto: '', 
-        persontitle: '', 
-        contactperson: '', 
-        email: '', 
-        phone: '', 
-        work1: '', 
-        work2: ''
+        status: '',
+        contactperson1: '',
+        budget: '',
+        pipeline: '',
+        property: '',
+        username: '',
+        contactperson2: '',
+        contactnumber: '',
+        comment: '',
       });
+    
     } catch (error) {
-      console.error('Error creating deal:', error);
+      console.error('Error creating lead:', error.response ? error.response.data : error.message);
     }
   };
 
   return (
     <div className='container fluid'>
+       <h6>Lead id: {leadId}</h6>
       <form onSubmit={handleSubmit}>
         <div className='row'>
           <div className='col-6 dealform1'>
+          <div className="form-group">
+              <label className='label_text'>Stage</label><br />
+                <select
+                  className="input_field ps-2"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                >
+                  <option value="Select" >Select</option>
+                <option value="Lead In">Lead In</option>
+                <option value="Contact Made">Contact Made</option>
+                <option value="Switch Off">Switch Off</option>
+                <option value="Wrong Number">Wrong Number</option>
+                <option value="Call Back">Call Back</option>
+                <option value="Interested">Interested</option>
+                <option value="Not Interested">Not Interested</option>
+                <option value="Broker">Broker</option>
+                </select>
+              
+            </div>
             <div className="form-group">
               <label className='label_text'>Contact person</label><br />
               <div className='contact_field d-flex align-items-center'>
@@ -67,59 +101,25 @@ const AddDeals = () => {
                 <input
                   type="text"
                   className="input_field2 ps-2"
-                  name="name"
-                  value={formData.name}
+                  name="contactperson1"
+                  value={formData.contactperson1}
                   onChange={handleChange}
                 />
               </div>
             </div>
-
             <div className="form-group">
-              <label className='label_text'>Organization</label>
+              <label className='label_text'>Budget</label>
               <div className='contact_field d-flex align-items-center'>
-                <FaBuilding />
+                
                 <input
-                  type="text"
+                  type="number"
                   className="input_field2 ps-2"
-                  name="organization"
-                  value={formData.organization}
+                  name="budget"
+                  value={formData.budget}
                   onChange={handleChange}
                 />
               </div>
             </div>
-
-            <div className="form-group">
-              <label className='label_text'>Title</label>
-              <input
-                type="text"
-                className="input_field"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className='label_text'>Value</label>
-              <div className='d-flex justify-content-between'>
-                <input
-                  type="text"
-                  className="value_input_field"
-                  name="value"
-                  value={formData.value}
-                  onChange={handleChange}
-                />
-                <input
-                  className="value_input_field"
-                  placeholder="Indian rupee"
-                  disabled
-                />
-              </div>
-              <div className='d-flex align-items-end justify-content-end'>
-                <label className='label_addtxt'>Add products</label>
-              </div>
-            </div>
-
             <div className="form-group">
               <label className='label_text'>Pipeline</label>
               <select
@@ -128,134 +128,101 @@ const AddDeals = () => {
                 value={formData.pipeline}
                 onChange={handleChange}
               >
-                <option value="Real estate">Real estate</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
+                <option value="Select" >Select</option>
+                <option value="Hot" >Hot</option>
+                <option value="Cold">Cold</option>
+                <option value="Medium">Medium</option>
               </select>
             </div>
-
             <div className="form-group">
               <label className='label_text'>Pipeline stage</label>
               <div className='stages-container'>
-                <div className='stage1'></div>
-                <div className='stage2'></div>
-                <div className='stage2'></div>
-                <div className='stage3'></div>
+              <div className={`stage1 ${stageColor}`}></div>
+                <div className={`stage2 ${stageColor}`}></div>
+                <div className={`stage3 ${stageColor}`}></div>
+                <div className={`stage4 ${stageColor}`}></div>
               </div>
+            
             </div>
-
             <div className="form-group">
-              <label className='label_text mt-3'>Label</label>
+              <label className='label_text mt-3'>Invest In</label>
               <select
                 className="input_field"
-                name="label"
-                value={formData.label}
+                name="property"
+                value={formData.property}
                 onChange={handleChange}
               >
-                <option value="Add Label">Add Label</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
+                <option value="Property">Property</option>
+                <option value="Option 2">Option 2</option>
+                <option value="Option 3">Option 3</option>
               </select>
             </div>
-
             <div className="form-group">
-              <label className='label_text'>Expected close date</label>
-              <input
-                type="date"
-                className="input_field pe-2"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className='label_text'>Owner</label>
-              <input
-                type="text"
-                className="input_field"
-                placeholder="Gaurav Tonger (YOU)"
-                name="owner"
-                value={formData.owner}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className='label_text'>Visible to</label>
-              <select
-                className="input_field"
-                name="visibleto"
-                value={formData.visibleto}
-                onChange={handleChange}
-              >
-                <option value="Directors">Directors</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
-              </select>
+              <label className='label_text'>Username</label><br />
+              <div className='contact_field d-flex align-items-center'>
+                <input
+                  type="text"
+                  className="input_field2 ps-2"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
           </div>
 
           <div className='col-6 dealform2'>
-            <div className='d-flex'>
-              <h4 className='persontxt'>PERSON</h4>
-              <div className='greyline'></div>
+          
+              <h4 className='persontxt'>Additional Information </h4>
+           
+            <div className='sticky_div'>
+            <div className="form-group">
+              <label className='label_text'>Contact Person</label><br />
+              <div className='contact_field d-flex align-items-center'>
+              
+                <input
+                  type="text"
+                  className="input_field2 ps-2"
+                  name="contactperson2"
+                  value={formData.contactperson2}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
 
-            <div className='sticky_div'>
-              <div className="form-group">
-                <label className='label_text'>Title</label>
-                <div className='d-flex justify-content-between'>
-                  <input
-                    type="text"
-                    className="value_input_field"
-                    placeholder=""
-                    name="persontitle"
-                    value={formData.persontitle}
-                    onChange={handleChange}
-                  />
-                  <select
-                    className="value_input_field"
-                    name="work1"
-                    value={formData.work1}
-                    onChange={handleChange}
-                  >
-                    <option value="Work">Work</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                  </select>
-                </div>
-                <label className='label_bottomtxt'> + Add Phone</label>
+            <div className="form-group">
+              <label className='label_text'>Contact Number</label><br />
+              <div className='contact_field d-flex align-items-center'>
+              
+                <input
+                  type="number"
+                  className="input_field2 ps-2"
+                  name="contactnumber"
+                  value={formData.contactnumber}
+                  onChange={handleChange}
+                />
               </div>
+            </div>
 
-              <div className="form-group">
-                <label className='label_text mt-3'>Contact person</label>
-                <div className='d-flex justify-content-between'>
-                  <input
-                    type="text"
-                    className="value_input_field"
-                    name="contactperson"
-                    value={formData.contactperson}
-                    onChange={handleChange}
-                  />
-                  <select
-                    className="value_input_field"
-                    name="work2"
-                    value={formData.work2}
-                    onChange={handleChange}
-                  >
-                    <option value="Work">Work</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                  </select>
-                </div>
-                <label className='label_bottomtxt'> + Add Email</label>
+            <div className="form-group">
+              <label className='label_text'>Message</label><br />
+              <div className='message_field d-flex align-items-center'>
+              
+                <textarea
+                  type="text"
+                  rows={5}
+                  className="input_field2 ps-2"
+                  name="comment"
+                  value={formData.comment}
+                  onChange={handleChange}
+                />
               </div>
+            </div>
             </div>
           </div>
 
           <div className='bottomdeal_div'>
-            <button className='cancel_btn me-2' type="button">Cancel</button>
+            <button className='cancel_btn me-2' type="button" onClick={() => dispatch(setIsPopupVisible(false))}   >Cancel</button>
             <button className='save_btn' type="submit">Save</button>
           </div>
         </div>

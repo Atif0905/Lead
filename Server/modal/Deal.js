@@ -1,49 +1,37 @@
 const mongoose = require('mongoose');
 
 const DealSchema = new mongoose.Schema({
+  status: {
+    type: String,
+    required: true
+  },
   name: {
     type: String,
     required: true
   },
-  title: {
+  budget: {
     type: String,
     required: true
   },
-  value: {
+  pipeline: {
     type: String,
     required: true
   },
-  date: {
+  property: {
     type: String,
     required: true
   },
-  owner: {
+  username: {
     type: String,
     required: true
-  },
-  visibleto: {
-    type: String,
-  },
-  persontitle: {
-    type: String,
-  },
-  phone: {
-    type: String,
- 
   },
   contactperson: {
     type: String,
-  
   },
-  work1: {
+  number: {
     type: String,
- 
   },
-  work2: {
-    type: String,
-  
-  },
-  email: {
+  comment: {
     type: String,
   }
 }, { timestamps: true });
