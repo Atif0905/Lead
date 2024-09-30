@@ -61,7 +61,7 @@ const Adminsidebar = () => {
             </div>
             <div className='d-flex iconss'>
             <div className='sideicon_div'>
-            <a href='/adminactivity'>
+            <a href='/scheduleactivity'>
             <LuActivitySquare className='side_icons' />
             </a>
             </div>

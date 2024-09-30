@@ -151,7 +151,7 @@ export default function UserDetails() {
            <BiSolidNotepad className="nav_icons"/>
            <p className="navitem_txt mb-1">Note</p>
            </div>
-           <div className=" nav_items mb-2">
+           <div className=" nav_items">
            <LiaBoxOpenSolid className="nav_icons"/>
            <p className="navitem_txt mb-1">Product</p>
            </div>

@@ -11,22 +11,22 @@ import { FaUserAlt, FaPlus } from 'react-icons/fa';
 import { GoAlertFill } from 'react-icons/go';
 import ImportResult from '../Leads/ImportResult';
 import AddDeals from '../Leads/AddDeals';
-import { RiDeleteBin6Line } from "react-icons/ri";
+
 import {
   setUsers, setIsAddLeads, setDeals, setIsLoading, setStages, setNewStage,  setIsAddingStage,  setSelectedLeadId, setIsAssignLead,
   setIsPopupVisible, setIsModalOpen, setIsDropdownOpen, setIsUserDropdown, setIsTeamDropdown,
 } from '../../redux/actions';
-
-
+import MovetoForm from './MovetoForm';
+import LostForm from './LostForm';
 
 const ItemTypes = {
     CARD: 'card',
   };
   
-  const DealCard = ({ id, text, moveCard, setDragging, name, status, assignedto, onDealDelete }) => {
+  const DealCard = ({ id, text, moveCard, setDragging, name, status, assignedto, onDealDelete, deal, onDragStart }) => {
     const [{ isDragging }, drag] = useDrag({
       type: ItemTypes.CARD,
-      item: { id },
+      item: { id, text, status, assignedto  }, 
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
@@ -55,8 +55,47 @@ const ItemTypes = {
       </div>
     );
   };
+
+  const LostButton = ({ onDrop }) => {
+    const [, drop] = useDrop({
+      accept: ItemTypes.CARD,
+      drop: (item) => onDrop(item, 'lost'),
+    });
   
-  const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd,  onDelete, onDealDelete, deleteDeal }) => {
+    return (
+      <div ref={drop}>
+        <button  className='lost_btn'>LOST</button>
+      </div>
+    );
+  };
+
+  const MoveToButton = ({ onDrop }) => {
+    const [, drop] = useDrop({
+      accept: ItemTypes.CARD,
+      drop: (item) => onDrop(item, 'moveTo'),
+    });
+  
+    return (
+      <div ref={drop}>
+        <button className='dlt_btn'>MOVE TO</button>
+      </div>
+    );
+  };
+
+  const WonButton = ({ onDrop }) => {
+    const [, drop] = useDrop({
+      accept: ItemTypes.CARD,
+      drop: (item) => onDrop(item, 'won'),
+    });
+  
+    return (
+      <div ref={drop}>
+        <button  className='won_btn'>WON</button>
+      </div>
+    );
+  };
+  
+  const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd,  onDelete, onDealDelete, deleteDeal, onDragStart, leadId }) => {
     const [, drop] = useDrop({
       accept: ItemTypes.CARD,
       drop: (item) => moveCard(item.id, stage),
@@ -83,6 +122,7 @@ const ItemTypes = {
               moveCard={moveCard}
               setDragging={setDragging}
               onDealDelete={deleteDeal} 
+              onDragStart={onDragStart}
             />
           ))}
         <div className='adddeal_button' onClick={togglePopadd}>
@@ -92,18 +132,22 @@ const ItemTypes = {
     );
   };
 
-const ExecutiveLead1 = () => {
+const ExecutiveLead1 = (deal) => {
   const { userId } = useParams();
   const dispatch = useDispatch();
+;
+
   const {
-    users, isAddLeads, deals,   isLoading,   stages, newStage,  isAddingStage,  selectedLeadId,  isAssignLead,  isPopupVisible,  isModalOpen, isDropdownOpen, isUserDropdown, isTeamDropdown
+   users, isAddLeads, deals,   isLoading,   stages, newStage,  isAddingStage,  selectedLeadId,  isAssignLead,  isPopupVisible,  isModalOpen, isDropdownOpen, isUserDropdown, isTeamDropdown
   } = useSelector((state) => state);
 
-  const [currentUserKey, setCurrentUserKey] = useState(null);
-  const [filteredSubUser, setFilteredSubUser] = useState(null);
-  const [assignedTo, setAssignedTo] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [leads, setLeads] = useState([]);
+  const [selectedDeal, setSelectedDeal] = useState(null);
+  const [isFormVisible, setIsFormVisible] = useState(false);
+  const [formType, setFormType] = useState(''); 
+  const [dealStatus, setDealStatus] = useState(deal.status);
+  
 
   useEffect(() => {
     const savedStages = JSON.parse(localStorage.getItem('dealStages')) || stages;
@@ -124,12 +168,12 @@ const ExecutiveLead1 = () => {
               const usersData = usersResponse.data.data;
               dispatch(setUsers(usersData));
 
-                const currentUser = usersData.find(user => user._id === userId);
-          const currentUserKey = currentUser?.fname;
+              const currentUser = usersData.find(user => user._id === userId);
+              const currentUserKey = currentUser?.fname;
 
                 const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
                 const allLeads = leadsResponse.data;
-          const filteredLeads = allLeads.filter(lead => lead.assignedto === currentUserKey);
+               const filteredLeads = allLeads.filter(lead => lead.assignedto === currentUserKey);
 
           setLeads(filteredLeads);
 
@@ -157,9 +201,9 @@ const ExecutiveLead1 = () => {
     fetchLeadsAndUsers();
   }, [userId]);
 
-  const togglePopadd = () => dispatch(setIsPopupVisible(!isPopupVisible));
-
-
+  const togglePopadd = () => {
+    dispatch(setIsPopupVisible(true));  
+  };
 
   const toggleModal = () => {
     dispatch(setIsModalOpen(!isModalOpen));
@@ -167,9 +211,7 @@ const ExecutiveLead1 = () => {
   };
 
   const toggleDropdown = () => dispatch(setIsDropdownOpen(!isDropdownOpen));
-    const toggleUserDropdown = () => dispatch(setIsUserDropdown(!isUserDropdown));
-    const toggleTeamDropdown = () => dispatch(setIsTeamDropdown(!isTeamDropdown));
-
+   
   const moveCard = async (draggedId, droppedStage) => {
     try {
       const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${draggedId}`, { newStatus: droppedStage });
@@ -212,11 +254,36 @@ const ExecutiveLead1 = () => {
       console.error('Error deleting deal:', error);
     }
   };
-return(
 
+  const handleDrop = (deal, dropType, leadId) => {
+    setSelectedDeal(deal); 
+    setFormType(dropType); 
+    setIsFormVisible(true); 
+    dispatch(setSelectedLeadId(leadId));
+  };
+
+  const handleStatusUpdate = (newStatus) => {
+    setDealStatus(newStatus); 
+  };
+
+  const handleWonDrop = async (item) => {
+    try {
+     
+      const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/update/${item.id}`, { status: 'won' });
+      if (response.status === 200) {
+        console.log('Lead status updated to won');
+     
+      }
+    } catch (error) {
+      console.error('Failed to update lead status:', error);
+    }
+  };
+
+return(
+  <DndProvider backend={HTML5Backend}>
 <div className="main-content">
-      <DndProvider backend={HTML5Backend}>
-        <div className='mt-4 ps-3'>
+    
+        <div className='mt-4 ps-3 '>
           <div className='d-flex'>
             <div className='buttdiv1'>
               <div className='cont_butt'>
@@ -252,41 +319,7 @@ return(
               <p className='pin_text mt-2'>Pin filters</p>
             </div>
             <div className='d-flex mt-4'>
-              <div className='me-3'>
-                <p className='ruptxt mt-1'>₨1,720,000·8 deals</p>
-              </div>
-              <div className='users_button me-3'>
-                <div className='users_butt1'>
-                  <img className='adminmaleimg' src='/AdministratorMale.webp' alt='admin' />
-                  <p className='adminname'>{users[0]?.fname || 'Loading...'}</p>
-                  <img className='arrowblackimg' src='/arrowblack.webp' alt='arrow black' onClick={toggleUserDropdown} />
-                </div>
-                {isUserDropdown && (
-                  <div className='users_dropdown'>
-                  {users.map((user) => (
-                    <p key={user.id} className='dir_list'>{user.fname} {user.lname}</p>
-                  ))}
-                </div>
-                )}
-                <div className='users_butt2'>
-                  <img className='callibrush' src='/CalliBrush.webp' alt='brush' />
-                </div>
-              </div>
-  
-              <div className='users_button d-flex align-items-center justify-content-around me-3'>
-                <img className='teamlogo' src='/Teamlogo.webp' alt='team logo' />
-                <p className='teamtext'>{users[0]?.fname || 'Loading...'}</p>
-                <img className='arrowblackimg' src='/arrowblack.webp' alt='arrow black' onClick={toggleTeamDropdown} />
-                {isTeamDropdown && (
-                  <div className='users_dropdown'>
-                    {users
-                      .filter(user => user.userType === 'SubUser')
-                      .map((user) => (
-                        <p key={user.id} className='dir_list'>{user.fname} {user.lname}</p>
-                      ))}
-                  </div>
-                )}
-              </div>
+             
             </div>
           </div>
   
@@ -299,9 +332,9 @@ return(
                 moveCard={moveCard}
                 setDragging={setIsDragging}
                 togglePopadd={togglePopadd}
-              
                 onDelete={handleDeleteStage}
                 onDealDelete={deleteDeal} 
+                leadId={selectedLeadId}
               />
             ))}
             <div className="add-stage-form mt-2">
@@ -327,13 +360,12 @@ return(
               <div className='popup_content'>
                 <div className='d-flex align-items-center justify-content-between adddeal_div'>
                   <h2 className='add_deal'>Add Deals</h2>
-                  <FontAwesomeIcon className='close_img' icon={faX} onClick={togglePopadd} />
+                  <FontAwesomeIcon className='close_img' icon={faX} onClick={() => dispatch(setIsPopupVisible(false))} />
                 </div>
-                <AddDeals />
-                <div className='bottomdeal_div'>
-                  <button className='cancel_btn me-2' onClick={togglePopadd}>Cancel</button>
-                  <button className='save_btn'>Save</button>
-                </div>
+                <AddDeals 
+                 leadId={selectedLeadId}
+                 setIsPopupVisible={setIsPopupVisible} />
+               
               </div>
             </div>
           )}
@@ -349,19 +381,35 @@ return(
               </div>
             </div>
           )}
-  
-          {isDragging && (
-            <div className='buttons_div p-2'>
+            {isDragging && (
+            <div className='buttons_div p-2 '>
               <button className='dlt_btn'>DELETE</button>
-              <button className='lost_btn'>LOST</button>
-              <button className='won_btn'>WON</button>
-              <button className='dlt_btn'>MOVE TO</button>
+              {/* <button  className='lost_btn'>LOST</button> */}
+              <LostButton onDrop={handleDrop} />
+              <WonButton onDrop={handleWonDrop} />
+              {/* <button className='dlt_btn' >MOVE TO</button> */}
+              <MoveToButton onDrop={handleDrop} />
             </div>
-          )}
-        </div>
-      </DndProvider>
-      </div>
+            )}
+        
+        {isFormVisible && selectedDeal && formType === 'moveTo' && (
+          <MovetoForm 
+          deal={selectedDeal}
+          leadId={selectedLeadId}
+          setIsFormVisible={setIsFormVisible}
+          onStatusUpdate={handleStatusUpdate}/>
+         )}
 
+        {isFormVisible && selectedDeal && formType === 'lost' && (
+         <LostForm
+         deal={selectedDeal}
+         setIsFormVisible={setIsFormVisible}
+         />
+        )}
+        </div>
+    
+      </div>
+      </DndProvider>
 )
 }
 export default ExecutiveLead1

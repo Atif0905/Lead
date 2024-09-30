@@ -1,11 +1,12 @@
 import React from "react";
-import DirectorDashboard from './Dashboard/DirectorDashboard'
+import DirectorDashboard from "./Dashboard/DirectorDashboard/DirectorDashboard";
+
 
 const UserHome = () => {
  
   return (
     <div className='main-content'>
-     <DirectorDashboard/>
+    <DirectorDashboard/>
     </div>
   )
 }

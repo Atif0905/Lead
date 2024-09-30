@@ -1,7 +1,6 @@
 import React from 'react'
 import "./Home.css";
-import ExecutiveDasboard from './Dashboard/ExecutiveDasboard';
-
+import ExecutiveDasboard from './Dashboard/ExecutiveDashboard/ExecutiveDasboard';
 
 const ExecutiveHome = () => {
   return (

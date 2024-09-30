@@ -12,6 +12,7 @@ import {
     SET_IS_ASSIGN_LEAD,
     SET_IS_MODAL_OPEN,
     SET_STAGES,
+    SET_ADMINSTAGES,
     SET_NEW_STAGE,
     SET_IS_ADDING_STAGE,
     SET_IS_DROPDOWN_OPEN,
@@ -48,6 +49,17 @@ import {
         'Not Interested', 
         'Broker'
     ],
+    adminstages: [ 'Lead In', 
+      'Contact Made', 
+      'Switch Off', 
+      'Wrong Number', 
+      'Call Back', 
+      'Interested', 
+      'Not Interested', 
+      'Broker',
+      'Lost',
+      'won'
+  ],
     newStage: '',
     isAddingStage: false,
   };
@@ -88,6 +100,8 @@ import {
                 return { ...state, dragging: action.payload };
       case SET_STAGES:
         return { ...state, stages: action.payload };
+        case SET_ADMINSTAGES:
+          return { ...state, adminstages: action.payload };
       case SET_NEW_STAGE:
         return { ...state, newStage: action.payload };
       case SET_IS_ADDING_STAGE:

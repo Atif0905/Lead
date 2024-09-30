@@ -9,7 +9,7 @@ const Activity = () => {
 
     const togglePopActivity = () => setIsShowActivity(!isShowActivity);
   return (
-    <div className='mt-5'>
+    <div className=''>
         <div className='d-flex'>
           <div className='buttdiv1'>
             <div className='cont_butt'>

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'; 
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import './Dashboard.css'
+import '../Dashboard.css'
 import { MdMyLocation } from "react-icons/md";
 import { RiMoneyRupeeCircleFill } from "react-icons/ri";
 import { SiGooglecalendar } from "react-icons/si";
@@ -14,11 +16,14 @@ import { FaCaretDown } from "react-icons/fa";
 import { useParams } from 'react-router-dom'; 
 import {
   setUsers, setTotalLeads, setLeads, setStages, 
-} from '../../redux/actions';
+} from '../../../redux/actions';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const SubuserDashboard = () => {
   const { userId } = useParams(); 
   const [isDropdownList, setIsDropdownList] = useState(null);
+  const [executiveFnames, setExecutiveFnames] = useState([]); 
 
   const toggleAdmin = (index) => {
     setIsDropdownList(prevIndex => (prevIndex === index ? null : index));
@@ -39,13 +44,18 @@ const SubuserDashboard = () => {
     
             const currentUser = usersData.find(user => user._id === userId);
             const currentUserKey = currentUser?.key1;
+            console.log(currentUserKey)
     
             const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
             const allLeads = leadsResponse.data;
             const filteredLeads = allLeads.filter(lead => lead.assignedto === currentUserKey);
-    
             dispatch(setLeads(filteredLeads));
             dispatch(setTotalLeads(filteredLeads.length));
+
+            const executiveFnamesList = usersData
+            .filter(user => user.key === currentUserKey && user.userType === "Executive")
+          setExecutiveFnames(executiveFnamesList);
+
           } else {
             console.error('Error fetching users: ', usersResponse.data.message);
           }
@@ -58,17 +68,71 @@ const SubuserDashboard = () => {
     }, [userId]);
   
     const getLeadsCountByStage = (stage) => {
-      return leads.filter(lead => lead.status === stage).length;
+      return (leads || []).filter(lead => lead.status === stage).length;
     };
+
     const getLeadsPercentageByStage = (stage) => {
       const stageCount = getLeadsCountByStage(stage);
       return totalLeads > 0 ? ((stageCount / totalLeads) * 100).toFixed(2) : 0;
     };
 
+      
+    const chartData = {
+      labels: stages.map(stage => stage.slice(0, 5)),
+      datasets: [
+        {
+          label: 'Reached Stage',
+          data: stages.map(stage => getLeadsCountByStage(stage)),
+          backgroundColor: '#FECF4C',
+          borderWidth: 0,
+          barThickness: 12, 
+          pointRadius: 10,
+        }
+      ]
+    };
+  
+    const options = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+          usePointStyle: true,
+          pointStyle: 'circle',
+          boxWidth: 9, 
+          boxHeight: 9,    
+          }
+        },
+        title: {
+          display: true,
+          text: 'Number of Leads',
+          position: 'left', 
+        },
+      },
+      scales: {
+        y: {
+          grid: {
+            display: false, 
+          },
+          ticks: {
+            callback: function(value) {
+              return value % 2 === 0 ? value : ''; 
+            },
+          },
+        },
+        x: {
+          grid: {
+            display: false, 
+          },
+        },
+      },
+      
+    };
+
 
   return (
     <div className='dashboard_maindiv'>
-    <div className='dashboard_sidebar'>
+    {/* <div className='dashboard_sidebar'>
     <div className='stick_div'>
 <div className='sidebar_lead_div'>
   <p className='sidebar_txt'>Lead Created</p>
@@ -96,7 +160,7 @@ const SubuserDashboard = () => {
       )}
           </div>
 
-    </div>
+    </div> */}
     <div className='dashboard_contentdiv'>
         <div className='d-flex align-items-center justify-content-between'>
     <h2>Teamlead Dashboard</h2>
@@ -139,10 +203,21 @@ const SubuserDashboard = () => {
 </div>
 <div className='dash_div2'>
   <div>
-  <p className='data_text'>No data to show with
-  current filters or grouping</p>
+
+  {executiveFnames.length > 0 ? (
+                            executiveFnames.map((executive,  index) => (
+                                <p key={index} className='data_text' >
+                                {executive.fname} {executive.lname}</p>
+                            ))
+                        ) : (
+                            <p>No users found</p>
+                        )}
+ 
+  
   <div className='d-flex align-items-center justify-content-center'>
+  <a href={`/leadcreatededit2/${userId}`}>
   <button className='report_btn mt-2'>Edit Report</button>
+  </a>
   </div>
   </div>
 </div>
@@ -177,6 +252,9 @@ const SubuserDashboard = () => {
 <p className='value_txt ms-4'>WON, LOST</p>
 </div>
 <p className='rate_txt'>WIN RATE IS 34%</p>
+</div>
+<div className='dash_chart1 p-2'>
+<Bar data={chartData} options={{ ...options, responsive: true, maintainAspectRatio: false }} />
 </div>
 </div>
     </div>
