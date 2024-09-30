@@ -106,6 +106,12 @@ const ExecutiveDasboard = () => {
       plugins: {
         legend: {
           position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            pointStyle: 'circle',
+            boxWidth: 9, 
+            boxHeight: 9,    
+            }
         },
         title: {
           display: true,
@@ -146,6 +152,12 @@ const ExecutiveDasboard = () => {
     plugins: {
       legend: {
         position: 'bottom',
+        labels: {
+          usePointStyle: true,
+          pointStyle: 'circle',
+          boxWidth: 9, 
+          boxHeight: 9,    
+          }
       },
     },
   };
@@ -260,7 +272,7 @@ const ExecutiveDasboard = () => {
 <p className='rate_txt'>WIN RATE IS 34%</p>
 </div>
 <div className='dash_chart1 p-2'>
-  <Bar data={chartData} options={options} />
+  <Bar data={chartData} options={{ ...options, responsive: true, maintainAspectRatio: false }} />
 </div>
 </div>
     </div>
@@ -378,7 +390,7 @@ const ExecutiveDasboard = () => {
 </div>
 <div className='dash_div4'>
 <div className='pie-chart'>
-<Pie data={pieChartData} options={pieChartOptions} />
+<Pie data={pieChartData} options={{ ...pieChartOptions, responsive: true, maintainAspectRatio: false }} />
   </div>
 </div>
 </div>
