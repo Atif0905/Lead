@@ -7,7 +7,7 @@ const AssignPopup = ({ leadId, setIsAssignLead, deals, setDeals }) => {
   const [assignedDirector, setAssignedDirector] = useState(null);
 
   useEffect(() => {
-    console.log('AssignPopup received leadId:', leadId); // Debug log
+   
 
     const fetchData = async () => {
       setIsLoading(true);

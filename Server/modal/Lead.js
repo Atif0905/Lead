@@ -54,7 +54,14 @@ const LeadSchema = new mongoose.Schema({
   },
   comment: {
     type: String,
-  }
+  },
+  lostreason: {
+    type: String,
+  },
+  lostcomment: {
+    type: String,
+  },
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('Lead', LeadSchema);

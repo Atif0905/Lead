@@ -80,9 +80,8 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
                   className="input_field ps-2"
                   name="status"
                   value={formData.status}
-                  onChange={handleChange}
-                >
-                  <option value="Select" >Select</option>
+                  onChange={handleChange}>
+                <option value="Select">Select</option>
                 <option value="Lead In">Lead In</option>
                 <option value="Contact Made">Contact Made</option>
                 <option value="Switch Off">Switch Off</option>
@@ -92,7 +91,6 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
                 <option value="Not Interested">Not Interested</option>
                 <option value="Broker">Broker</option>
                 </select>
-              
             </div>
             <div className="form-group">
               <label className='label_text'>Contact person</label><br />

@@ -15,7 +15,6 @@ import Product from "./components/products";
 import About from "./components/about";
 import ProtectedRoute from "./components/ProtectedRoute";
 import UserHome from "./components/userHome";
-import DirectorDashboard from "./components/Dashboard/DirectorDashboard";
 import DirectorLead1 from "./components/DirectorLeads/DirectorLead1";
 import SubUserHome from "./components/subUserHome";
 import Teamlead1 from "./components/TeamLeads/Teamlead1";
@@ -30,6 +29,13 @@ import Deals from "./components/Deals/Deals";
 import ImportData from "./components/Tools/ImportData";
 import Leads from "./components/Leads/Leads";
 import DirectorLead from "./components/DirectorLead";
+import LeadCreatedEdit from "./components/Dashboard/AdminDashboard/LeadCreatedEdit";
+import DirectorDashboard from "./components/Dashboard/DirectorDashboard/DirectorDashboard";
+import LeadCreated1 from "./components/Dashboard/DirectorDashboard/LeadCreated1";
+import LeadCreated2 from "./components/Dashboard/SubuserDashboard/LeadCreated2";
+import Activity from "./components/Activity/Activity";
+import AdminActivity from "./components/adminActivity";
+import LeadCreated3 from "./components/Dashboard/ExecutiveDashboard/LeadCreated3";
 
 
 
@@ -90,7 +96,8 @@ function App() {
                     <Route path="/dir1leads/:userId" element={<DirectorLead1 />} />
                     <Route path="/adddeals" element={<Deals/>} />
                     <Route path="/toolsimport" element={<ImportData/>} />
-                  
+                  <Route path="/leadcreatededit" element={<LeadCreatedEdit/>} />
+                  <Route path="/scheduleactivity" element={<AdminActivity/>} />
                   </>
                 )}
                 
@@ -98,9 +105,10 @@ function App() {
                   <>
                     <Route path="/" element={<Navigate to={`/directorhome/${userId}`} />} />
                     <Route path="/directorhome/:userId" element={<UserHome />} />
-                    <Route path="/dir-dashboard" element={<DirectorDashboard />} />
+                    <Route path="/dir-dashboard" element={<DirectorDashboard/>} />
                     <Route path="/dir1leads/:userId" element={<DirectorLead1 />} />
                     <Route path="/dirlead/:userId" element={<DirectorLead/>}/>
+                    <Route path="/leadcreatededit1/:userId" element={<LeadCreated1/>} />
                   </>
                 )}
 
@@ -109,6 +117,7 @@ function App() {
                     <Route path="/" element={<Navigate to={`/subuserhome/${userId}`} />} />
                     <Route path="/subuserhome/:userId" element={<SubUserHome />} />
                     <Route path="/teamlead1/:userId" element={<Teamlead1 />} />
+                    <Route path="/leadcreatededit2/:userId" element={<LeadCreated2 />} />
                   </>
                 )}
 
@@ -117,6 +126,7 @@ function App() {
                     <Route path="/" element={<Navigate to={`/executivehome/${userId}`} />} />
                     <Route path="/executivehome/:userId" element={<ExecutiveHome />} />
                     <Route path="/executivelead1/:userId" element={<ExecutiveLead1 />} />
+                    <Route path="/leadcreatededit3/:userId" element={<LeadCreated3 />} />
                   </>
                 )}
 

@@ -10,7 +10,7 @@ import { FaBuildingCircleArrowRight } from "react-icons/fa6";
 import { BiSolidPhoneCall } from "react-icons/bi";
 import { FcCollaboration } from "react-icons/fc";
 import { IoIosTimer } from "react-icons/io";
-import '../Deals/Deals.css'
+import "../Leads/Deals.css"
 
 const ScheduleActivity = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

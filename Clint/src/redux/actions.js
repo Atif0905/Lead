@@ -10,6 +10,7 @@ export const SET_TOTAL_LEADS = 'SET_TOTAL_LEADS';
 export const SET_IS_POPUP_VISIBLE = 'SET_IS_POPUP_VISIBLE';
 export const SET_SELECTED_LEAD_ID = 'SET_SELECTED_LEAD_ID';
 export const SET_STAGES = 'SET_STAGES';
+export const SET_ADMINSTAGES ='SET_ADMINSTAGES';
 export const SET_NEW_STAGE = 'SET_NEW_STAGE';
 export const SET_IS_ADDING_STAGE = 'SET_IS_ADDING_STAGE';
 export const SET_IS_ASSIGN_LEAD = 'SET_IS_ASSIGN_LEAD'
@@ -89,6 +90,10 @@ export const setStages = (stages) => ({
     type: SET_STAGES,
      payload: stages 
     });
+    export const setAdminStages = (adminstages) => ({ 
+        type: SET_ADMINSTAGES,
+         payload: adminstages 
+        });
 export const setNewStage = (newStage) => ({ 
     type: SET_NEW_STAGE, 
     payload: newStage

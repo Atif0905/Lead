@@ -9,7 +9,6 @@ import { faX } from '@fortawesome/free-solid-svg-icons';
 import { FaUserAlt, FaPlus } from 'react-icons/fa';
 import AssignPopup from './AssignPopup';
 import { GoAlertFill } from 'react-icons/go';
-import { RiDeleteBin6Line } from "react-icons/ri";
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   setDeals,
@@ -18,18 +17,22 @@ import {
   setIsPopupVisible,
   setIsLoading,
   setStages,
+  setAdminStages,
   setNewStage,
   setIsAddingStage,
   setSelectedLeadId,
   setIsAssignLead,
 } from '../../redux/actions';
 import AddDeals from './AddDeals';
+import AdminLostForm from './AdminLostForm';
+import AdminMovetoForm from './AdminMovetoForm';
+import AdminDeleteForm from './AdminDeleteForm';
 
 const ItemTypes = {
   CARD: 'card',
 };
 
-const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status, assignedto, onDelete, handleDeleteDeal , togglePopadd}) => {
+const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status, assignedto, togglePopadd}) => {
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.CARD,
     item: { id },
@@ -47,8 +50,7 @@ const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status,
       ref={drag}
       className='dealcard'
       style={{ opacity: isDragging ? 0.5 : 1 }}
-      onClick={() => togglePopadd(id)}
-      >
+      onClick={() => togglePopadd(id)}>
       <div className='dealcard_content'>
         <p className='deal_head1'>{status}</p>
         <p className='deal_head2'>{assignedto}</p>
@@ -62,16 +64,63 @@ const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status,
           }}/>
               <div>
             <GoAlertFill className='deals_alerticon' />
-            <RiDeleteBin6Line className='ms-3 deals_dlticon' 
-             onClick={(e) => {
-              e.stopPropagation(); 
-              handleDeleteDeal(id);
-            }}/>
             </div>
         </div>
       </div>
     </div>
   
+  );
+};
+
+const DeleteButton = ({ onDrop }) => {
+  const [, drop] = useDrop({
+    accept: ItemTypes.CARD,
+    drop: (item) => onDrop(item, 'Delete'),
+  });
+
+  return (
+    <div ref={drop}>
+      <button  className='dlt_btn'>DELETE</button>
+    </div>
+  );
+};
+
+const LostButton = ({ onDrop }) => {
+  const [, drop] = useDrop({
+    accept: ItemTypes.CARD,
+    drop: (item) => onDrop(item, 'lost'),
+  });
+
+  return (
+    <div ref={drop}>
+      <button  className='lost_btn'>LOST</button>
+    </div>
+  );
+};
+
+const MoveToButton = ({ onDrop }) => {
+  const [, drop] = useDrop({
+    accept: ItemTypes.CARD,
+    drop: (item) => onDrop(item, 'moveTo'),
+  });
+
+  return (
+    <div ref={drop}>
+      <button className='dlt_btn'>MOVE TO</button>
+    </div>
+  );
+};
+
+const WonButton = ({ onDrop }) => {
+  const [, drop] = useDrop({
+    accept: ItemTypes.CARD,
+    drop: (item) => onDrop(item, 'won'),
+  });
+
+  return (
+    <div ref={drop}>
+      <button  className='won_btn'>WON</button>
+    </div>
   );
 };
 
@@ -115,7 +164,7 @@ const DealBox = ({ stage, deals,  moveCard, setDragging, toggleAssign, onDelete,
   );
 };
 
-const Leads = () => {
+const Leads = (deal) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { userId } = useParams();
@@ -126,6 +175,7 @@ const Leads = () => {
     isLoading,
     isPopupVisible,
     stages,
+    adminstages,
     newStage,
     isAddingStage,
     selectedLeadId,
@@ -133,7 +183,11 @@ const Leads = () => {
   } = useSelector((state) => state);
 
   const [isDragging, setIsDragging] = useState(false);
- 
+  const [selectedDeal, setSelectedDeal] = useState(null);
+  const [isFormVisible, setIsFormVisible] = useState(false);
+  const [formType, setFormType] = useState(''); 
+  const [dealStatus, setDealStatus] = useState(deal.status);
+
 
   useEffect(() => {
     const savedStages = JSON.parse(localStorage.getItem('dealStages')) || stages;
@@ -141,8 +195,8 @@ const Leads = () => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('dealStages', JSON.stringify(stages));
-  }, [stages]);
+    localStorage.setItem('dealStages', JSON.stringify(adminstages));
+  }, [adminstages]);
 
   useEffect(() => {
     const fetchLeads = async () => {
@@ -211,6 +265,7 @@ const Leads = () => {
     dispatch(setSelectedLeadId(leadId));  
     dispatch(setIsPopupVisible(true));  
   };
+
   const moveCard = async (draggedId, droppedStage) => {
     try {
       const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${draggedId}`, { newStatus: droppedStage });
@@ -228,7 +283,7 @@ const Leads = () => {
   const handleAddStage = (e) => {
     e.preventDefault();
     if (newStage) {
-      const updatedStages = [...stages, newStage];
+      const updatedStages = [...adminstages, newStage];
      dispatch(setStages(updatedStages));
       dispatch(setNewStage(''));
     dispatch(setIsAddingStage(false));
@@ -237,7 +292,7 @@ const Leads = () => {
 
   const handleDeleteStage = (stageToDelete) => {
     if (window.confirm(`Are you sure you want to delete the stage "${stageToDelete}"?`)) {
-      const updatedStages = stages.filter(stage => stage !== stageToDelete);
+      const updatedStages = adminstages.filter(stage => stage !== stageToDelete);
       dispatch(setStages(updatedStages));
       const updatedDeals = deals.filter(deal => deal.status !== stageToDelete);
       dispatch(setDeals(updatedDeals));
@@ -254,13 +309,38 @@ const Leads = () => {
       console.error('Error deleting deal:', error);
     }
   };
+ 
+
+  const handleDrop = (deal, dropType, leadId) => {
+    setSelectedDeal(deal); 
+    setFormType(dropType); 
+    setIsFormVisible(true); 
+    dispatch(setSelectedLeadId(leadId));
+  };
+
+  const handleStatusUpdate = (newStatus) => {
+    setDealStatus(newStatus); 
+  };
+
+  const handleWonDrop = async (item) => {
+    try {
+     
+      const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/update/${item.id}`, { status: 'won' });
+      if (response.status === 200) {
+        console.log('Lead status updated to won');
+     
+      }
+    } catch (error) {
+      console.error('Failed to update lead status:', error);
+    }
+  };
 
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div className='mt-4 ps-3'>
         <div className='dealscontainer mt-2'>
-          {stages.map((stage, index) => (
+          {adminstages.map((stage, index) => (
             <DealBox
               key={index}
               stage={stage}
@@ -271,6 +351,7 @@ const Leads = () => {
               togglePopadd={togglePopadd}
               onDelete={handleDeleteStage}
               handleDeleteDeal={handleDeleteDeal}
+              leadId={selectedLeadId}
             />
           ))}
            
@@ -322,11 +403,36 @@ const Leads = () => {
         )}
         {isDragging && (
           <div className='buttons_div p-2'>
-            <button className='dlt_btn'>DELETE</button>
-            <button className='lost_btn'>LOST</button>
-            <button className='won_btn'>WON</button>
-            <button className='dlt_btn'>MOVE TO</button>
+            <DeleteButton onDrop={handleDrop} />
+            <LostButton onDrop={handleDrop} />
+              <WonButton onDrop={handleWonDrop} />
+              <MoveToButton onDrop={handleDrop} />
           </div>
+        )}
+
+{isFormVisible && selectedDeal && formType === 'Delete' && (
+         <AdminDeleteForm
+         setIsFormVisible={setIsFormVisible}
+         leadId={selectedLeadId} 
+         deal={selectedDeal}
+         handleDeleteDeal={handleDeleteDeal}
+         />
+        )}
+
+        {isFormVisible && selectedDeal && formType === 'moveTo' && (
+          <AdminMovetoForm 
+          deal={selectedDeal}
+          leadId={selectedLeadId}
+          setIsFormVisible={setIsFormVisible}
+          onStatusUpdate={handleStatusUpdate}/>
+         )}
+
+        {isFormVisible && selectedDeal && formType === 'lost' && (
+         <AdminLostForm
+         deal={selectedDeal}
+         
+         setIsFormVisible={setIsFormVisible}
+         />
         )}
       </div>
     </DndProvider>
