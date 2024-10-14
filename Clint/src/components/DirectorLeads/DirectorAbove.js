@@ -14,10 +14,12 @@ import {
   setIsDropdownOpen,
   setIsUserDropdown,
   setIsTeamDropdown,
+  setIsAddLeads,
 } from '../../redux/actions';
 
 import AddDeals from '../Leads/AddDeals';
 import ImportResult from '../Leads/ImportResult';
+import Addleads from './Addleads';
 
 
 
@@ -31,10 +33,9 @@ const DirectorAbove = () => {
     };
   
     const dispatch = useDispatch();
-  
-  
+
     const {
-      users, subUsers, isPopupVisible,  isModalOpen, isDropdownOpen,  isUserDropdown,
+      users, subUsers, isPopupVisible,  isModalOpen, isDropdownOpen,  isUserDropdown, isAddLeads,
       isTeamDropdown
     } = useSelector((state) => state);
   
@@ -62,6 +63,11 @@ const DirectorAbove = () => {
   
     const togglePopadd = () => 
       dispatch(setIsPopupVisible(!isPopupVisible));
+
+    const toggleAssignLeads=() => {
+      dispatch(setIsAddLeads(!isAddLeads));
+      dispatch(setIsDropdownOpen(false));
+    }
   
     const toggleModal = () => {
       dispatch(setIsModalOpen(!isModalOpen));
@@ -100,8 +106,11 @@ const DirectorAbove = () => {
           <img className='arrow_down' src='/arrowdown.webp' alt='arrow down' />
         </div>
         {isDropdownOpen && (
-          <div className='dropdown-content' onClick={toggleModal}>
-            <p className='import_txt'>+ Import data</p>
+          <div className='dropdown-content' >
+            <div>
+            <p className='import_txt' onClick={toggleModal}>+ Import data</p>
+            <p className='import_txt' onClick={toggleAssignLeads}>+ Add Leads</p>
+            </div>
           </div>
       )}
       </div>
@@ -181,6 +190,18 @@ const DirectorAbove = () => {
         </div>
       </div>
     )}
+
+{isAddLeads && (
+            <div className='modal'>
+              <div className='modal_content'>
+                <div className='d-flex align-items-center justify-content-between importdeal_div'>
+                  <h2 className='import_deal'>Add Leads</h2>
+                  <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleAssignLeads} />
+                </div>
+   <Addleads/>
+              </div>
+            </div>
+          )}
 
   </div>
   </div>

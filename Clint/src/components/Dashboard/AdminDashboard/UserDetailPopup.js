@@ -31,9 +31,7 @@ const UserDetailPopup = ({ onClose, selectUser,  subUsers, leads, executives }) 
   };
 
   const handleSubUserClick = (subUser) => {
-   
     const matchedExecutivesList = executives.filter(exec => exec.key === subUser.key1);
-    
     const executivesDetails = matchedExecutivesList.map(exec => {
       const assignedLeads = Array.isArray(leads)
         ? leads.filter(lead => lead.assignedto === exec.fname)
@@ -45,7 +43,6 @@ const UserDetailPopup = ({ onClose, selectUser,  subUsers, leads, executives }) 
         leadCount: assignedLeads.length,
       };
     });
-
     setMatchedExecutives(executivesDetails);
   };
 
@@ -63,7 +60,7 @@ const UserDetailPopup = ({ onClose, selectUser,  subUsers, leads, executives }) 
           <p className="no-user">No user selected</p>
         )}
 
-{matchingSubUsers.length > 0 && (
+         {matchingSubUsers.length > 0 && (
           <div className="subuser-names">
             <h5>{selectUser.fname}'s Teamleads</h5>
             {matchingSubUsers.map((subUser, index) => (
@@ -74,7 +71,7 @@ const UserDetailPopup = ({ onClose, selectUser,  subUsers, leads, executives }) 
           </div>
         )}
 
-{matchedExecutives.length > 0 && (
+         {matchedExecutives.length > 0 && (
           <div className="executive-details">
             <h5> Executives:</h5>
             {matchedExecutives.map((exec, index) => (

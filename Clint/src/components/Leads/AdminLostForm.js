@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './Deals.css';
 import axios from 'axios'
 
-const AdminLostForm = ({ deal, setIsFormVisible }) => {
+const AdminLostForm = ({ deal, setIsFormVisible , onUpdateDeal}) => {
     const leadId = deal?.id;
   
     const [formData, setFormData] = useState({
@@ -24,7 +24,10 @@ const AdminLostForm = ({ deal, setIsFormVisible }) => {
     
         try {
           const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/update/${leadId}`, formData); 
-          console.log('Lead updated:', response.data);
+         
+          const updatedDeal = response.data;
+          onUpdateDeal(updatedDeal);
+
           setFormData({
             status: 'Lost',
             lostreason: '',
@@ -43,7 +46,6 @@ const AdminLostForm = ({ deal, setIsFormVisible }) => {
       <div className='p-4'>
         <h4>Mark as Lost</h4>
         <div className='dealcardbtn'>
-          <p>{deal?.id}</p>
           <p className='deal_head3'>{deal?.text}</p>
           <p className='deal_head1'>{deal?.status}</p>
           <p className='deal_head2'>{deal?.assignedto}</p>

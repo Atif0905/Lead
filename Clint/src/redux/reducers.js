@@ -25,7 +25,7 @@ import {
   
   const initialState = {
     deals: [],
-    leads: null,
+    leads: [],
     isAddLeads: false,
     users: [],
     subUsers: [],

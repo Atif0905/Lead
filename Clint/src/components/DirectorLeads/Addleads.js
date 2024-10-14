@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import '../Leads/Deals.css'
 
 const Addleads = () => {
   const [formData, setFormData] = useState({
@@ -91,7 +92,7 @@ const Addleads = () => {
             value={formData.assignedto}
             onChange={handleChange}
           /><br/>
-          <button type="submit" className="mt-2">Submit</button>
+          <button type="submit" className=" save_btn mt-2">Submit</button>
         </form>
       </div>
     </div>

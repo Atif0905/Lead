@@ -9,7 +9,7 @@ import { faX } from '@fortawesome/free-solid-svg-icons';
 import { FaUserAlt, FaPlus } from 'react-icons/fa';
 import AssignPopup from './AssignPopup';
 import { GoAlertFill } from 'react-icons/go';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams} from 'react-router-dom';
 import {
   setDeals,
   setUsers,
@@ -17,7 +17,6 @@ import {
   setIsPopupVisible,
   setIsLoading,
   setStages,
-  setAdminStages,
   setNewStage,
   setIsAddingStage,
   setSelectedLeadId,
@@ -32,10 +31,10 @@ const ItemTypes = {
   CARD: 'card',
 };
 
-const DealCard = ({ id, text, moveCard, setDragging, toggleAssign, name, status, assignedto, togglePopadd}) => {
+const DealCard = ({ id, text,  setDragging, toggleAssign,  status, assignedto, togglePopadd}) => {
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.CARD,
-    item: { id },
+    item: { id, text, status, assignedto},
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -164,15 +163,12 @@ const DealBox = ({ stage, deals,  moveCard, setDragging, toggleAssign, onDelete,
   );
 };
 
-const Leads = (deal) => {
-  const navigate = useNavigate();
+const Leads = () => {
+ 
   const dispatch = useDispatch();
   const { userId } = useParams();
   const {
-    users,
-    subUsers,
     deals,
-    isLoading,
     isPopupVisible,
     stages,
     adminstages,
@@ -186,7 +182,6 @@ const Leads = (deal) => {
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [formType, setFormType] = useState(''); 
-  const [dealStatus, setDealStatus] = useState(deal.status);
 
 
   useEffect(() => {
@@ -220,19 +215,7 @@ const Leads = (deal) => {
         dispatch(setIsLoading(false));
       }
     };
-
-    const fetchDeals = async () => {
-      dispatch(setIsLoading(true));
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_PORT}/leads/deals`);
-        console.log('Fetched deals:', response.data);
-      } catch (error) {
-        console.error('Error fetching deals:', error);
-      } finally {
-        dispatch(setIsLoading(false));
-      }
-    };
-
+    
     const fetchUsers = async () => {
       dispatch(setIsLoading(true));
       try {
@@ -252,7 +235,6 @@ const Leads = (deal) => {
     };
     
     fetchLeads();
-    fetchDeals(); 
     fetchUsers();
   }, [userId]);
 
@@ -309,7 +291,6 @@ const Leads = (deal) => {
       console.error('Error deleting deal:', error);
     }
   };
- 
 
   const handleDrop = (deal, dropType, leadId) => {
     setSelectedDeal(deal); 
@@ -318,8 +299,11 @@ const Leads = (deal) => {
     dispatch(setSelectedLeadId(leadId));
   };
 
-  const handleStatusUpdate = (newStatus) => {
-    setDealStatus(newStatus); 
+  const handleStatusUpdate = (leadId, newStatus) => {
+    const updatedDeals = deals.map(deal =>
+      deal.id === leadId ? { ...deal, status: newStatus } : deal
+    );
+    dispatch(setDeals(updatedDeals)); 
   };
 
   const handleWonDrop = async (item) => {
@@ -327,12 +311,21 @@ const Leads = (deal) => {
      
       const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/update/${item.id}`, { status: 'won' });
       if (response.status === 200) {
-        console.log('Lead status updated to won');
-     
+        const updatedDeals = deals.map(deal =>
+          deal.id === item.id ? { ...deal, status: 'won' } : deal
+        );
+        dispatch(setDeals(updatedDeals)); 
       }
     } catch (error) {
       console.error('Failed to update lead status:', error);
     }
+  };
+
+  const handleUpdateDeal = (updatedDeal) => {
+    const updatedDeals = deals.map(deal =>
+      deal.id === updatedDeal._id ? { ...deal, status: updatedDeal.status } : deal
+    );
+    dispatch(setDeals(updatedDeals));
   };
 
 
@@ -401,6 +394,9 @@ const Leads = (deal) => {
             </div>
           </div>
         )}
+
+         </div>
+         
         {isDragging && (
           <div className='buttons_div p-2'>
             <DeleteButton onDrop={handleDrop} />
@@ -430,11 +426,11 @@ const Leads = (deal) => {
         {isFormVisible && selectedDeal && formType === 'lost' && (
          <AdminLostForm
          deal={selectedDeal}
-         
+         onUpdateDeal={handleUpdateDeal}
          setIsFormVisible={setIsFormVisible}
          />
         )}
-      </div>
+     
     </DndProvider>
   );
 };

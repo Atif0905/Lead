@@ -2,31 +2,32 @@ import React, { useState } from 'react';
 import '../Leads/Deals.css';
 import axios from 'axios';
 
-const MovetoForm = ({ deal, setIsFormVisible , onStatusUpdate }) => {
-  const [stage, setStage] = useState("Select"); 
-  const leadId = deal?.id; 
+const DirMovetoForm = ({ deal, setIsFormVisible , onStatusUpdate }) => {
+    const [stage, setStage] = useState("Select"); 
+    const leadId = deal?.id; 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); 
+    const handleSubmit = async (e) => {
+        e.preventDefault(); 
+        
+        if (stage === "Select") {
+          alert("Please select a stage.");
+          return;
+        }
     
-    if (stage === "Select") {
-      alert("Please select a stage.");
-      return;
-    }
+        try {
+          const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/update/${leadId}`, {
+            status: stage, 
+          });
+          console.log('Lead updated successfully:', response.data);
 
-    try {
-      const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/update/${leadId}`, {
-        status: stage, 
-      });
-      console.log('Lead updated successfully:', response.data);
-      onStatusUpdate(stage, leadId);
-      setIsFormVisible(false);
-    } catch (error) {
-      console.error('Error updating lead:', error);
-      alert('Failed to update the lead. Please try again.');
-    }
-  };
-
+        onStatusUpdate(stage, leadId);
+          setIsFormVisible(false);
+        } catch (error) {
+          console.error('Error updating lead:', error);
+          alert('Failed to update the lead. Please try again.');
+        }
+      };
+  
   return (
     <div className='btnpopup'>
       <div className='btnpopup_content'>
@@ -72,7 +73,7 @@ const MovetoForm = ({ deal, setIsFormVisible , onStatusUpdate }) => {
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default MovetoForm;
+export default DirMovetoForm

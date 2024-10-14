@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
@@ -8,31 +8,40 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   setUsers,
   setSubUsers,
+  setExecutives,
   setIsLoading,
   setIsModalOpen,
   setIsPopupVisible,
   setIsDropdownOpen,
   setIsUserDropdown,
   setIsTeamDropdown,
+  setIsAddLeads,
 } from '../../redux/actions';
 
 import AddDeals from './AddDeals';
 import ImportResult from './ImportResult';
+import Addleads from '../DirectorLeads/Addleads';
 
 const LeadAbove = () => {
   const navigate = useNavigate();
   const { userId } = useParams();
 
-  const dispatch = useDispatch();
+  const [hoveredUserKey, setHoveredUserKey] = useState(null);
+  const [hoveredSubUserKey, setHoveredSubUserKey] = useState(null);
+  const [matchedSubUser, setMatchedSubUser] = useState(null);
+  const [matchedExecutive, setMatchedExecutive] = useState(null);
 
+  const dispatch = useDispatch();
   const {
     users,
     subUsers,
+    executives,
     isPopupVisible,
     isModalOpen,
     isDropdownOpen,
     isUserDropdown,
-    isTeamDropdown
+    isTeamDropdown,
+    isAddLeads,
   } = useSelector((state) => state);
 
   useEffect(() => {
@@ -44,6 +53,7 @@ const LeadAbove = () => {
           const allUsers = usersResponse.data.data;
           dispatch(setUsers(allUsers.filter(user => user.userType === 'User')));
           dispatch(setSubUsers(allUsers.filter(user => user.userType === 'SubUser')));
+          dispatch(setExecutives(allUsers.filter(user => user.userType === 'Executive')));
         } else {
           console.error('Failed to fetch users:', usersResponse.data.message);
         }
@@ -64,14 +74,40 @@ const LeadAbove = () => {
     dispatch(setIsDropdownOpen(false));
   };
 
+  const toggleAssignLeads=() => {
+    dispatch(setIsAddLeads(!isAddLeads));
+    dispatch(setIsDropdownOpen(false));
+  }
+
   const toggleDropdown = () => dispatch(setIsDropdownOpen(!isDropdownOpen));
   const toggleUserDropdown = () => dispatch(setIsUserDropdown(!isUserDropdown));
   const toggleTeamDropdown = () => dispatch(setIsTeamDropdown(!isTeamDropdown));
+
+  const handleUserMouseEnter = (userKey) => {
+    setHoveredUserKey(userKey);
+    const matched = subUsers.find((subUser) => subUser.key === userKey);
+    setMatchedSubUser(matched || null);
+    setHoveredSubUserKey(null); 
+  };
+
+  const handleSubUserMouseEnter = (subUserKey) => {
+    setHoveredSubUserKey(subUserKey);
+    const matched = executives.find((executive) => executive.key === subUserKey);
+    setMatchedExecutive(matched || null);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredUserKey(null);
+    setMatchedSubUser(null);
+    setHoveredSubUserKey(null);
+    setMatchedExecutive(null);
+  };
 
   return (
     <div className='mt-4 ps-3'>
       <div className='d-flex'>
         <div className='buttdiv1'>
+       
           <div className='cont_butt'>
             <img className='bar_chat' src='/bar_img.webp' alt='bar img' />
           </div>
@@ -88,12 +124,15 @@ const LeadAbove = () => {
               + <span>Deal</span>
             </p>
           </div>
-          <div className='deal_butt2' onClick={toggleDropdown} >
+          <div className='deal_butt2' onClick={toggleDropdown}>
             <img className='arrow_down' src='/arrowdown.webp' alt='arrow down' />
           </div>
           {isDropdownOpen && (
-            <div className='dropdown-content' onClick={toggleModal} >
-              <p className='import_txt'>+ Import data</p>
+            <div className='dropdown-content'>
+              <div>
+              <p className='import_txt'  onClick={toggleModal}>+ Import data</p>
+              <p className='import_txt' onClick={toggleAssignLeads}>+ Add Leads</p>
+              </div>
             </div>
           )}
         </div>
@@ -112,22 +151,47 @@ const LeadAbove = () => {
             <div className='users_butt1'>
               <img className='adminmaleimg' src='/AdministratorMale.webp' alt='admin' />
               <p className='adminname'>Director</p>
-              <img className='arrowblackimg' src='/arrowblack.webp' alt='arrow black' onClick={toggleUserDropdown} />
-            </div>
-            {isUserDropdown && (
-              <div className='users_dropdown'>
-                <div>
-                  {users.map(user => (
-                    <div key={user.key} >
-                      <a href={`/dir1leads/${user._id}`}>
-                      <p className='dir_list'>{user.fname} {user.lname}</p>
-                      </a>
-                    </div>
-                  ))}
+              <img
+                className='arrowblackimg'
+                src='/arrowblack.webp'
+                alt='arrow black'
+                onClick={toggleUserDropdown}
+              />
+              {isUserDropdown && (
+                <div className='users_dropdown'>
+                  <div>
+                    {users.map((user) => (
+                      <div
+                        key={user.key}
+                        className='users_hover'
+                        onMouseEnter={() => handleUserMouseEnter(user.key)}
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        <a href={`/dir1leads/${user._id}`}>
+                          <p className='dir_list'>
+                            {user.fname} {user.lname}
+                          </p>
+                        </a>
+                        {hoveredUserKey === user.key && matchedSubUser && (
+                          <div
+                            className='subuser-hover'
+                            onMouseEnter={() => handleSubUserMouseEnter(matchedSubUser.key1)}
+                            onMouseLeave={handleMouseLeave}
+                          >
+                            <p className='subuser-fname'>
+                              {matchedSubUser.fname} {matchedSubUser.lname}
+                            </p>
+                            {hoveredSubUserKey === matchedSubUser.key1 && matchedExecutive && (
+                              <p className='executive-fname'>{matchedExecutive.fname}</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-
+              )}
+            </div>
             <div className='users_butt2'>
               <img className='callibrush' src='/CalliBrush.webp' alt='brush' />
             </div>
@@ -140,11 +204,13 @@ const LeadAbove = () => {
             {isTeamDropdown && (
               <div className='subusers_dropdown'>
                 <div>
-                  {subUsers.map(subUser => (
-                    <div key={subUser.key} onClick={() => {
-                     
-                      navigate(`/dir1leads/${subUser._id}`);
-                    }}>
+                  {subUsers.map((subUser) => (
+                    <div
+                      key={subUser.key}
+                      onClick={() => {
+                        navigate(`/dir1leads/${subUser._id}`);
+                      }}
+                    >
                       <p className='dir_list'>{subUser.fname} {subUser.lname}</p>
                     </div>
                   ))}
@@ -169,15 +235,26 @@ const LeadAbove = () => {
       {isModalOpen && (
         <div className='modal'>
           <div className='modal_content'>
-            <div className='d-flex align-items-center justify-content-between importdeal_div'>
-              <h2 className='import_deal'>Import Results</h2>
+            <div className='d-flex align-items-center justify-content-between adddeal_div'>
+              <h2 className='add_deal'>Import Result</h2>
               <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleModal} />
             </div>
-            <ImportResult closeModal={toggleModal}/>
+            <ImportResult />
           </div>
         </div>
       )}
 
+{isAddLeads && (
+            <div className='modal'>
+              <div className='modal_content'>
+                <div className='d-flex align-items-center justify-content-between importdeal_div'>
+                  <h2 className='import_deal'>Add Leads</h2>
+                  <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleAssignLeads} />
+                </div>
+             <Addleads/>
+              </div>
+            </div>
+          )}
     </div>
   );
 };

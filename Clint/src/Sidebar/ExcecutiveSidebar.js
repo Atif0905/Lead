@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
 import './Sidebar.css';
 import { MdMyLocation } from "react-icons/md";
 import { AiFillDollarCircle } from "react-icons/ai";
@@ -8,10 +8,20 @@ import { LuActivitySquare } from "react-icons/lu";
 import { MdContactPage } from "react-icons/md";
 import { GoGraph } from "react-icons/go";
 import { FaBoxArchive } from "react-icons/fa6";
-import { RiFileSettingsFill } from "react-icons/ri"
+import { RiFileSettingsFill } from "react-icons/ri";
+import { useLocation } from 'react-router-dom';
 
 const Excecutivesidebar = () => {
   const userId = window.localStorage.getItem("userId");
+  const location = useLocation();
+  const [activeLink, setActiveLink] = useState(location.pathname);
+
+  useEffect(() => {
+    setActiveLink(location.pathname);
+  }, [location]);
+
+  const isActive = (path) => activeLink === path;
+
   return (
     <div>
     <div className='excecutiveside'>
@@ -19,7 +29,7 @@ const Excecutivesidebar = () => {
               <img className='sidebarlogo' src='/group white.webp' alt='logo' />
             </div>
             <div className='d-flex iconss'>
-            <div className='sideicon_div'>
+            <div className={`sideicon_div ${isActive(`/executivelead1/${userId}`) ? 'active' : ''}`}>
               <a href={`/executivelead1/${userId}`}>
             <MdMyLocation className='side_icons' />
             </a>
@@ -69,7 +79,7 @@ const Excecutivesidebar = () => {
               </div>
             </div>
             <div className='d-flex iconss'>
-            <div className='sideicon_div'>
+            <div className={`sideicon_div ${isActive(`/executivehome/${userId}`) ? 'active' : ''}`}>
               <a href='/executivehome'>
             <GoGraph className='side_icons' />
             </a>

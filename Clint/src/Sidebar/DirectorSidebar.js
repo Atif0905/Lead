@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
 import './Sidebar.css';
 import { MdMyLocation } from "react-icons/md";
 import { AiFillDollarCircle } from "react-icons/ai";
@@ -9,10 +9,19 @@ import { MdContactPage } from "react-icons/md";
 import { GoGraph } from "react-icons/go";
 import { FaBoxArchive } from "react-icons/fa6";
 import { RiFileSettingsFill } from "react-icons/ri"
+import { useLocation } from 'react-router-dom';
 
 const DirectorSidebar = () => {
   const userId = window.localStorage.getItem("userId");
-  
+  const location = useLocation();
+  const [activeLink, setActiveLink] = useState(location.pathname);
+
+  useEffect(() => {
+    setActiveLink(location.pathname);
+  }, [location]);
+
+  const isActive = (path) => activeLink === path;
+
   return (
     <div>
   <div className='excecutiveside'>
@@ -20,7 +29,7 @@ const DirectorSidebar = () => {
               <img className='sidebarlogo' src='/group white.webp' alt='logo' />
             </div>
             <div className='d-flex iconss'>
-            <div className='sideicon_div'>
+            <div className={`sideicon_div ${isActive(`/dirlead/${userId}`) ? 'active' : ''}`}>
             <a href={`/dirlead/${userId}`}>
             <MdMyLocation className='side_icons' />
             </a>
@@ -70,7 +79,7 @@ const DirectorSidebar = () => {
               </div>
             </div>
             <div className='d-flex iconss'>
-            <div className='sideicon_div'>
+            <div className={`sideicon_div ${isActive(`/directorhome/${userId}`) ? 'active' : ''}`}>
               <a href='/directorhome'>
             <GoGraph className='side_icons' />
             </a>

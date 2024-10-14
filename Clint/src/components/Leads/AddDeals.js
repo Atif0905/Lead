@@ -126,7 +126,7 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
                 value={formData.pipeline}
                 onChange={handleChange}
               >
-                <option value="Select" >Select</option>
+                <option value="Select">Select</option>
                 <option value="Hot" >Hot</option>
                 <option value="Cold">Cold</option>
                 <option value="Medium">Medium</option>
@@ -220,7 +220,7 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
           </div>
 
           <div className='bottomdeal_div'>
-            <button className='cancel_btn me-2' type="button" onClick={() => dispatch(setIsPopupVisible(false))}   >Cancel</button>
+            <button className='cancel_btn me-2' type="button" onClick={() => dispatch(setIsPopupVisible(false))}>Cancel</button>
             <button className='save_btn' type="submit">Save</button>
           </div>
         </div>
