@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from "react";
 import './Sidebar.css';
-import React from "react";
 import { MdMyLocation } from "react-icons/md";
 import { AiFillDollarCircle } from "react-icons/ai";
 import { GoProjectSymlink } from "react-icons/go";
@@ -9,20 +9,27 @@ import { MdContactPage } from "react-icons/md";
 import { GoGraph } from "react-icons/go";
 import { FaBoxArchive } from "react-icons/fa6";
 import { RiFileSettingsFill } from "react-icons/ri";
+import { useLocation } from 'react-router-dom';
 
 const Adminsidebar = () => {
   const userId = window.localStorage.getItem("userId");
+  const location = useLocation();
+  const [activeLink, setActiveLink] = useState(location.pathname);
+
+  useEffect(() => {
+    setActiveLink(location.pathname);
+  }, [location]);
+
+  const isActive = (path) => activeLink === path;
 
   return (
     <div>
-    
     <div className='excecutiveside'>
-       
             <div>
               <img className='sidebarlogo' src='/group white.webp' alt='logo' />
             </div>
             <div className='d-flex iconss'>
-            <div className='sideicon_div'>
+            <div className={`sideicon_div ${isActive(`/adminleads/${userId}`) ? 'active' : ''}`}>
               <a href={`/adminleads/${userId}`}>
             <MdMyLocation className='side_icons' />
             </a>
@@ -32,7 +39,7 @@ const Adminsidebar = () => {
               </div>
               </div>
               <div className='d-flex iconss'>
-            <div className='sideicon_div'>
+              <div className={`sideicon_div ${isActive('/adddeals') ? 'active' : ''}`}>
               <a href='/adddeals'>
             <AiFillDollarCircle className='side_icons' />
             </a>
@@ -42,7 +49,7 @@ const Adminsidebar = () => {
               </div>
             </div>
             <div className='d-flex iconss'>
-            <div className='sideicon_div'>
+            <div className={`sideicon_div ${isActive('/projects') ? 'active' : ''}`}>
               <a href='./projects'>
             <GoProjectSymlink className='side_icons' />
             </a>
@@ -60,7 +67,7 @@ const Adminsidebar = () => {
               </div>
             </div>
             <div className='d-flex iconss'>
-            <div className='sideicon_div'>
+            <div className={`sideicon_div ${isActive('/scheduleactivity') ? 'active' : ''}`}>
             <a href='/scheduleactivity'>
             <LuActivitySquare className='side_icons' />
             </a>
@@ -78,8 +85,8 @@ const Adminsidebar = () => {
               </div>
             </div>
             <div className='d-flex iconss'>
-            <div className='sideicon_div'>
-              <a href='./'>
+            <div className={`sideicon_div ${isActive(`/admin-dashboard/${userId}`) ? 'active' : ''}`}>
+              <a href='/'>
             <GoGraph className='side_icons' />
             </a>
             </div>
@@ -96,7 +103,7 @@ const Adminsidebar = () => {
               </div>
             </div>
             <div className='d-flex iconss'>
-            <div className='sideicon_div'>
+            <div className={`sideicon_div ${isActive('/toolsimport') ? 'active' : ''}`}>
               <a href='/toolsimport'>
             <RiFileSettingsFill  className='side_icons' />
             </a>

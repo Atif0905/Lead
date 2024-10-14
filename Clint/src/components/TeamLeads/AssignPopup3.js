@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
 
 const AssignPopup3 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo }) => {
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -36,22 +38,26 @@ const AssignPopup3 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo }) 
                 assignedto: `${user.fname}`
             });
 
-            if (response.status === 200 && response.data.status === "ok") {
+            if (response.status === 200) {
                 const updatedDeals = deals.map((deal) =>
                     deal.id === leadId ? { ...deal, assignedto: `${user.fname}` } : deal
                 );
-                setDeals(updatedDeals);
-                setIsAssignLead(false);
+                dispatch(setDeals(updatedDeals));
+                dispatch(setIsAssignLead(false));
             } else {
                 console.error("Failed to update lead:", response.data);
                 alert(`Failed to assign: ${response.data.message || 'Unknown error occurred'}`);
             }
         } catch (error) {
             console.error('Error updating lead:', error);
+            if (error.response) {
+              console.error('Error response:', error.response.data);
+            }
             alert('An error occurred while assigning the lead.');
-        }
-    };
-
+          } finally {
+            dispatch(setIsAssignLead(false)); 
+          }
+        };  
    
 
     return (
@@ -63,7 +69,7 @@ const AssignPopup3 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo }) 
                 ) : users.length > 0 ? (
                     users.map((user) => (
                         <div key={user.key} className='d-flex justify-content-between'>
-                            <p>Name: {user.fname}</p>
+                            <p>Name: {user.fname} {user.lname}</p>
                             <div>
                                 <button 
                                     className='assign_button'

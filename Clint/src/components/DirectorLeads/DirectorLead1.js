@@ -12,21 +12,22 @@ import ImportResult from '../Leads/ImportResult';
 import AddDeals from '../Leads/AddDeals';
 import AssignPopup2 from './AssignPopup2';
 import Addleads from './Addleads';
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
-  setUsers, setIsAddLeads, setDeals,  setSubUsers, setIsLoading, setStages, setNewStage,  setIsAddingStage,  setSelectedLeadId, setIsAssignLead,
-  setIsPopupVisible, setIsModalOpen, setIsDropdownOpen, setIsUserDropdown, setIsTeamDropdown,
+  setUsers, setIsAddLeads, setDeals, setLeads, setIsLoading, setStages, setNewStage,  setIsAddingStage,  setSelectedLeadId, setIsAssignLead, setIsPopupVisible, setIsModalOpen, setIsDropdownOpen, setIsUserDropdown, setIsTeamDropdown,
 } from '../../redux/actions';
+import DirDeleteForm from './DirDeleteForm';
+import DirLostForm from './DirLostForm';
+import DirMovetoForm from './DirMovetoForm';
 
 const ItemTypes = {
     CARD: 'card',
   };
   
-  const DealCard = ({ id, text, moveCard, setDragging, toggleAssign1, name, status, assignedto, onDealDelete, handleDeleteDeal}) => {
+  const DealCard = ({ id, text,  setDragging, toggleAssign1,  status, assignedto}) => {
     const [{ isDragging }, drag] = useDrag({
       type: ItemTypes.CARD,
-      item: { id },
+      item: { id, text, status, assignedto },
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
@@ -50,16 +51,68 @@ const ItemTypes = {
           <div className='dealcard_icon'>
             <FaUserAlt className='deals_usericon' onClick={() => toggleAssign1(id, assignedto)} />
              <div>
-            <GoAlertFill className='deals_alerticon' />
-            <RiDeleteBin6Line className='ms-3 deals_dlticon'  onClick={() => handleDeleteDeal(id)}/>
+            <GoAlertFill className='deals_alerticon'/>
             </div>
           </div>
         </div>
       </div>
     );
   };
+
+  const DeleteButton = ({ onDrop }) => {
+    const [, drop] = useDrop({
+      accept: ItemTypes.CARD,
+      drop: (item) => onDrop(item, 'Delete'),
+    });
   
-  const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd, toggleAssign1, onDelete, onDealDelete, deleteDeal, handleDeleteDeal }) => {
+    return (
+      <div ref={drop}>
+        <button className='dlt_btn'>DELETE</button>
+      </div>
+    );
+  };
+
+  const LostButton = ({ onDrop }) => {
+    const [, drop] = useDrop({
+      accept: ItemTypes.CARD,
+      drop: (item) => onDrop(item, 'lost'),
+    });
+  
+    return (
+      <div ref={drop}>
+        <button  className='lost_btn'>LOST</button>
+      </div>
+    );
+  };
+
+  const WonButton = ({ onDrop }) => {
+    const [, drop] = useDrop({
+      accept: ItemTypes.CARD,
+      drop: (item) => onDrop(item, 'won'),
+    });
+  
+    return (
+      <div ref={drop}>
+        <button  className='won_btn'>WON</button>
+      </div>
+    );
+  };
+
+  const MoveToButton = ({ onDrop }) => {
+    const [, drop] = useDrop({
+      accept: ItemTypes.CARD,
+      drop: (item) => onDrop(item, 'moveTo'),
+    });
+  
+    return (
+      <div ref={drop}>
+        <button className='dlt_btn'>MOVE TO</button>
+      </div>
+    );
+  };
+  
+  
+  const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd, toggleAssign1, onDelete, deleteDeal, handleDeleteDeal }) => {
     const [, drop] = useDrop({
       accept: ItemTypes.CARD,
       drop: (item) => moveCard(item.id, stage),
@@ -72,7 +125,7 @@ const ItemTypes = {
           <button className='stage_dlt' onClick={() => onDelete(stage)}>Delete</button>
         </div>
         {deals
-          .filter((deal) => deal.status === stage)
+          .filter((deal) => deal.status === stage )
           .map((deal) => (
             <DealCard
               key={deal.id}
@@ -98,11 +151,11 @@ const ItemTypes = {
   };
 
 const DirectorLead1 = () => {
-  const navigate = useNavigate();
+ 
   const { userId } = useParams();
   const dispatch = useDispatch();
   const {
-    users, isAddLeads, deals,   isLoading, subUsers,  stages, newStage,  isAddingStage,  selectedLeadId,  isAssignLead,  isPopupVisible,  isModalOpen, isDropdownOpen, isUserDropdown, isTeamDropdown
+    users, isAddLeads, deals, leads, stages, newStage,  isAddingStage,  selectedLeadId,  isAssignLead,  isPopupVisible,  isModalOpen, isDropdownOpen, isUserDropdown, isTeamDropdown
   } = useSelector((state) => state);
 
    
@@ -110,7 +163,9 @@ const DirectorLead1 = () => {
     const [filteredSubUser, setFilteredSubUser] = useState(null);
     const [assignedTo, setAssignedTo] = useState('');
     const [isDragging, setIsDragging] = useState(false);
-    const [leads, setLeads] = useState([]);
+    const [selectedDeal, setSelectedDeal] = useState(null);
+    const [isFormVisible, setIsFormVisible] = useState(false);
+    const [formType, setFormType] = useState(''); 
    
   
     useEffect(() => {
@@ -138,9 +193,7 @@ const DirectorLead1 = () => {
             const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
             const allLeads = leadsResponse.data;
             const filteredLeads = allLeads.filter(lead => lead.assignedto === currentUserKey);
-  
-            setLeads(filteredLeads);
-  
+            dispatch(setLeads(filteredLeads));
             const formattedDeals = filteredLeads.map(lead => ({
               id: lead._id,
               name: lead.name,
@@ -176,8 +229,7 @@ const DirectorLead1 = () => {
         const subUser = users.find(user => user.userType === 'SubUser' && user.key === selectedDeal.assignedto);
         setFilteredSubUser(subUser);
       }
-      
-dispatch(setIsAssignLead(true));
+     dispatch(setIsAssignLead(true));
     };
   
     const toggleModal = () => {
@@ -241,23 +293,52 @@ dispatch(setIsAssignLead(true));
     const handleDeleteDeal = async (dealId) => {
       try {
         await axios.delete(`${process.env.REACT_APP_PORT}/leads/delete/${dealId}`);
-        
         const updatedDeals = deals.filter((deal) => deal.id !== dealId);
         dispatch(setDeals(updatedDeals));
       } catch (error) {
         console.error('Error deleting deal:', error);
       }
     };
-    const handleDirectorClick = (userId) => {
-      navigate(`/dir1leads/${userId}`);
+    
+    const handleDrop = (deal, dropType, leadId) => {
+      setSelectedDeal(deal);
+      setFormType(dropType); 
+      setIsFormVisible(true); 
+      dispatch(setSelectedLeadId(leadId));
+    };
+
+    const handleStatusUpdate = ( newStatus, leadId) => {
+      const updatedDeals = deals.map((deal) => 
+        deal.id === leadId ? { ...deal, status: newStatus  } : deal
+      );
+      dispatch(setDeals(updatedDeals));
+    };
+    
+    const handleWonDrop = async (item) => {
+      try {
+        const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/update/${item.id}`, { status: 'won' });
+        if (response.status === 200) {
+          const updatedDeals = deals.map(deal =>
+            deal.id === item.id ? { ...deal, status: 'won' } : deal
+          );
+          dispatch(setDeals(updatedDeals)); 
+        }
+      } catch (error) {
+        console.error('Failed to update lead status:', error);
+      }
+    };
+
+    const handleUpdateDeal = (updatedDeal) => {
+      const updatedDeals = deals.map(deal =>
+        deal.id === updatedDeal._id ? { ...deal, status: updatedDeal.status } : deal
+      );
+      dispatch(setDeals(updatedDeals));
     };
   
     return (
-  <div className='main-content'>
+    <div className='main-content'>
       <DndProvider backend={HTML5Backend}>
         <div className='mt-4 ps-3'>
-        
-  
           <div className='dealscontainer mt-2'>
             {stages.map((stage, index) => (
               <DealBox
@@ -272,6 +353,7 @@ dispatch(setIsAssignLead(true));
                 onDealDelete={deleteDeal} 
                 users={users}  
                 handleDeleteDeal={handleDeleteDeal}
+                onStatusUpdate={handleStatusUpdate}
               />
             ))}
             <div className="add-stage-form mt-2">
@@ -346,20 +428,44 @@ dispatch(setIsAssignLead(true));
                   <h2 className='import_deal'>Add Leads</h2>
                   <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleAssignLeads} />
                 </div>
-   <Addleads/>
+               <Addleads/>
               </div>
             </div>
           )}
 
-  
           {isDragging && (
             <div className='buttons_div p-2'>
-              <button className='dlt_btn'>DELETE</button>
-              <button className='lost_btn'>LOST</button>
-              <button className='won_btn'>WON</button>
-              <button className='dlt_btn'>MOVE TO</button>
+               <DeleteButton onDrop={handleDrop} />
+               <LostButton onDrop={handleDrop} />
+               <WonButton onDrop={handleWonDrop} />
+               <MoveToButton onDrop={handleDrop} />
             </div>
           )}
+
+{isFormVisible && selectedDeal && formType === 'Delete' && (
+         <DirDeleteForm
+         setIsFormVisible={setIsFormVisible}
+         leadId={selectedLeadId} 
+         deal={selectedDeal}
+         handleDeleteDeal={handleDeleteDeal}
+         />
+        )}
+
+{isFormVisible && selectedDeal && formType === 'lost' && (
+        <DirLostForm
+         deal={selectedDeal}
+         onUpdateDeal={handleUpdateDeal}
+         setIsFormVisible={setIsFormVisible}
+         />
+        )}
+
+{isFormVisible && selectedDeal && formType === 'moveTo' && (
+          <DirMovetoForm 
+          deal={selectedDeal}
+          leadId={selectedLeadId}
+          setIsFormVisible={setIsFormVisible}
+          onStatusUpdate={handleStatusUpdate}/>
+         )}
         </div>
       </DndProvider>
       </div>

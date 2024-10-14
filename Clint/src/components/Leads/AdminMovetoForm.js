@@ -5,6 +5,7 @@ import axios from 'axios';
 const AdminMovetoForm = ({ deal, setIsFormVisible , onStatusUpdate }) => {
     const [stage, setStage] = useState("Select"); 
     const leadId = deal?.id; 
+
     const handleSubmit = async (e) => {
         e.preventDefault(); 
         
@@ -18,7 +19,7 @@ const AdminMovetoForm = ({ deal, setIsFormVisible , onStatusUpdate }) => {
             status: stage, 
           });
           console.log('Lead updated successfully:', response.data);
-          onStatusUpdate(stage);
+          onStatusUpdate(leadId, stage);
           setIsFormVisible(false);
         } catch (error) {
           console.error('Error updating lead:', error);
@@ -30,12 +31,10 @@ const AdminMovetoForm = ({ deal, setIsFormVisible , onStatusUpdate }) => {
     <div className='btnpopup_content'>
       <div className='p-4'>
         <h4>Move/Convert</h4>
-     
         <div className='dealcardbtn'>
           <p className='deal_head3'>{deal?.text}</p>
           <p className='deal_head1'>{deal?.status}</p>
           <p className='deal_head2'>{deal?.assignedto}</p>
-         
         </div>
       </div>
       <form onSubmit={handleSubmit}>

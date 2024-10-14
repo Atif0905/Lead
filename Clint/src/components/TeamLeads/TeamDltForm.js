@@ -1,9 +1,8 @@
-import React from 'react';
-import './Deals.css';
+import React from 'react'
+import '../Leads/Deals.css'
 
-const AdminDeleteForm = ({ deal, setIsFormVisible, handleDeleteDeal}) => {
+const TeamDltForm = ({ deal, setIsFormVisible, handleDeleteDeal}) => {
     const leadId = deal?.id; 
-
   return (
     <div className='btnpopup'>
     <div className='dltbtnpopup_content'>
@@ -15,10 +14,9 @@ const AdminDeleteForm = ({ deal, setIsFormVisible, handleDeleteDeal}) => {
             <button type='submit' className='marklost_btn ms-3'  onClick={() =>  handleDeleteDeal(leadId)}>DELETE</button>
           </div>
       </div>
-   
     </div>
   </div>
   )
 }
 
-export default AdminDeleteForm
+export default TeamDltForm

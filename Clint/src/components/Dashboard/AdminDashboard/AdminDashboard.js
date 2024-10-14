@@ -12,6 +12,7 @@ import { FaCircleUser } from "react-icons/fa6";
 import { IoMdShare } from "react-icons/io";
 import { FaEllipsisH } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
+import dayjs from 'dayjs';
 
 import {
   setUsers, setSubUsers, setTotalLeads, setExecutives, setAdminStages, setSelectedUser, setIsPopupVisible, setLeads
@@ -28,6 +29,8 @@ const AdminDashboard = () => {
   const [stageCounts, setStageCounts] = useState({});
   const [isPopupShow, setisPopupShow] = useState(false); 
   const [leadCountsByUser, setLeadCountsByUser] = useState([]);
+  const [wonLeads, setWonLeads] = useState([]);
+  const [timeDifferences, setTimeDifferences] = useState([]);
 
   const toggleAdmin = (index) => {
     setIsDropdownList(prevIndex => (prevIndex === index ? null : index));
@@ -64,10 +67,24 @@ const AdminDashboard = () => {
         const leadsData = response.data;
         dispatch(setLeads(leadsData));
 
-  
         const totalLeads = leadsData.length;
         dispatch(setTotalLeads(totalLeads));
+
+        const wonLeads = leadsData.filter((lead) => lead.status === 'won');
+        setWonLeads(wonLeads);
       
+        const timeDiffs = leadsData
+        .filter((lead) => lead.status === 'won') 
+        .map((lead) => {
+          const createdAt = dayjs(lead.createdAt);
+          const updatedAt = dayjs(lead.updatedAt);
+          const diffDays = updatedAt.diff(createdAt, 'day'); 
+          return { label: lead.assignedto || 'Lead', timeTaken: diffDays }; 
+        });
+
+      setTimeDifferences(timeDiffs);
+
+
         const counts = adminstages.reduce((acc, stage) => {
           const count = leadsData.filter(lead => lead.status === stage).length;
           acc[stage] = {
@@ -132,7 +149,6 @@ const AdminDashboard = () => {
         }),
         borderWidth: 0,
         barThickness: 12, 
-        pointRadius: 10,
       },
       {
         label: 'Won',
@@ -183,39 +199,61 @@ const AdminDashboard = () => {
     
   };
 
+  const labels = timeDifferences.map((item) => item.label);
+  const data = timeDifferences.map((item) => item.timeTaken);
+  const wonchartData = {
+    labels,
+    datasets: [
+      {
+        label: 'Time Taken (Days)',
+        data,
+        backgroundColor: '#0D5A65',
+        borderWidth: 0,
+        barThickness: 20, 
+      },
+    ],
+  };
+
+  const wonoptions = {
+    responsive: true,
+    
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+      },
+      y: {
+        beginAtZero: true,
+        grid: {
+          display: false,
+        },
+       
+      },
+    },
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          usePointStyle: true,
+          pointStyle: 'circle',
+          boxWidth: 9, 
+          boxHeight: 9,    
+          }
+      },
+      title: {
+        display: true,
+        text: 'Time Taken to won Leads',
+        position: 'left', 
+      },
+    },
+  };
+
+
+
   return (
     <div className='dashboard_maindiv'>
-        {/* <div className='dashboard_sidebar'>
-          <div className='stick_div'>
-<div className='sidebar_lead_div'>
-  <p className='sidebar_txt'>Lead Created</p>
-  <FaCaretDown className='ms-1 admin_careticon' 
-   onClick={() =>toggleAdmin(1)}  />
-</div>
-{isDropdownList === 1 && (
-        <div className='admin_dropdown_menu'>
-          <p className='ms-1'>{totalLeads > 0 ? `${totalLeads} LEADS` : "(NO VALUE)"}</p>
-        </div>
-      )}
-<div className='sidebar_lead_div'>
-  <p className='sidebar_txt'>Lead Converted</p>
-  <FaCaretDown className='admin_careticon' 
-   onClick={() =>toggleAdmin(2)}  />
-</div>
-{isDropdownList === 2 && (
-        <div className='admin_dropdown_menu'>
-           {stages.map((stage, index) => (
-               <p key={index} className=''> 
-               {stage}: {stageCounts[stage].count > 0 ? 
-          `${stageCounts[stage].percentage}%` : "0%"
-        }
-               </p>
-              ))}
-        </div>
-      )}
-          </div>
-        
-        </div> */}
+ 
         <div className='dashboard_contentdiv'>
       
             <div className='d-flex align-items-center justify-content-between'>
@@ -331,10 +369,11 @@ const AdminDashboard = () => {
     <p className='ms-3 value_txt'>WON</p>
    </div>
     </div>
-    <div className='dash_div2'>
-      <div>
-      
-      </div>
+    <div className='dash_chart1 p-1'>
+    
+      <Bar data={wonchartData} options={{...wonoptions, responsive: true, maintainAspectRatio: false  }} />
+     
+  
     </div>
 </div>
 <div className='dashboard_card1'>
@@ -369,13 +408,17 @@ const AdminDashboard = () => {
     <p className='value_txt ms-2'>REAL ESTATE</p>
     </div>
     </div>
-    <div className='dash_div2'>
-      <div>
-      <p className='data_text'>No data to show with
-      current filters or grouping</p>
-      <div className='d-flex align-items-center justify-content-center'>
-      <button className='report_btn mt-2'>Edit Report</button>
-      </div>
+    <div className='dash_div2 '>
+      <div className=''>
+      {timeDifferences.length > 0 ? (
+            timeDifferences.map((item, index) => (
+              <p key={index}>
+                <strong>{item.label}</strong>: {item.timeTaken} days
+              </p>
+            ))
+          ) : (
+            <li>No won leads available.</li>
+          )}
       </div>
     </div>
 </div>

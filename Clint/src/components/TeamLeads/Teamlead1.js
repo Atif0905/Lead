@@ -9,24 +9,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import { FaUserAlt, FaPlus } from 'react-icons/fa';
 import { GoAlertFill } from 'react-icons/go';
-import ImportResult from '../Leads/ImportResult';
-import AddDeals from '../Leads/AddDeals';
 import AssignPopup3 from './AssignPopup3';
-import Addleads from '../DirectorLeads/Addleads';
-import { RiDeleteBin6Line } from "react-icons/ri";
 import {
-  setUsers, setIsAddLeads, setDeals, setIsLoading, setStages, setNewStage,  setIsAddingStage,  setSelectedLeadId, setIsAssignLead,
-  setIsPopupVisible, setIsModalOpen, setIsDropdownOpen, setIsUserDropdown, setIsTeamDropdown,
+  setUsers, setDeals, setIsLoading, setStages, setNewStage,  setIsAddingStage,  setSelectedLeadId, setIsAssignLead,
+  setIsPopupVisible,
 } from '../../redux/actions';
+import TeamMovetoForm from './TeamMovetoForm';
+import TeamDltForm from './TeamDltForm';
+import TeamLostForm from './TeamLostForm';
 
 const ItemTypes = {
     CARD: 'card',
   };
   
-  const DealCard = ({ id, text, moveCard, setDragging, toggleAssign2, name, status, assignedto, onDealDelete, handleDeleteDeal }) => {
+  const DealCard = ({ id, text,  setDragging, toggleAssign2, status, assignedto}) => {
     const [{ isDragging }, drag] = useDrag({
       type: ItemTypes.CARD,
-      item: { id },
+      item: { id, text, status, assignedto},
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
@@ -51,10 +50,61 @@ const ItemTypes = {
             <FaUserAlt className='deals_usericon' onClick={() => toggleAssign2(id, assignedto)} />
              <div>
             <GoAlertFill className='deals_alerticon' />
-            <RiDeleteBin6Line className='ms-3 deals_dlticon'  onClick={() => handleDeleteDeal(id)}/>
             </div>
           </div>
         </div>
+      </div>
+    );
+  };
+
+  const DeleteButton = ({ onDrop }) => {
+    const [, drop] = useDrop({
+      accept: ItemTypes.CARD,
+      drop: (item) => onDrop(item, 'Delete'),
+    });
+  
+    return (
+      <div ref={drop}>
+        <button  className='dlt_btn'>DELETE</button>
+      </div>
+    );
+  };
+
+  const MoveToButton = ({ onDrop }) => {
+    const [, drop] = useDrop({
+      accept: ItemTypes.CARD,
+      drop: (item) => onDrop(item, 'moveTo'),
+    });
+  
+    return (
+      <div ref={drop}>
+        <button className='dlt_btn'>MOVE TO</button>
+      </div>
+    );
+  };
+
+  const LostButton = ({ onDrop }) => {
+    const [, drop] = useDrop({
+      accept: ItemTypes.CARD,
+      drop: (item) => onDrop(item, 'lost'),
+    });
+  
+    return (
+      <div ref={drop}>
+        <button  className='lost_btn'>LOST</button>
+      </div>
+    );
+  };
+
+  const WonButton = ({ onDrop }) => {
+    const [, drop] = useDrop({
+      accept: ItemTypes.CARD,
+      drop: (item) => onDrop(item, 'won'),
+    });
+  
+    return (
+      <div ref={drop}>
+        <button  className='won_btn'>WON</button>
       </div>
     );
   };
@@ -101,15 +151,19 @@ const Teamlead1 = () => {
   const { userId } = useParams();
   const dispatch = useDispatch();
   const {
-    users, isAddLeads, deals,   isLoading,   stages, newStage,  isAddingStage,  selectedLeadId,  isAssignLead,  isPopupVisible,  isModalOpen, isDropdownOpen, isUserDropdown, isTeamDropdown
+    users, isAddLeads, deals,   isLoading,   stages, newStage, executives, isAddingStage,  selectedLeadId,  isAssignLead,  isPopupVisible,  isModalOpen, isDropdownOpen, isUserDropdown, isTeamDropdown
   } = useSelector((state) => state);
 
   const [currentUserKey, setCurrentUserKey] = useState(null);
+ 
   const [filteredSubUser, setFilteredSubUser] = useState(null);
+  const [currentUserName, setCurrentUserName] = useState(null);
   const [assignedTo, setAssignedTo] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [leads, setLeads] = useState([]);
- 
+  const [selectedDeal, setSelectedDeal] = useState(null);
+  const [isFormVisible, setIsFormVisible] = useState(false);
+  const [formType, setFormType] = useState(''); 
   
     useEffect(() => {
       const savedStages = JSON.parse(localStorage.getItem('dealStages')) || stages;
@@ -128,14 +182,18 @@ const Teamlead1 = () => {
               if (usersResponse.data.status === 'ok') {
                 const usersData = usersResponse.data.data;
                   dispatch(setUsers(usersData));
+                  
 
                   const currentUser = usersData.find(user => user._id === userId);
-            const currentUserKey = currentUser?.key1;
+                  const currentUserKey = currentUser?.key1;
+                  setCurrentUserKey(currentUserKey);
+
+                  const currentUserName = usersData.find(user => user.key === currentUserKey)?.fname;
+                  setCurrentUserName(currentUserName);
 
                   const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
                   const allLeads = leadsResponse.data;
             const filteredLeads = allLeads.filter(lead => lead.assignedto === currentUserKey);
-  
             setLeads(filteredLeads);
   
             const formattedDeals = filteredLeads.map(lead => ({
@@ -152,6 +210,7 @@ const Teamlead1 = () => {
               } else {
                   console.error('Failed to fetch users:', usersResponse.data.message);
               }
+      
           } catch (error) {
               console.error('Error fetching leads and users:', error);
           } finally {
@@ -160,10 +219,9 @@ const Teamlead1 = () => {
       };
 
       fetchLeadsAndUsers();
+      
   }, [userId]);
 
-
-  
     const togglePopadd = () => dispatch(setIsPopupVisible(!isPopupVisible));
   
     const toggleAssign2 = (leadId, assignedTo) => {
@@ -174,20 +232,10 @@ const Teamlead1 = () => {
         const subUser = users.find(user => user.userType === 'Executive' && user.key === selectedDeal.assignedto);
         setFilteredSubUser(subUser);
       }
+    
       dispatch(setIsAssignLead(true));
     };
   
-    const toggleModal = () => {
-      dispatch(setIsModalOpen(!isModalOpen));
-      dispatch(setIsDropdownOpen(false));
-    };
-    const toggleAssignLeads=() => {
-      dispatch(setIsAddLeads(!isAddLeads));
-      dispatch(setIsDropdownOpen(false));
-    }
-    const toggleDropdown = () => dispatch(setIsDropdownOpen(!isDropdownOpen));
-    const toggleUserDropdown = () => dispatch(setIsUserDropdown(!isUserDropdown));
-    const toggleTeamDropdown = () => dispatch(setIsTeamDropdown(!isTeamDropdown));
   
     const moveCard = async (draggedId, droppedStage) => {
       try {
@@ -242,88 +290,49 @@ const Teamlead1 = () => {
         console.error('Error deleting deal:', error);
       }
     };
+
+    const handleDrop = (deal, dropType, leadId) => {
+      setSelectedDeal(deal);
+      setFormType(dropType); 
+      setIsFormVisible(true); 
+      dispatch(setSelectedLeadId(leadId));
+    };
+    
+    const handleStatusUpdate = (newStatus, leadId) => {
+      
+      const updatedDeals = deals.map((deal) => 
+        deal.id === leadId ? { ...deal, status:newStatus } : deal
+      );
+      dispatch(setDeals(updatedDeals));
+    };
+
+    const handleWonDrop = async (item) => {
+      try {
+       
+        const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/update/${item.id}`, { status: 'won' });
+        if (response.status === 200) {
+          const updatedDeals = deals.map(deal =>
+            deal.id === item.id ? { ...deal, status: 'won' } : deal
+          );
+          dispatch(setDeals(updatedDeals)); 
+        }
+      } catch (error) {
+        console.error('Failed to update lead status:', error);
+      }
+    };
  
-  
+    const handleUpdateDeal = (updatedDeal) => {
+      const updatedDeals = deals.map(deal =>
+        deal.id === updatedDeal._id ? { ...deal, status: updatedDeal.status } : deal
+      );
+      dispatch(setDeals(updatedDeals));
+    };
     return (
     
       <div className="main-content">
       <DndProvider backend={HTML5Backend}>
         <div className='mt-4 ps-3'>
-          <div className='d-flex'>
-            <div className='buttdiv1'>
-              <div className='cont_butt'>
-                <img className='bar_chat' src='/bar_img.webp' alt='bar img' />
-              </div>
-              <div className='bar_butt'>
-                <img className='bar_chat' src='/Content.webp' alt='content img' />
-              </div>
-              <div className='cont_butt'>
-                <img className='bar_chat' src='/Rupee.webp' alt='rupee img' />
-              </div>
-            </div>
-            <div className='buttdiv2'>
-              <div className='deal_butt1' onClick={togglePopadd}>
-                <p className='deal_butt1_txt'>
-                  + <span>Deal</span>
-                </p>
-              </div>
-              <div className='deal_butt2' onClick={toggleDropdown}>
-                <img className='arrow_down' src='/arrowdown.webp' alt='arrow down' />
-              </div>
-              {isDropdownOpen && (
-                <div className='dropdown-content'>
-                   <div className=''>
-                  <p className='import_txt' onClick={toggleModal}>+ Import data</p>
-                  <p className='import_txt' onClick={toggleAssignLeads}>+ Add Leads</p>
-                  </div> 
-                </div>
-              )}
-            </div>
-          </div>
-  
-          <div className='d-flex align-items-center justify-content-between'>
-            <div className='d-flex mt-4'>
-              <img className='pin_img me-1' src='/Pin.webp' alt='pin' />
-              <p className='pin_text mt-2'>Pin filters</p>
-            </div>
-            <div className='d-flex mt-4'>
-              <div className='me-3'>
-                <p className='ruptxt mt-1'>₨1,720,000·8 deals</p>
-              </div>
-              <div className='users_button me-3'>
-                <div className='users_butt1'>
-                  <img className='adminmaleimg' src='/AdministratorMale.webp' alt='admin' />
-                  <p className='adminname'>{users[0]?.fname || 'Loading...'}</p>
-                  <img className='arrowblackimg' src='/arrowblack.webp' alt='arrow black' onClick={toggleUserDropdown} />
-                </div>
-                {isUserDropdown && (
-                  <div className='users_dropdown'>
-                    {users.map((user) => (
-                      <p key={user.id} className='dir_list'>{user.fname} {user.lname}</p>
-                    ))}
-                  </div>
-                )}
-                <div className='users_butt2'>
-                  <img className='callibrush' src='/CalliBrush.webp' alt='brush' />
-                </div>
-              </div>
-  
-              <div className='users_button d-flex align-items-center justify-content-around me-3'>
-                <img className='teamlogo' src='/Teamlogo.webp' alt='team logo' />
-                <p className='teamtext'>{users[0]?.fname || 'Loading...'}</p>
-                <img className='arrowblackimg' src='/arrowblack.webp' alt='arrow black' onClick={toggleTeamDropdown} />
-                {isTeamDropdown && (
-                  <div className='users_dropdown'>
-                    {users
-                      .filter(user => user.userType === 'SubUser')
-                      .map((user) => (
-                        <p key={user.id} className='dir_list'>{user.fname} {user.lname}</p>
-                      ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+         
   
           <div className='dealscontainer mt-2'>
             {stages.map((stage, index) => (
@@ -359,33 +368,7 @@ const Teamlead1 = () => {
             </div>
           </div>
   
-          {isPopupVisible && (
-            <div className='popup'>
-              <div className='popup_content'>
-                <div className='d-flex align-items-center justify-content-between adddeal_div'>
-                  <h2 className='add_deal'>Add Deals</h2>
-                  <FontAwesomeIcon className='close_img' icon={faX} onClick={togglePopadd} />
-                </div>
-                <AddDeals />
-                <div className='bottomdeal_div'>
-                  <button className='cancel_btn me-2' onClick={togglePopadd}>Cancel</button>
-                  <button className='save_btn'>Save</button>
-                </div>
-              </div>
-            </div>
-          )}
-  
-          {isModalOpen && (
-            <div className='modal'>
-              <div className='modal_content'>
-                <div className='d-flex align-items-center justify-content-between importdeal_div'>
-                  <h2 className='import_deal'>Import Results</h2>
-                  <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleModal} />
-                </div>
-               <ImportResult/>
-              </div>
-            </div>
-          )}
+          
   
           {isAssignLead && (
             <div className='modal'>
@@ -406,26 +389,40 @@ const Teamlead1 = () => {
             </div>
           )}
 
-{isAddLeads && (
-            <div className='modal'>
-              <div className='modal_content'>
-                <div className='d-flex align-items-center justify-content-between importdeal_div'>
-                  <h2 className='import_deal'>Add Leads</h2>
-                  <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleAssignLeads} />
-                </div>
-   <Addleads/>
-              </div>
-            </div>
-          )}
   
           {isDragging && (
             <div className='buttons_div p-2'>
-              <button className='dlt_btn'>DELETE</button>
-              <button className='lost_btn'>LOST</button>
-              <button className='won_btn'>WON</button>
-              <button className='dlt_btn'>MOVE TO</button>
+                <DeleteButton onDrop={handleDrop} />
+                <LostButton onDrop={handleDrop} />
+                <WonButton onDrop={handleWonDrop} />
+              <MoveToButton onDrop={handleDrop} />
             </div>
           )}
+
+{isFormVisible && selectedDeal && formType === 'Delete' && (
+         <TeamDltForm
+         setIsFormVisible={setIsFormVisible}
+         leadId={selectedLeadId} 
+         deal={selectedDeal}
+         handleDeleteDeal={handleDeleteDeal}
+         />
+        )}
+
+{isFormVisible && selectedDeal && formType === 'lost' && (
+        <TeamLostForm
+         deal={selectedDeal}
+         onUpdateDeal={handleUpdateDeal}
+         setIsFormVisible={setIsFormVisible}
+         />
+        )}
+
+{isFormVisible && selectedDeal && formType === 'moveTo' && (
+          <TeamMovetoForm
+          deal={selectedDeal}
+          leadId={selectedLeadId}
+          setIsFormVisible={setIsFormVisible}
+          onStatusUpdate={handleStatusUpdate}/>
+         )}
         </div>
       </DndProvider>
       </div>

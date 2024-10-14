@@ -17,7 +17,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import UserHome from "./components/userHome";
 import DirectorLead1 from "./components/DirectorLeads/DirectorLead1";
 import SubUserHome from "./components/subUserHome";
-import Teamlead1 from "./components/TeamLeads/Teamlead1";
 import ExecutiveHome from "./components/executiveHome";
 import ExecutiveLead1 from "./components/ExecutiveLead/ExecutiveLead1";
 import Adminsidebar from "./Sidebar/AdminSidebar";
@@ -33,18 +32,14 @@ import LeadCreatedEdit from "./components/Dashboard/AdminDashboard/LeadCreatedEd
 import DirectorDashboard from "./components/Dashboard/DirectorDashboard/DirectorDashboard";
 import LeadCreated1 from "./components/Dashboard/DirectorDashboard/LeadCreated1";
 import LeadCreated2 from "./components/Dashboard/SubuserDashboard/LeadCreated2";
-import Activity from "./components/Activity/Activity";
 import AdminActivity from "./components/adminActivity";
 import LeadCreated3 from "./components/Dashboard/ExecutiveDashboard/LeadCreated3";
-
-
-
+import TeamLead from "./components/TeamLead";
 
 function App() {
   const isLoggedIn = window.localStorage.getItem("loggedIn") === "true";
   const userType = window.localStorage.getItem("userType");
   const userId = window.localStorage.getItem("userId");
- 
 
   return (
     <Router>
@@ -116,7 +111,7 @@ function App() {
                   <>
                     <Route path="/" element={<Navigate to={`/subuserhome/${userId}`} />} />
                     <Route path="/subuserhome/:userId" element={<SubUserHome />} />
-                    <Route path="/teamlead1/:userId" element={<Teamlead1 />} />
+                    <Route path="/teamlead1/:userId" element={<TeamLead />} />
                     <Route path="/leadcreatededit2/:userId" element={<LeadCreated2 />} />
                   </>
                 )}
@@ -129,12 +124,10 @@ function App() {
                     <Route path="/leadcreatededit3/:userId" element={<LeadCreated3 />} />
                   </>
                 )}
-
                 <Route path="/products" element={<Product />} />
               </Route>
             </>
           )}
-
           <Route path="/about" element={<About />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

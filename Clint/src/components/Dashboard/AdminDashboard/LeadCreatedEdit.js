@@ -2,19 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import '../Dashboard.css';
-import {
-  setUsers, setSubUsers, setExecutives, setLeads
-} from '../../../redux/actions';
+import {setUsers, setSubUsers, setExecutives, setLeads} from '../../../redux/actions';
+import { FaChartSimple } from "react-icons/fa6";
+import { RiBarChartHorizontalFill } from "react-icons/ri";
+import { RiPieChart2Fill } from "react-icons/ri";
+import { PiHashFill } from "react-icons/pi";
+import { BiBarChartAlt } from "react-icons/bi";
+import { MdOutlineSettings } from "react-icons/md";
+import { BsChevronDoubleDown } from "react-icons/bs";
+import { RxCross2 } from "react-icons/rx";
 
 const LeadCreatedEdit = () => {
   const [leadCountsByUser, setLeadCountsByUser] = useState([]);
   const [matchingSubUsers, setMatchingSubUsers] = useState([]);
   const [matchedExecutives, setMatchedExecutives] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null); // Track the selected user
-  const [selectedSubUser, setSelectedSubUser] = useState(null); // Track the selected sub-user
+  const [selectedUser, setSelectedUser] = useState(null); 
+  const [selectedSubUser, setSelectedSubUser] = useState(null);
 
   const dispatch = useDispatch();
-
   const {
     subUsers, executives, users, leads
   } = useSelector((state) => state);
@@ -59,8 +64,8 @@ const LeadCreatedEdit = () => {
   }, [dispatch, users]);
 
   const handleClick = (user) => {
-    setSelectedUser(user); // Set the selected user
-    setSelectedSubUser(null); // Reset the selected sub-user when a new user is clicked
+    setSelectedUser(user); 
+    setSelectedSubUser(null); 
 
     const matchedSubUsers = Array.isArray(subUsers)
       ? subUsers.filter(subUser => subUser.key === user.key)
@@ -78,7 +83,6 @@ const LeadCreatedEdit = () => {
         key1: subUser.key1,
       };
     });
-
     setMatchingSubUsers(subUserDetails);
   };
 
@@ -103,41 +107,100 @@ const LeadCreatedEdit = () => {
   };
 
   return (
-    <div className="p-3">
-      <div className="main-content">
-        <h4 className='mt-3 mb-4'>Lead Created by user Details</h4>
+    <div className="main-content">
+      <div className="dashboard_contentdiv ">
+        
+        <div className='d-flex justify-content-between'>
+        <h4 className='create_head'>Leads created by users</h4>
+        <div>
+        <button className='users_btn_icon'>Discard Change</button>
+        <button className='users_btn_icon ms-3'>Save As New</button>
+        <button className='save_btn_icon ms-3'>Save</button>
+        </div>
+        </div>
 
-        {leadCountsByUser.map(({ user, count }) => (
-          <div key={user._id}>
-            <p className="user-names" onClick={() => handleClick(user)}>
-              {user.fname} {user.lname}: {count} LEADS
-            </p>
-            {selectedUser && selectedUser._id === user._id && matchingSubUsers.length > 0 && (
-              <div className="subuser-names">
-                <h5>  {user.fname} {user.lname}'s Teamlead</h5>
-                {matchingSubUsers.map((subUser, index) => (
-                  <div key={index}>
-                    <p className="subuser-name" onClick={() => handleSubUserClick(subUser)}>
-                       {subUser.fname} {subUser.lname}: {subUser.leadCount} LEADS
-                    </p>
+        <div className='filter_div'>
+<div className='lead_chartdiv'>
+  <div className='d-flex justify-content-center align-items-center'>
+<BsChevronDoubleDown />
+<p className='filter_text1 mt-3 ms-2'>Filter Applied</p>
+</div>
+ <div className='d-flex justify-content-center align-items-center'>
 
-                    {selectedSubUser && selectedSubUser.key1 === subUser.key1 && matchedExecutives.length > 0 && (
-                      <div className="executive-details">
-                        <h5>{subUser.fname} {subUser.lname}'s Executives</h5>
-                        {matchedExecutives.map((exec, index) => (
-                          <p key={index}>
-                            {exec.fname} {exec.lname}: {exec.leadCount} LEADS
-                          </p>
-                        ))}
-                      </div>
-                    )}
+<p className='filter_text1 mt-3'>No Applied</p>
+<RxCross2 className='ms-2'/>
+</div>
+</div>
+        </div>
+        <div className='leadcreated_box'>
+          <div className='d-flex lead_chartdiv'>
+          <div className='d-flex'>
+          <FaChartSimple className='bar_icons' />
+          <RiBarChartHorizontalFill  className='ms-3 bar_icons'/>
+          <RiPieChart2Fill  className='ms-3 bar_icons' />
+          <PiHashFill  className='ms-3 bar_icons'/>
+          <BiBarChartAlt  className='ms-3 bar_icons'/>
+          </div>
+          <div className='d-flex'>
+            <button className='export_button'>Export </button>
+            <div className='setting_div ms-3'>
+              <MdOutlineSettings />
+            </div>
+          </div>
+          </div>
+          <div className='p-2 d-flex justify-content-between'>
+            <div>
+            <h5>Select a User</h5>
+          <select onChange={(e) => handleClick (users.find(user => user._id === e.target.value))}>
+            <option value="">User's</option>
+            {leadCountsByUser.map(({ user }) => (
+              <option key={user._id} value={user._id}>
+                {user.fname} {user.lname}
+              </option>
+              
+            ))}
+          </select>
+
+          {selectedUser && (
+            <>
+             <h6>{selectedUser.fname} {selectedUser.lname} - {leadCountsByUser.find(u => u.user._id === selectedUser._id)?.count} LEADS</h6>
+              <h5>Team Leads</h5>
+              <div className='team-leads-list'>
+                {matchingSubUsers.length > 0 ? (
+                  matchingSubUsers.map((subUser) => (
+                    <div key={subUser.key1} className="team-lead" onClick={() => handleSubUserClick(subUser)}>
+                      {subUser.fname} {subUser.lname} - {subUser.leadCount} LEADS
+                    </div>
+                  ))
+                ) : (
+                  <p>No team leads found for this user.</p>
+                )}
+              </div>
+            </>
+          )}
+
+          {selectedSubUser && matchedExecutives.length > 0 && (
+            <>
+              <h5>Executives</h5>
+              <div className='executives-list'>
+                {matchedExecutives.map((exec, index) => (
+                  <div key={index} className="executive">
+                    {exec.fname} {exec.lname} - {exec.leadCount} LEADS
                   </div>
                 ))}
               </div>
-            )}
-          </div>
-        ))}
+            </>
+          )}
+          
+       </div>
 
+     
+        </div>
+       </div>
+       <div className='summary_div_box'>
+      <button className='lead_btn'>Leads</button>
+      <button className='ms-3 summry_btn'>Summary</button>
+       </div>
       </div>
     </div>
   );

@@ -13,8 +13,8 @@ import ImportResult from '../Leads/ImportResult';
 import AddDeals from '../Leads/AddDeals';
 
 import {
-  setUsers, setIsAddLeads, setDeals, setIsLoading, setStages, setNewStage,  setIsAddingStage,  setSelectedLeadId, setIsAssignLead,
-  setIsPopupVisible, setIsModalOpen, setIsDropdownOpen, setIsUserDropdown, setIsTeamDropdown,
+  setUsers,  setDeals, setIsLoading, setStages, setNewStage,  setIsAddingStage,  setSelectedLeadId,
+  setIsPopupVisible, setIsModalOpen, setIsDropdownOpen
 } from '../../redux/actions';
 import MovetoForm from './MovetoForm';
 import LostForm from './LostForm';
@@ -23,7 +23,7 @@ const ItemTypes = {
     CARD: 'card',
   };
   
-  const DealCard = ({ id, text, moveCard, setDragging, name, status, assignedto, onDealDelete, deal, onDragStart }) => {
+  const DealCard = ({ id, text,  setDragging, status, assignedto }) => {
     const [{ isDragging }, drag] = useDrag({
       type: ItemTypes.CARD,
       item: { id, text, status, assignedto  }, 
@@ -95,7 +95,7 @@ const ItemTypes = {
     );
   };
   
-  const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd,  onDelete, onDealDelete, deleteDeal, onDragStart, leadId }) => {
+  const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd,  onDelete,  deleteDeal, onDragStart, }) => {
     const [, drop] = useDrop({
       accept: ItemTypes.CARD,
       drop: (item) => moveCard(item.id, stage),
@@ -138,7 +138,7 @@ const ExecutiveLead1 = (deal) => {
 ;
 
   const {
-   users, isAddLeads, deals,   isLoading,   stages, newStage,  isAddingStage,  selectedLeadId,  isAssignLead,  isPopupVisible,  isModalOpen, isDropdownOpen, isUserDropdown, isTeamDropdown
+ deals,   stages, newStage,  isAddingStage,  selectedLeadId,  isPopupVisible,  isModalOpen, isDropdownOpen, 
   } = useSelector((state) => state);
 
   const [isDragging, setIsDragging] = useState(false);
@@ -262,8 +262,12 @@ const ExecutiveLead1 = (deal) => {
     dispatch(setSelectedLeadId(leadId));
   };
 
-  const handleStatusUpdate = (newStatus) => {
-    setDealStatus(newStatus); 
+  const handleStatusUpdate = (newStatus, leadId) => {
+      
+    const updatedDeals = deals.map((deal) => 
+      deal.id === leadId ? { ...deal, status:newStatus } : deal
+    );
+    dispatch(setDeals(updatedDeals));
   };
 
   const handleWonDrop = async (item) => {
@@ -271,12 +275,21 @@ const ExecutiveLead1 = (deal) => {
      
       const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/update/${item.id}`, { status: 'won' });
       if (response.status === 200) {
-        console.log('Lead status updated to won');
-     
+        const updatedDeals = deals.map(deal =>
+          deal.id === item.id ? { ...deal, status: 'won' } : deal
+        );
+        dispatch(setDeals(updatedDeals)); 
       }
     } catch (error) {
       console.error('Failed to update lead status:', error);
     }
+  };
+
+  const handleUpdateDeal = (updatedDeal) => {
+    const updatedDeals = deals.map(deal =>
+      deal.id === updatedDeal._id ? { ...deal, status: updatedDeal.status } : deal
+    );
+    dispatch(setDeals(updatedDeals));
   };
 
 return(
@@ -404,6 +417,7 @@ return(
          <LostForm
          deal={selectedDeal}
          setIsFormVisible={setIsFormVisible}
+         onUpdateDeal={handleUpdateDeal}
          />
         )}
         </div>
