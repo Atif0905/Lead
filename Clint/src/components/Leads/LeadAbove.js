@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import './Deals.css';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   setUsers,
   setSubUsers,
@@ -14,7 +14,6 @@ import {
   setIsPopupVisible,
   setIsDropdownOpen,
   setIsUserDropdown,
-  setIsTeamDropdown,
   setIsAddLeads,
 } from '../../redux/actions';
 
@@ -23,13 +22,7 @@ import ImportResult from './ImportResult';
 import Addleads from '../DirectorLeads/Addleads';
 
 const LeadAbove = () => {
-  const navigate = useNavigate();
   const { userId } = useParams();
-
-  const [hoveredUserKey, setHoveredUserKey] = useState(null);
-  const [hoveredSubUserKey, setHoveredSubUserKey] = useState(null);
-  const [matchedSubUser, setMatchedSubUser] = useState(null);
-  const [matchedExecutive, setMatchedExecutive] = useState(null);
 
   const dispatch = useDispatch();
   const {
@@ -40,7 +33,6 @@ const LeadAbove = () => {
     isModalOpen,
     isDropdownOpen,
     isUserDropdown,
-    isTeamDropdown,
     isAddLeads,
   } = useSelector((state) => state);
 
@@ -63,7 +55,6 @@ const LeadAbove = () => {
         dispatch(setIsLoading(false));
       }
     };
-
     fetchUsers();
   }, [userId, dispatch]);
 
@@ -81,27 +72,8 @@ const LeadAbove = () => {
 
   const toggleDropdown = () => dispatch(setIsDropdownOpen(!isDropdownOpen));
   const toggleUserDropdown = () => dispatch(setIsUserDropdown(!isUserDropdown));
-  const toggleTeamDropdown = () => dispatch(setIsTeamDropdown(!isTeamDropdown));
 
-  const handleUserMouseEnter = (userKey) => {
-    setHoveredUserKey(userKey);
-    const matched = subUsers.find((subUser) => subUser.key === userKey);
-    setMatchedSubUser(matched || null);
-    setHoveredSubUserKey(null); 
-  };
 
-  const handleSubUserMouseEnter = (subUserKey) => {
-    setHoveredSubUserKey(subUserKey);
-    const matched = executives.find((executive) => executive.key === subUserKey);
-    setMatchedExecutive(matched || null);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredUserKey(null);
-    setMatchedSubUser(null);
-    setHoveredSubUserKey(null);
-    setMatchedExecutive(null);
-  };
 
   return (
     <div className='mt-4 ps-3'>
@@ -164,28 +136,13 @@ const LeadAbove = () => {
                       <div
                         key={user.key}
                         className='users_hover'
-                        onMouseEnter={() => handleUserMouseEnter(user.key)}
-                        onMouseLeave={handleMouseLeave}
                       >
                         <a href={`/dir1leads/${user._id}`}>
                           <p className='dir_list'>
                             {user.fname} {user.lname}
                           </p>
                         </a>
-                        {hoveredUserKey === user.key && matchedSubUser && (
-                          <div
-                            className='subuser-hover'
-                            onMouseEnter={() => handleSubUserMouseEnter(matchedSubUser.key1)}
-                            onMouseLeave={handleMouseLeave}
-                          >
-                            <p className='subuser-fname'>
-                              {matchedSubUser.fname} {matchedSubUser.lname}
-                            </p>
-                            {hoveredSubUserKey === matchedSubUser.key1 && matchedExecutive && (
-                              <p className='executive-fname'>{matchedExecutive.fname}</p>
-                            )}
-                          </div>
-                        )}
+                     
                       </div>
                     ))}
                   </div>
@@ -197,27 +154,6 @@ const LeadAbove = () => {
             </div>
           </div>
 
-          <div className='users_button d-flex align-items-center justify-content-around me-3'>
-            <img className='teamlogo' src='/Teamlogo.webp' alt='team logo' />
-            <p className='teamtext'>Team</p>
-            <img className='arrowblackimg' src='/arrowblack.webp' alt='arrow black' onClick={toggleTeamDropdown} />
-            {isTeamDropdown && (
-              <div className='subusers_dropdown'>
-                <div>
-                  {subUsers.map((subUser) => (
-                    <div
-                      key={subUser.key}
-                      onClick={() => {
-                        navigate(`/dir1leads/${subUser._id}`);
-                      }}
-                    >
-                      <p className='dir_list'>{subUser.fname} {subUser.lname}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       </div>
       {isPopupVisible && (

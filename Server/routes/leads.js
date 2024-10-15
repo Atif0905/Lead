@@ -154,7 +154,6 @@ router.post('/create', async (req, res) => {
 router.put('/update/:id', async (req, res) => {
   const { id } = req.params;
   const { status, contactperson1, budget, pipeline, property, username, contactperson2, contactnumber, comment, lostreason, lostcomment } = req.body;
-
   try {
     const updatedLead = await Lead.findByIdAndUpdate(id, {
       status,
