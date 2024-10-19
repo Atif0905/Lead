@@ -5,13 +5,8 @@ import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import axios from 'axios';
 import '../Leads/Deals.css'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faX } from '@fortawesome/free-solid-svg-icons';
 import { FaUserAlt, FaPlus } from 'react-icons/fa';
 import { GoAlertFill } from 'react-icons/go';
-import ImportResult from '../Leads/ImportResult';
-import AddDeals from '../Leads/AddDeals';
-
 import {
   setUsers,  setDeals, setIsLoading, setStages, setNewStage,  setIsAddingStage,  setSelectedLeadId,
   setIsPopupVisible, setIsModalOpen, setIsDropdownOpen
@@ -132,22 +127,20 @@ const ItemTypes = {
     );
   };
 
-const ExecutiveLead1 = (deal) => {
+const ExecutiveLead1 = () => {
   const { userId } = useParams();
   const dispatch = useDispatch();
 ;
 
   const {
- deals,   stages, newStage,  isAddingStage,  selectedLeadId,  isPopupVisible,  isModalOpen, isDropdownOpen, 
+ deals,   stages, newStage,  isAddingStage,  selectedLeadId,  isModalOpen,  
   } = useSelector((state) => state);
 
   const [isDragging, setIsDragging] = useState(false);
   const [leads, setLeads] = useState([]);
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
-  const [formType, setFormType] = useState(''); 
-  const [dealStatus, setDealStatus] = useState(deal.status);
-  
+  const [formType, setFormType] = useState('');   
 
   useEffect(() => {
     const savedStages = JSON.parse(localStorage.getItem('dealStages')) || stages;
@@ -159,7 +152,6 @@ const ExecutiveLead1 = (deal) => {
   }, [stages]);
 
   useEffect(() => {
-   
       const fetchLeadsAndUsers = async () => {
         dispatch(setIsLoading(true));
         try {
@@ -205,12 +197,8 @@ const ExecutiveLead1 = (deal) => {
     dispatch(setIsPopupVisible(true));  
   };
 
-  const toggleModal = () => {
-    dispatch(setIsModalOpen(!isModalOpen));
-    dispatch(setIsDropdownOpen(false));
-  };
+ 
 
-  const toggleDropdown = () => dispatch(setIsDropdownOpen(!isDropdownOpen));
    
   const moveCard = async (draggedId, droppedStage) => {
     try {
@@ -295,47 +283,7 @@ const ExecutiveLead1 = (deal) => {
 return(
   <DndProvider backend={HTML5Backend}>
 <div className="main-content">
-    
         <div className='mt-4 ps-3 '>
-          <div className='d-flex'>
-            <div className='buttdiv1'>
-              <div className='cont_butt'>
-                <img className='bar_chat' src='/bar_img.webp' alt='bar img' />
-              </div>
-              <div className='bar_butt'>
-                <img className='bar_chat' src='/Content.webp' alt='content img' />
-              </div>
-              <div className='cont_butt'>
-                <img className='bar_chat' src='/Rupee.webp' alt='rupee img' />
-              </div>
-            </div>
-            <div className='buttdiv2'>
-              <div className='deal_butt1' onClick={togglePopadd}>
-                <p className='deal_butt1_txt'>
-                  + <span>Deal</span>
-                </p>
-              </div>
-              <div className='deal_butt2' onClick={toggleDropdown}>
-                <img className='arrow_down' src='/arrowdown.webp' alt='arrow down' />
-              </div>
-              {isDropdownOpen && (
-                <div className='dropdown-content' onClick={toggleModal}>
-                  <p className='import_txt'>+ Import data</p>
-                </div>
-              )}
-            </div>
-          </div>
-  
-          <div className='d-flex align-items-center justify-content-between'>
-            <div className='d-flex mt-4'>
-              <img className='pin_img me-1' src='/Pin.webp' alt='pin' />
-              <p className='pin_text mt-2'>Pin filters</p>
-            </div>
-            <div className='d-flex mt-4'>
-             
-            </div>
-          </div>
-  
           <div className='dealscontainer mt-2'>
             {stages.map((stage, index) => (
               <DealBox
@@ -368,32 +316,8 @@ return(
             </div>
           </div>
   
-          {isPopupVisible && (
-            <div className='popup'>
-              <div className='popup_content'>
-                <div className='d-flex align-items-center justify-content-between adddeal_div'>
-                  <h2 className='add_deal'>Add Deals</h2>
-                  <FontAwesomeIcon className='close_img' icon={faX} onClick={() => dispatch(setIsPopupVisible(false))} />
-                </div>
-                <AddDeals 
-                 leadId={selectedLeadId}
-                 setIsPopupVisible={setIsPopupVisible} />
-               
-              </div>
-            </div>
-          )}
+       
   
-          {isModalOpen && (
-            <div className='modal'>
-              <div className='modal_content'>
-                <div className='d-flex align-items-center justify-content-between importdeal_div'>
-                  <h2 className='import_deal'>Import Results</h2>
-                  <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleModal} />
-                </div>
-               <ImportResult/>
-              </div>
-            </div>
-          )}
             {isDragging && (
             <div className='buttons_div p-2 '>
               <button className='dlt_btn'>DELETE</button>

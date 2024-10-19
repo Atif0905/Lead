@@ -308,7 +308,6 @@ const Leads = () => {
 
   const handleWonDrop = async (item) => {
     try {
-     
       const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/update/${item.id}`, { status: 'won' });
       if (response.status === 200) {
         const updatedDeals = deals.map(deal =>
@@ -406,7 +405,7 @@ const Leads = () => {
           </div>
         )}
 
-{isFormVisible && selectedDeal && formType === 'Delete' && (
+        {isFormVisible && selectedDeal && formType === 'Delete' && (
          <AdminDeleteForm
          setIsFormVisible={setIsFormVisible}
          leadId={selectedLeadId} 

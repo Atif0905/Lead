@@ -151,7 +151,7 @@ const ItemTypes = {
   };
 
 const DirectorLead1 = () => {
- 
+  
   const { userId } = useParams();
   const dispatch = useDispatch();
   const {
@@ -232,20 +232,6 @@ const DirectorLead1 = () => {
      dispatch(setIsAssignLead(true));
     };
   
-    const toggleModal = () => {
-      dispatch(setIsModalOpen(!isModalOpen));
-      dispatch(setIsDropdownOpen(false));
-    };
-
-    const toggleAssignLeads=() => {
-      dispatch(setIsAddLeads(!isAddLeads));
-      dispatch(setIsDropdownOpen(false));
-    }
-
-  
-    const toggleDropdown = () => dispatch(setIsDropdownOpen(!isDropdownOpen));
-    const toggleUserDropdown = () => dispatch(setIsUserDropdown(!isUserDropdown));
-    const toggleTeamDropdown = () => dispatch(setIsTeamDropdown(!isTeamDropdown));
   
     const moveCard = async (draggedId, droppedStage) => {
       try {
@@ -374,34 +360,6 @@ const DirectorLead1 = () => {
             </div>
           </div>
   
-          {isPopupVisible && (
-            <div className='popup'>
-              <div className='popup_content'>
-                <div className='d-flex align-items-center justify-content-between adddeal_div'>
-                  <h2 className='add_deal'>Add Deals</h2>
-                  <FontAwesomeIcon className='close_img' icon={faX} onClick={togglePopadd} />
-                </div>
-                <AddDeals/>
-                <div className='bottomdeal_div'>
-                  <button className='cancel_btn me-2' onClick={togglePopadd}>Cancel</button>
-                  <button className='save_btn'>Save</button>
-                </div>
-              </div>
-            </div>
-          )}
-  
-          {isModalOpen && (
-            <div className='modal'>
-              <div className='modal_content'>
-                <div className='d-flex align-items-center justify-content-between importdeal_div'>
-                  <h2 className='import_deal'>Import Results</h2>
-                  <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleModal} />
-                </div>
-               <ImportResult/>
-              </div>
-            </div>
-          )}
-  
           {isAssignLead && (
             <div className='modal'>
               <div className='modal_content'>
@@ -417,18 +375,6 @@ const DirectorLead1 = () => {
                   assignedTo={assignedTo}
                   currentUserKey={currentUserKey}
                 />
-              </div>
-            </div>
-          )}
-
-          {isAddLeads && (
-            <div className='modal'>
-              <div className='modal_content'>
-                <div className='d-flex align-items-center justify-content-between importdeal_div'>
-                  <h2 className='import_deal'>Add Leads</h2>
-                  <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleAssignLeads} />
-                </div>
-               <Addleads/>
               </div>
             </div>
           )}

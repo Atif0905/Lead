@@ -216,7 +216,6 @@ const AdminDashboard = () => {
 
   const wonoptions = {
     responsive: true,
-    
     scales: {
       x: {
         grid: {

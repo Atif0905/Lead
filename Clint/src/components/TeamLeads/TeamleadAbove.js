@@ -4,9 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import '../Leads/Deals.css'
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams , useNavigate } from 'react-router-dom';
 import {
   setUsers,
+  setSubUsers,
+  setExecutives,
   setIsLoading,
   setIsModalOpen,
   setIsPopupVisible,
@@ -20,14 +22,15 @@ import Addleads from '../DirectorLeads/Addleads';
 
 const TeamleadAbove = () => {
     const { userId } = useParams();
-
-    const [currentUserName, setCurrentUserName] = useState(null);
-    const [currentUserKey, setCurrentUserKey] = useState(null);
-
+    const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    const [currentUserKey, setCurrentUserKey] = useState(null);
+    const [selectedName, setSelectedName] = useState('User');
+
     const {
        isPopupVisible,  isModalOpen, isDropdownOpen,  isAddLeads,
-        isTeamDropdown
+        isTeamDropdown,  subUsers, executives,
       } = useSelector((state) => state);
 
       useEffect(() => {
@@ -36,17 +39,15 @@ const TeamleadAbove = () => {
             try {
                 const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
                 if (usersResponse.data.status === 'ok') {
-                  const usersData = usersResponse.data.data;
-                    dispatch(setUsers(usersData));
+                  const allUsers = usersResponse.data.data;
+                    dispatch(setUsers(allUsers));
+                    dispatch(setSubUsers(allUsers.filter(user => user.userType === 'SubUser')));
+                    dispatch(setExecutives(allUsers.filter(user => user.userType === 'Executive')));
                     
-                    const currentUser = usersData.find(user => user._id === userId);
-                    const currentUserKey = currentUser?.key1;
-                    setCurrentUserKey(currentUserKey);
-  
-                    const currentUserName = usersData.find(user => user.key === currentUserKey)?.fname;
-                    setCurrentUserName(currentUserName);
-                    console.log(currentUserName)
-  
+                    const currentUser = allUsers.find(user => user._id === userId);
+                    if (currentUser) {
+                 setCurrentUserKey(currentUser.key1);
+          }
                     } else {
                     console.error('Failed to fetch users:', usersResponse.data.message);
                 }
@@ -119,20 +120,33 @@ const TeamleadAbove = () => {
             </div>
             <div className='d-flex mt-4'>
               <div className='me-3'>
-                <p className='ruptxt mt-1'>₨1,720,000·8 deals</p>
+                <p className='ruptxt mt-1'>₨1,720,000.8 deals</p>
               </div>
             
               <div className='users_button d-flex align-items-center justify-content-around me-5'>
                 <img className='teamlogo' src='/Teamlogo.webp' alt='team logo' />
-                <p className='teamtext'>teams</p>
+                <p className='teamtext'>{selectedName}</p>
                 <img className='arrowblackimg' src='/arrowblack.webp' alt='arrow black' onClick={toggleTeamDropdown} />
                 {isTeamDropdown && (
-                  <div className='users_dropdown'>
-                    <div className='users_hover'>
-                    <p>{currentUserName}</p>
-                      </div>
-                  </div>
-                )}
+                    <div className='users_dropdown'>
+                    <div>
+                    {executives.map((executive) => (
+                 <div key={executive.key}>
+          {currentUserKey === executive.key && (
+            <div className='users_hover'>
+                <a  onClick={() => { 
+                  setSelectedName(`${executive.fname} ${executive.lname}`);
+                  navigate(`/executiveleads/${executive._id}`)
+                  }}>
+            <p className='dir_list'>{executive.fname} {executive.lname}</p>
+            </a>
+            </div>
+          )}
+        </div>
+      ))}
+      </div>
+      </div>
+      )}
               </div>
             </div>
           </div>

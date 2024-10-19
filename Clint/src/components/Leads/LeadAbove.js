@@ -36,6 +36,10 @@ const LeadAbove = () => {
     isAddLeads,
   } = useSelector((state) => state);
 
+  const [hoveredUserKey, setHoveredUserKey] = useState(null); 
+  const [hoveredSubUserKey1, setHoveredSubUserKey1] = useState(null); 
+  const [selectedName, setSelectedName] = useState('User');
+  
   useEffect(() => {
     const fetchUsers = async () => {
       dispatch(setIsLoading(true));
@@ -65,21 +69,24 @@ const LeadAbove = () => {
     dispatch(setIsDropdownOpen(false));
   };
 
-  const toggleAssignLeads=() => {
+  const toggleAssignLeads = () => {
     dispatch(setIsAddLeads(!isAddLeads));
     dispatch(setIsDropdownOpen(false));
-  }
+  };
 
   const toggleDropdown = () => dispatch(setIsDropdownOpen(!isDropdownOpen));
   const toggleUserDropdown = () => dispatch(setIsUserDropdown(!isUserDropdown));
 
+  const handleUserMouseEnter = (userKey) => setHoveredUserKey(userKey);
+  const handleUserMouseLeave = () => setHoveredUserKey(null);
 
+  const handleSubUserMouseEnter = (subUserKey1) => setHoveredSubUserKey1(subUserKey1);
+  const handleSubUserMouseLeave = () => setHoveredSubUserKey1(null);
 
   return (
     <div className='mt-4 ps-3'>
       <div className='d-flex'>
         <div className='buttdiv1'>
-       
           <div className='cont_butt'>
             <img className='bar_chat' src='/bar_img.webp' alt='bar img' />
           </div>
@@ -102,8 +109,8 @@ const LeadAbove = () => {
           {isDropdownOpen && (
             <div className='dropdown-content'>
               <div>
-              <p className='import_txt'  onClick={toggleModal}>+ Import data</p>
-              <p className='import_txt' onClick={toggleAssignLeads}>+ Add Leads</p>
+                <p className='import_txt' onClick={toggleModal}>+ Import data</p>
+                <p className='import_txt' onClick={toggleAssignLeads}>+ Add Leads</p>
               </div>
             </div>
           )}
@@ -122,7 +129,7 @@ const LeadAbove = () => {
           <div className='users_button me-3'>
             <div className='users_butt1'>
               <img className='adminmaleimg' src='/AdministratorMale.webp' alt='admin' />
-              <p className='adminname'>Director</p>
+              <p className='adminname'>{selectedName}</p>
               <img
                 className='arrowblackimg'
                 src='/arrowblack.webp'
@@ -135,14 +142,50 @@ const LeadAbove = () => {
                     {users.map((user) => (
                       <div
                         key={user.key}
-                        className='users_hover'
-                      >
-                        <a href={`/dir1leads/${user._id}`}>
+                        className='d-flex'
+                        onMouseEnter={() => handleUserMouseEnter(user.key)} 
+                        onMouseLeave={handleUserMouseLeave} >
+                          <div className='users_hover'>
+                          <a href={`/dir1leads/${user._id}`} onClick={() => setSelectedName(`${user.fname} ${user.lname}`)}>
                           <p className='dir_list'>
                             {user.fname} {user.lname}
                           </p>
                         </a>
-                     
+                        </div>
+                        {hoveredUserKey === user.key && (
+                          <div className='subuser-info'>
+                            {subUsers
+                              .filter((subUser) => subUser.key === user.key)
+                              .map((subUser) => (
+                                <div
+                                  key={subUser.key}
+                                  className='subuser-hover d-flex'
+                                  onMouseEnter={() => handleSubUserMouseEnter(subUser.key1)} 
+                                  onMouseLeave={handleSubUserMouseLeave}>
+                                    <div>
+                                      <a href={`/teamlead/${subUser._id}`} onClick={() => setSelectedName(`${subUser.fname} ${subUser.lname}`)}>
+                                  <p className='subuser-name'>
+                                    {subUser.fname} {subUser.lname}
+                                  </p>
+                                  </a>
+                               </div>
+                                  {hoveredSubUserKey1 === subUser.key1 && (
+                                    <div className='executive-info'>
+                                      {executives
+                                        .filter((executive) => executive.key === subUser.key1)
+                                        .map((executive) => (
+                                          <a href={`/executiveleads/${executive._id}`} onClick={() => setSelectedName(`${executive.fname} ${executive.lname}`)}>
+                                          <p key={executive.key} className='executive-name'>
+                                            {executive.fname} {executive.lname}
+                                          </p>
+                                          </a>
+                                        ))}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -153,9 +196,9 @@ const LeadAbove = () => {
               <img className='callibrush' src='/CalliBrush.webp' alt='brush' />
             </div>
           </div>
-
         </div>
       </div>
+
       {isPopupVisible && (
         <div className='popup'>
           <div className='popup_content'>
@@ -167,7 +210,6 @@ const LeadAbove = () => {
           </div>
         </div>
       )}
-
       {isModalOpen && (
         <div className='modal'>
           <div className='modal_content'>
@@ -175,22 +217,23 @@ const LeadAbove = () => {
               <h2 className='add_deal'>Import Result</h2>
               <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleModal} />
             </div>
-            <ImportResult />
+            <ImportResult
+            toggleModal={toggleModal}/>
           </div>
         </div>
       )}
 
 {isAddLeads && (
-            <div className='modal'>
-              <div className='modal_content'>
-                <div className='d-flex align-items-center justify-content-between importdeal_div'>
-                  <h2 className='import_deal'>Add Leads</h2>
-                  <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleAssignLeads} />
-                </div>
-             <Addleads/>
-              </div>
+        <div className='modal'>
+          <div className='modal_content'>
+            <div className='d-flex align-items-center justify-content-between importdeal_div'>
+              <h2 className='import_deal'>Add Leads</h2>
+              <FontAwesomeIcon className='close_img' icon={faX} onClick={toggleAssignLeads} />
             </div>
-          )}
+            <Addleads />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
