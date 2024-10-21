@@ -3,9 +3,10 @@ import TeamleadAbove from './TeamLeads/TeamleadAbove'
 import Teamlead1 from './TeamLeads/Teamlead1'
 
 const TeamLead = () => {
+  
   return (
     <>
-<TeamleadAbove/>
+{/* <TeamleadAbove/> */}
 <Teamlead1/>
     </>
   )

@@ -40,6 +40,7 @@ import {
     isUserDropdown: false,
     isTeamDropdown: false,
     selectedLeadId: null,
+    isDragging: false,
     stages: [ 'Lead In', 
         'Contact Made', 
         'Switch Off', 
@@ -110,6 +111,7 @@ import {
           return { ...state, selectedLeadId: action.payload };
         case TOGGLE_POPUP_ADD:
           return { ...state, isPopupVisible: !state.isPopupVisible };
+       
       default:
         return state;
     }

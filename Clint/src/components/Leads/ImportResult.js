@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './Deals.css'
 
-export default function ImportResult({ closeModal }) {
+export default function ImportResult({  toggleModal }) {
     const [fileType, setFileType] = useState('xlsx');
     const [file, setFile] = useState(null);
   
@@ -91,7 +91,7 @@ export default function ImportResult({ closeModal }) {
             </div>
         </div>
         <div className='bottomimport_div'>
-                <button className='cancel_btn1 me-2'  onClick={closeModal}>Cancel</button>
+                <button className='cancel_btn1 me-2'  onClick={toggleModal}>Cancel</button>
                 <button className='save_btn1' onClick={handleUpload}>Import</button>
               </div>
          </>

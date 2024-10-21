@@ -363,7 +363,7 @@ color: #211C52;
     z-index: 1;
     top: 100%;
   }
-  .subusers_dropdown{
+  /* .subusers_dropdown{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -374,28 +374,25 @@ color: #211C52;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
     top: 10%;
-  }
+  } */
   .users_dropdown{
     display: flex;
     align-items: left;
     justify-content: left;
     position: absolute;
     background-color: #FFFFFF;
-    width: auto;
+    width: 163px;
     height: auto;
+    padding: 15px 15px 0px 15px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
-    top: 100%;
+    top: 101%;
   }
   .users_hover{
   width: 100%;
   height: auto;
-  padding: 15px 15px 0px 15px;
   }
-  .users_hover:hover{
-    padding: 15px 15px 1px 15px;
-    background-color: #f1f1f1;
-  }
+
  .teams_hover{
   width: 100%;
   height: auto;
