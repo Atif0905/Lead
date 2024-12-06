@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'; 
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
+import  { fetchLeads, fetchUsers } from '../../api/Api'
 import '../Dashboard.css'
 import { MdMyLocation } from "react-icons/md";
 import { RiMoneyRupeeCircleFill } from "react-icons/ri";
@@ -61,10 +61,9 @@ const AdminDashboard = () => {
   }
 
   useEffect(() => {
-    const fetchLeads = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
-        const leadsData = response.data;
+        const leadsData = await fetchLeads(); 
         dispatch(setLeads(leadsData));
 
         const totalLeads = leadsData.length;
@@ -72,18 +71,17 @@ const AdminDashboard = () => {
 
         const wonLeads = leadsData.filter((lead) => lead.status === 'won');
         setWonLeads(wonLeads);
-      
+
         const timeDiffs = leadsData
-        .filter((lead) => lead.status === 'won') 
-        .map((lead) => {
-          const createdAt = dayjs(lead.createdAt);
-          const updatedAt = dayjs(lead.updatedAt);
-          const diffDays = updatedAt.diff(createdAt, 'day'); 
-          return { label: lead.assignedto || 'Lead', timeTaken: diffDays }; 
-        });
+          .filter((lead) => lead.status === 'won') 
+          .map((lead) => {
+            const createdAt = dayjs(lead.createdAt);
+            const updatedAt = dayjs(lead.updatedAt);
+            const diffDays = updatedAt.diff(createdAt, 'day'); 
+            return { label: lead.assignedto || 'Lead', timeTaken: diffDays }; 
+          });
 
-      setTimeDifferences(timeDiffs);
-
+        setTimeDifferences(timeDiffs);
 
         const counts = adminstages.reduce((acc, stage) => {
           const count = leadsData.filter(lead => lead.status === stage).length;
@@ -95,8 +93,6 @@ const AdminDashboard = () => {
         }, {});
         setStageCounts(counts);
 
-        
-
         const leadCountsByUser = users.filter(user => user.userType === 'User').map(user => {
           const count = leadsData.filter(lead => lead.assignedto === user.key).length;
           return { user, count };
@@ -106,28 +102,23 @@ const AdminDashboard = () => {
         console.error(`Error fetching leads: ${error.message}`);
       }
     };
-
-    const fetchUsers = async () => {
+   const fetchUsersData = async () => {
       try {
-        const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
-        if (usersResponse.data.status === 'ok') {
-          const usersData = usersResponse.data.data;
-          dispatch(setUsers(usersData));
-          const subUsersData = usersData.filter(user => user.userType === 'SubUser');
-          const executivesData = usersData.filter(user => user.userType === 'Executive');
-          dispatch(setSubUsers(subUsersData));
-          dispatch(setExecutives(executivesData));
-        } else {
-          console.error('Failed to fetch users:', usersResponse.data.message);
-        }
+        const usersData = await fetchUsers();  // Use fetchUsers API function
+        dispatch(setUsers(usersData));
+
+        const subUsersData = usersData.filter(user => user.userType === 'SubUser');
+        const executivesData = usersData.filter(user => user.userType === 'Executive');
+        dispatch(setSubUsers(subUsersData));
+        dispatch(setExecutives(executivesData));
       } catch (error) {
         console.error('Error fetching users:', error);
       }
     };
-
-    fetchLeads();
-    fetchUsers();
+    fetchDashboardData();
+    fetchUsersData();
   }, [dispatch, adminstages, users]);
+
 
   const getLeadsCountByStage = (adminstage) => {
     return (leads || []).filter(lead => lead.status === adminstage).length;
@@ -252,9 +243,7 @@ const AdminDashboard = () => {
 
   return (
     <div className='dashboard_maindiv'>
- 
         <div className='dashboard_contentdiv'>
-      
             <div className='d-flex align-items-center justify-content-between'>
           
         <h2>Admin Dashboard</h2>

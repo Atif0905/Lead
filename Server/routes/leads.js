@@ -142,7 +142,6 @@ router.post('/create', async (req, res) => {
       assignedto,
      
     });
-
     const savedLead = await newLead.save();
     res.status(201).json(savedLead);
   } catch (error) {

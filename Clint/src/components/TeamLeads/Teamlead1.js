@@ -240,8 +240,6 @@ const Teamlead1 = () => {
     
       dispatch(setIsAssignLead(true));
     };
-    const toggleDropdown = () => dispatch(setIsDropdownOpen(!isDropdownOpen)); 
-    const toggleTeamDropdown = () => dispatch(setIsTeamDropdown(!isTeamDropdown));
       
       const toggleModal = () => {
         dispatch(setIsModalOpen(!isModalOpen));
@@ -347,74 +345,7 @@ const Teamlead1 = () => {
       <div className="main-content">
       <DndProvider backend={HTML5Backend}>
         <div className='mt-4 ps-3'> 
-        <div className='d-flex'>
-            <div className='buttdiv1'>
-              <div className='cont_butt'>
-                <img className='bar_chat' src='/bar_img.webp' alt='bar img' />
-              </div>
-              <div className='bar_butt'>
-                <img className='bar_chat' src='/Content.webp' alt='content img' />
-              </div>
-              <div className='cont_butt'>
-                <img className='bar_chat' src='/Rupee.webp' alt='rupee img' />
-              </div>
-            </div>
-            <div className='buttdiv2'>
-              <div className='deal_butt1' onClick={togglePopadd}>
-                <p className='deal_butt1_txt'>
-                  + <span>Deal</span>
-                </p>
-              </div>
-              <div className='deal_butt2' onClick={toggleDropdown}>
-                <img className='arrow_down' src='/arrowdown.webp' alt='arrow down' />
-              </div>
-              {isDropdownOpen && (
-                <div className='dropdown-content'>
-                   <div className=''>
-                  <p className='import_txt' onClick={toggleModal}>+ Import data</p>
-                  <p className='import_txt' onClick={toggleAssignLeads}>+ Add Leads</p>
-                  </div> 
-                </div>
-              )}
-            </div>
-          </div>
-          <div className='d-flex align-items-center justify-content-between'>
-            <div className='d-flex mt-4'>
-              <img className='pin_img me-1' src='/Pin.webp' alt='pin' />
-              <p className='pin_text mt-2'>Pin filters</p>
-            </div>
-            <div className='d-flex mt-4'>
-              <div className='me-3'>
-                <p className='ruptxt mt-1'>₨1,720,000.8 deals</p>
-              </div>
-            
-              <div className='users_button d-flex align-items-center justify-content-around me-5'>
-                <img className='teamlogo' src='/Teamlogo.webp' alt='team logo' />
-                <p className='teamtext'>{selectedName}</p>
-                <img className='arrowblackimg' src='/arrowblack.webp' alt='arrow black' onClick={toggleTeamDropdown} />
-                {isTeamDropdown && (
-                    <div className='users_dropdown'>
-                    <div>
-                    {executives.map((executive) => (
-                 <div key={executive.key}>
-          {currentUserKey === executive.key && (
-            <div className='users_hover'>
-                <a  onClick={() => { 
-                  setSelectedName(`${executive.fname} ${executive.lname}`);
-                  navigate(`/executiveleads/${executive._id}`)
-                  }}>
-            <p className='dir_list'>{executive.fname} {executive.lname}</p>
-            </a>
-            </div>
-          )}
-        </div>
-      ))}
-      </div>
-      </div>
-      )}
-              </div>
-            </div>
-          </div> 
+        
           <div className='dealscontainer mt-2'>
             {stages.map((stage, index) => (
               <DealBox

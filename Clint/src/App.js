@@ -48,14 +48,16 @@ function App() {
       <div className="App">
       {userType === "Admin" && (
           <>
+           <UserDetails /> 
             <Adminsidebar /> 
-            <UserDetails /> 
+           
           </>
         )}
           {userType === "User" && (
           <>
-            <DirectorSidebar /> 
             <UserDetails /> 
+            <DirectorSidebar /> 
+          
           </>
         )}
   {userType === "SubUser" && (
@@ -66,8 +68,8 @@ function App() {
         )}
           {userType === "Executive" && (
           <>
-            <Excecutivesidebar/> 
             <UserDetails /> 
+            <Excecutivesidebar/> 
           </>
         )}
 
