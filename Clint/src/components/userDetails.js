@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom"; 
 import axios from "axios";
-import "../App.css";
+import "../Sidebar/Sidebar.css";
 import { CiSearch } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa6";
 import { MdMyLocation } from "react-icons/md";
@@ -12,7 +13,6 @@ import { BiSolidNotepad } from "react-icons/bi";
 import { LiaBoxOpenSolid } from "react-icons/lia";
 import AdminLead from "./AdminLead";
 
-
 export default function UserDetails() {
   const [userData, setUserData] = useState(null);
   const [userType, setUserType] = useState("");
@@ -21,6 +21,31 @@ export default function UserDetails() {
   const [isAdminDashboard, setIsAdminDashboard] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+
+  const location = useLocation(); 
+ 
+  const pathTitleMap = {
+    "/admin-dashboard": "Admin Dashboard",
+    "/adminleads": "Admin Leads",
+    "/leads": "Leads Overview",
+    "/dir1leads": "Director Leads",
+    "/teamlead": "Leads",
+    "/executiveleads": "Leads",
+    "/adddeals": "Add Deals",
+    "/toolsimport": "Import Data",
+    "/leadcreatededit": "Edit Lead",
+    "/scheduleactivity": "Schedule Activity",
+    "/dirlead": "Leads",
+    "/directorhome": "Dashboard"
+  };
+
+  const getBasePath = (path) => {
+    const parts = path.split("/"); 
+    return `/${parts[1]}`;
+  };
+
+  const currentPath = getBasePath(location.pathname);
+  const currentTitle = pathTitleMap[currentPath];
 
   useEffect(() => {
     const token = window.localStorage.getItem("token");
@@ -116,7 +141,7 @@ export default function UserDetails() {
     <div className="sidebarabovediv">
       <div className="d-flex justify-content-between">
         <div className="navtitle_div mt-2">
-          <h5 className="nav_title">deals</h5>
+        <h5 className="nav_title">{currentTitle}</h5>
           </div>
         <div className="d-flex mt-2">
           <div className="search_div">
@@ -160,7 +185,7 @@ export default function UserDetails() {
         )}
           </div>
           </div>
-        <div className="dropdown mt-2" onClick={toggleDropdown}>
+        <div className="dropdown" onClick={toggleDropdown}>
           <p className="sidebarusername" style={dropdownStyle}>{initials.toUpperCase()}</p>
           {isDropdownOpen && (
             <div className="dropdown-menu">

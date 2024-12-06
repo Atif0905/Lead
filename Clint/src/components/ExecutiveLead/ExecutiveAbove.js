@@ -91,11 +91,11 @@ const ExecutiveAbove = () => {
           </div>
   
           <div className='d-flex align-items-center justify-content-between'>
-            <div className='d-flex mt-4'>
-              <img className='pin_img me-1' src='/Pin.webp' alt='pin' />
-              <p className='pin_text mt-2'>Pin filters</p>
+            <div className=''>
+              {/* <img className='pin_img me-1' src='/Pin.webp' alt='pin' />
+              <p className='pin_text mt-2'>Pin filters</p> */}
             </div>
-            <div className='d-flex mt-4'>
+            <div className='d-flex'>
              
             </div>
           </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import { fetchLeads, fetchUsers } from '../../api/Api'
 import '../Dashboard.css';
 import {setUsers, setSubUsers, setExecutives, setLeads} from '../../../redux/actions';
 import { FaChartSimple } from "react-icons/fa6";
@@ -24,11 +25,11 @@ const LeadCreatedEdit = () => {
     subUsers, executives, users, leads
   } = useSelector((state) => state);
 
-  useEffect(() => {
-    const fetchLeads = async () => {
+   useEffect(() => {
+    // Fetch leads data
+    const fetchLeadsData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
-        const leadsData = response.data;
+        const leadsData = await fetchLeads(); // Use the API function
         dispatch(setLeads(leadsData));
 
         const leadCountsByUser = users.filter(user => user.userType === 'User').map(user => {
@@ -41,26 +42,24 @@ const LeadCreatedEdit = () => {
       }
     };
 
-    const fetchUsers = async () => {
+    // Fetch users data
+    const fetchUsersData = async () => {
       try {
-        const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
-        if (usersResponse.data.status === 'ok') {
-          const usersData = usersResponse.data.data;
-          dispatch(setUsers(usersData));
-          const subUsersData = usersData.filter(user => user.userType === 'SubUser');
-          const executivesData = usersData.filter(user => user.userType === 'Executive');
-          dispatch(setSubUsers(subUsersData));
-          dispatch(setExecutives(executivesData));
-        } else {
-          console.error('Failed to fetch users:', usersResponse.data.message);
-        }
+        const usersData = await fetchUsers(); // Use the API function
+        dispatch(setUsers(usersData));
+        
+        const subUsersData = usersData.filter(user => user.userType === 'SubUser');
+        const executivesData = usersData.filter(user => user.userType === 'Executive');
+        
+        dispatch(setSubUsers(subUsersData));
+        dispatch(setExecutives(executivesData));
       } catch (error) {
         console.error('Error fetching users:', error);
       }
     };
 
-    fetchLeads();
-    fetchUsers();
+    fetchLeadsData();
+    fetchUsersData();
   }, [dispatch, users]);
 
   const handleClick = (user) => {

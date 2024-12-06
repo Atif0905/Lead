@@ -6,7 +6,7 @@ const TeamLead = () => {
   
   return (
     <>
-{/* <TeamleadAbove/> */}
+<TeamleadAbove/>
 <Teamlead1/>
     </>
   )

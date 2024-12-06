@@ -10,18 +10,7 @@ import { FaUserAlt, FaPlus } from 'react-icons/fa';
 import AssignPopup from './AssignPopup';
 import { GoAlertFill } from 'react-icons/go';
 import { useParams} from 'react-router-dom';
-import {
-  setDeals,
-  setUsers,
-  setSubUsers,
-  setIsPopupVisible,
-  setIsLoading,
-  setStages,
-  setNewStage,
-  setIsAddingStage,
-  setSelectedLeadId,
-  setIsAssignLead,
-} from '../../redux/actions';
+import {setDeals,setUsers,setSubUsers,setIsPopupVisible,setIsLoading,setStages,setNewStage,setIsAddingStage,setSelectedLeadId,setIsAssignLead,} from '../../redux/actions';
 import AddDeals from './AddDeals';
 import AdminLostForm from './AdminLostForm';
 import AdminMovetoForm from './AdminMovetoForm';
@@ -57,7 +46,7 @@ const DealCard = ({ id, text,  setDragging, toggleAssign,  status, assignedto, t
           <p className='deal_head3'>{text}</p> 
         </div>
         <div className='dealcard_icon'>
-          <FaUserAlt className='deals_usericon'  onClick={(e) => {
+          <FaUserAlt className='deals_usericon' onClick={(e) => {
             e.stopPropagation();
             toggleAssign(id);
           }}/>
@@ -393,7 +382,6 @@ const Leads = () => {
             </div>
           </div>
         )}
-
          </div>
          
         {isDragging && (

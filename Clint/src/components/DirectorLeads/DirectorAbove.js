@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   setUsers,
+  setLeads,
   setSubUsers,
   setExecutives,
   setIsLoading,
@@ -30,6 +31,7 @@ const DirectorAbove = () => {
 
   const {
     users,
+    leads,
     subUsers,
     executives,
     isPopupVisible,
@@ -40,9 +42,10 @@ const DirectorAbove = () => {
   } = useSelector((state) => state);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchUsersAndLeads = async () => {
       dispatch(setIsLoading(true));
       try {
+        // Fetch Users
         const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
         if (usersResponse.data.status === 'ok') {
           const allUsers = usersResponse.data.data;
@@ -57,16 +60,65 @@ const DirectorAbove = () => {
         } else {
           console.error('Failed to fetch users:', usersResponse.data.message);
         }
+
+        // Fetch Leads
+        const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
+        if (leadsResponse.status === 200) {
+          setLeads(leadsResponse.data); 
+        } else {
+          console.error('Failed to fetch leads:', leadsResponse.data.message);
+        }
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching users or leads:', error);
       } finally {
         dispatch(setIsLoading(false));
       }
     };
 
-    fetchUsers();
+    fetchUsersAndLeads();
   }, [userId]);
 
+  const assignLeadsAutomatically = async () => {
+    if (subUsers.length === 0 || leads.length === 0) {
+      console.error("No subUsers or leads available for assignment.");
+      return;
+    }
+  
+    // Filter subUsers to include only those matching the currentUserKey
+    const filteredSubUsers = subUsers.filter(subUser => subUser.key === currentUserKey);
+  
+    if (filteredSubUsers.length === 0) {
+      console.error("No matching subUsers found for the current user.");
+      return;
+    }
+  
+    try {
+      const updatedLeads = [...leads];
+      let subUserIndex = 0;
+  
+      // Assign leads only to filteredSubUsers
+      for (let i = 0; i < updatedLeads.length; i++) {
+        const lead = updatedLeads[i];
+        const subUser = filteredSubUsers[subUserIndex];
+  
+        lead.assignedto = subUser.key1; // Assign subUser's key1 to the lead
+  
+        // API call to update the lead in the backend
+        await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${lead._id}`, {
+          assignedto: subUser.key1,
+        });
+  
+        // Rotate to the next filteredSubUser
+        subUserIndex = (subUserIndex + 1) % filteredSubUsers.length;
+      }
+  
+      // Update the local state
+      dispatch(setLeads(updatedLeads));
+      console.log("Leads assigned to matching subUsers successfully!");
+    } catch (error) {
+      console.error("Error assigning leads to matching subUsers:", error);
+    }
+  };
   const togglePopadd = () => dispatch(setIsPopupVisible(!isPopupVisible));
 
   const toggleAssignLeads = () => {
@@ -122,12 +174,11 @@ const DirectorAbove = () => {
           </div>
         </div>
 
-        <div className='d-flex align-items-center justify-content-between'>
-          <div className='d-flex mt-4'>
-            <img className='pin_img me-1' src='/Pin.webp' alt='pin' />
-            <p className='pin_text mt-2'>Pin filters</p>
+        <div className='d-flex align-items-center justify-content-between mt-4'>
+          <div>
+          <button className='automatic_button' onClick={assignLeadsAutomatically}>Assign Leads</button>
           </div>
-          <div className='d-flex mt-4'>
+          <div className='d-flex'>
             <div className='me-3'>
               <p className='ruptxt mt-1'>₨1,720,000·8 deals</p>
             </div>

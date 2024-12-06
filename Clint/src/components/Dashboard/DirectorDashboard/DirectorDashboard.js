@@ -4,6 +4,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import '../Dashboard.css'
+import  { fetchLeads, fetchUsers } from '../../api/Api'
 import { MdMyLocation } from "react-icons/md";
 import { RiMoneyRupeeCircleFill } from "react-icons/ri";
 import { SiGooglecalendar } from "react-icons/si";
@@ -34,19 +35,14 @@ const DirectorDashboard = () => {
     const {
         subUsers,  users, totalLeads, leads,  stages=[], isPopupVisible,
     } = useSelector((state) => state);
-
-   
-  
+    
     const toggleDropdown = () => {
         setIsDropdownVisible(!isDropdownVisible);
       };  
-
       const showPopup = (subUser) => {
-      
         setSelectUser({ ...subUser});
         dispatch(setIsPopupVisible(true));
       };
-    
       const closePopup = () => {
         dispatch(setIsPopupVisible(false));
       }

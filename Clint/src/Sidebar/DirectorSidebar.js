@@ -26,7 +26,7 @@ const DirectorSidebar = () => {
     <div>
   <div className='excecutiveside'>
             <div>
-              <img className='sidebarlogo' src='/group white.webp' alt='logo' />
+              <img className='sidebarlogo' src='' alt='logo' />
             </div>
             <div className='d-flex iconss'>
             <div className={`sideicon_div ${isActive(`/dirlead/${userId}`) ? 'active' : ''}`}>
