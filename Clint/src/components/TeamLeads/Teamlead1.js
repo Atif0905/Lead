@@ -344,9 +344,8 @@ const Teamlead1 = () => {
     return (
       <div className="main-content">
       <DndProvider backend={HTML5Backend}>
-        <div className='mt-4 ps-3'> 
-        
-          <div className='dealscontainer mt-2'>
+        <div className='ps-3'> 
+          <div className='dealscontainer'>
             {stages.map((stage, index) => (
               <DealBox
                 key={index}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux'; // Import useSelector
 import axios from 'axios';
-import '../Leads/Deals.css'
+import '../Leads/Deals.css';
 
 const Addleads = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,9 @@ const Addleads = () => {
     title: '',
     assignedto: ''
   });
+
+  // Get stages from Redux store
+  const stages = useSelector((state) => state.stages); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,8 +45,7 @@ const Addleads = () => {
 
   return (
     <div className='container'>
-      <h2>Assign</h2>
-      <div className='p-3'>
+      <div className='formcontainer'>
         <form onSubmit={handleSubmit} className='p-2'>
           <input
             className='input_assign mt-1'
@@ -68,14 +71,19 @@ const Addleads = () => {
             value={formData.number}
             onChange={handleChange}
           /><br/>
-          <input
+          
+          <select
             className='input_assign mt-2'
-            type="text"
             name="status"
-            placeholder='Status'
             value={formData.status}
             onChange={handleChange}
-          /><br/>
+          >
+            <option value="">Status</option>
+            {stages.map((stage, index) => (
+              <option key={index} value={stage}>{stage}</option>
+            ))}
+          </select><br/>
+
           <input
             className='input_assign mt-2'
             type="text"
@@ -92,11 +100,11 @@ const Addleads = () => {
             value={formData.assignedto}
             onChange={handleChange}
           /><br/>
-          <button type="submit" className=" save_btn mt-2">Submit</button>
+          <button type="submit" className="save_btn mt-2">Submit</button>
         </form>
       </div>
     </div>
   );
-}
+};
 
 export default Addleads;
