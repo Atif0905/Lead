@@ -12,6 +12,7 @@ import ImportResult from './ImportResult';
 import Addleads from '../DirectorLeads/Addleads';
 
 const LeadAbove = () => {
+  // Extract userId from URL parameters
   const { userId } = useParams();
 
   const dispatch = useDispatch();
@@ -25,6 +26,7 @@ const LeadAbove = () => {
   
   
   useEffect(() => {
+    // Fetch users, subUsers, and executives from API and update state in redux store
     const fetchUsers = async () => {
       dispatch(setIsLoading(true));
       try {
@@ -43,16 +45,17 @@ const LeadAbove = () => {
         dispatch(setIsLoading(false));
       }
     };
-    fetchUsers();
+    fetchUsers(); // Call fetchUsers when component mounts or userId changes
   }, [userId, dispatch]);
   
-
+// Fetch unassigned leads from the database
   const fetchUnassignedLeads = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
       if (response.data && Array.isArray(response.data)) {
         const unassigned = response.data.filter((lead) => !lead.assignedto);
         setUnassignedLeads(unassigned);
+        console.log('Unassigned Leads:', unassigned); 
       } else {
         console.error('Unexpected response format:', response.data);
       }
@@ -61,21 +64,25 @@ const LeadAbove = () => {
     }
   };
 
+ // Distribute unassigned leads to users in a circular way
   const distributeLeads = async () => {
     if (users.length === 0) {
       console.error('No users available for lead distribution.');
       return;
     }
 
-    const leadsPerUser = Math.floor(unassignedLeads.length / users.length);
-    const remainingLeads = unassignedLeads.length % users.length;
+    const leadsPerUser = Math.floor(unassignedLeads.length / users.length);  // Calculate number of leads per user
+    console.log(leadsPerUser)
+    const remainingLeads = unassignedLeads.length % users.length;  // Calculate remaining leads
+console.log(remainingLeads)
 
     let assignedLeads = [];
     let index = 0;
 
-    const startingIndex = (lastUserIndex + 1) % users.length;
+    const startingIndex = (lastUserIndex + 1) % users.length; // Ensure circular distribution
+    console.log(startingIndex)
 
-   // Distribute leads starting from the next user in the cycle
+  // Distribute leads evenly to users
     for (let i = 0; i < users.length; i++) {
       const userIndex = (startingIndex + i) % users.length; // Ensure circular distribution
       const user = users[userIndex];
@@ -83,13 +90,13 @@ const LeadAbove = () => {
 
       assignedLeads = [
         ...assignedLeads,
-        ...leadsToAssign.map((lead) => ({ ...lead, assignedto: user.key })),
+        ...leadsToAssign.map((lead) => ({ ...lead, assignedto: user.key })), // Assign leads to users
       ];
       index += leadsPerUser;
 
       // Update the lastUserIndex for the next cycle
       if (index >= unassignedLeads.length) {
-        setLastUserIndex(userIndex); // Save the last user index where distribution stopped
+        setLastUserIndex(userIndex); // Set last user index for next distribution
         break;
       }
     }
@@ -119,7 +126,7 @@ const LeadAbove = () => {
     }
   };
 
-
+  // Handle the Assign Leads button click, fetch unassigned leads, and distribute them
   const handleAssignLeadsClick = async () => {
     await fetchUnassignedLeads();
     await distributeLeads();
@@ -163,7 +170,7 @@ const LeadAbove = () => {
           </div>
         </div>
         <div className='buttdiv2'>
-          <div className='deal_butt1' onClick={togglePopadd}>
+          <div className='deal_butt1'>
             <p className='deal_butt1_txt'>
               + <span>Deal</span>
             </p>

@@ -37,6 +37,7 @@ import LeadCreated3 from "./components/Dashboard/ExecutiveDashboard/LeadCreated3
 import TeamLead from "./components/TeamLead";
 import Teamlead1 from "./components/TeamLeads/Teamlead1";
 import ExecutiveLead from "./components/ExecutiveLead";
+import PopupNotification from "./components/ExecutiveLead/PopupNotification";
 
 function App() {
   const isLoggedIn = window.localStorage.getItem("loggedIn") === "true";
@@ -70,6 +71,7 @@ function App() {
           <>
             <UserDetails /> 
             <Excecutivesidebar/> 
+       
           </>
         )}
 
@@ -135,6 +137,7 @@ function App() {
                     <Route path="/executiveleads/:userId" element={<ExecutiveLead1/>}/>
                     <Route path="/leadcreatededit3/:userId" element={<LeadCreated3 />} />
                     <Route path="/dir1leads/:userId" element={<DirectorLead1 />} />
+                  
                   </>
                 )}
                 <Route path="/products" element={<Product />} />

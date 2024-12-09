@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { useDispatch } from 'react-redux';
 import './Deals.css';
 import { FaUser } from "react-icons/fa";
@@ -17,11 +17,12 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
     contactperson2: '', 
     contactnumber: '', 
     comment: '', 
+    callbackTime: '',
+    callbackDate: ''
   });
 
   const [stageColor, setStageColor] = useState('');
-  
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -61,6 +62,8 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
         contactperson2: '',
         contactnumber: '',
         comment: '',
+        callbackTime: '',
+        callbackDate: '',
       });
     
     } catch (error) {
@@ -70,7 +73,7 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
 
   return (
     <div className='container fluid'>
-       <h6>Lead id: {leadId}</h6>
+       {/* <h6>Lead id: {leadId}</h6> */}
       <form onSubmit={handleSubmit}>
         <div className='row'>
           <div className='col-6 dealform1'>
@@ -92,6 +95,34 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
                 <option value="Broker">Broker</option>
                 </select>
             </div>
+            {formData.status === 'Call Back' && (
+              <>
+                <div className="form-group">
+                  <label className="label_text">Callback Date</label><br />
+                  <div className="contact_field d-flex align-items-center">
+                    <input
+                      type="date"
+                      className="input_field2 ps-2"
+                      name="callbackDate"
+                      value={formData.callbackDate}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label className="label_text">Callback Time</label><br />
+                  <div className="contact_field d-flex align-items-center">
+                    <input
+                      type="time"
+                      className="input_field2 ps-2"
+                      name="callbackTime"
+                      value={formData.callbackTime}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
             <div className="form-group">
               <label className='label_text'>Contact person</label><br />
               <div className='contact_field d-flex align-items-center'>
@@ -225,6 +256,7 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
           </div>
         </div>
       </form>
+      
     </div>
   );
 };

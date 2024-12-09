@@ -58,7 +58,7 @@ const LeadCreated2 = () => {
             <div>
               <h3>Executive Names:</h3>
               {subUsers.map((user, index) => {
-                const assignedLeads = leads.filter(lead => lead.assignedto === user.fname);
+                const assignedLeads = leads.filter(lead => lead.assignedto === user.id);
                 return (
                   <div key={index}>
                     <p >

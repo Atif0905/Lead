@@ -13,12 +13,13 @@ import {
 } from '../../redux/actions';
 import MovetoForm from './MovetoForm';
 import LostForm from './LostForm';
+import PopupNotification from './PopupNotification';
 
 const ItemTypes = {
     CARD: 'card',
   };
   
-  const DealCard = ({ id, text,  setDragging, status, assignedto }) => {
+  const DealCard = ({ id, text,  setDragging, status, assignedto, togglePopadd }) => {
     const [{ isDragging }, drag] = useDrag({
       type: ItemTypes.CARD,
       item: { id, text, status, assignedto  }, 
@@ -35,7 +36,8 @@ const ItemTypes = {
       <div
         ref={drag}
         className='dealcard'
-        style={{ opacity: isDragging ? 0.5 : 1 }}>
+        style={{ opacity: isDragging ? 0.5 : 1 }}
+        onClick={() => togglePopadd(id)}>
         <div className='dealcard_content'>
           <p className='deal_head1'>{status}</p>
           <p className='deal_head2'>{assignedto}</p>
@@ -43,8 +45,10 @@ const ItemTypes = {
             <p className='deal_head3'>{text}</p> 
           </div>
           <div className='dealcard_icon'>
-            <FaUserAlt className='deals_usericon' />
-            <GoAlertFill className='deals_alerticon' />
+            <FaUserAlt className='deals_usericon'
+             onClick={(e) => e.stopPropagation()} />
+            <GoAlertFill className='deals_alerticon' 
+             onClick={(e) => e.stopPropagation()}/>
           </div>
         </div>
       </div>
@@ -118,9 +122,10 @@ const ItemTypes = {
               setDragging={setDragging}
               onDealDelete={deleteDeal} 
               onDragStart={onDragStart}
+              togglePopadd={togglePopadd}
             />
           ))}
-        <div className='adddeal_button' onClick={togglePopadd}>
+        <div className='adddeal_button'>
           <FaPlus />
         </div>
       </div>
@@ -140,7 +145,8 @@ const ExecutiveLead1 = () => {
   const [leads, setLeads] = useState([]);
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
-  const [formType, setFormType] = useState('');   
+  const [formType, setFormType] = useState(''); 
+  const [filteredLeads, setFilteredLeads] = useState([]); 
 
   useEffect(() => {
     const savedStages = JSON.parse(localStorage.getItem('dealStages')) || stages;
@@ -161,13 +167,14 @@ const ExecutiveLead1 = () => {
               dispatch(setUsers(usersData));
 
               const currentUser = usersData.find(user => user._id === userId);
-              const currentUserKey = currentUser?.fname;
+              const currentUserKey = currentUser?.id;
 
                 const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
                 const allLeads = leadsResponse.data;
                const filteredLeads = allLeads.filter(lead => lead.assignedto === currentUserKey);
 
           setLeads(filteredLeads);
+          console.log(filteredLeads)
 
           const formattedDeals = filteredLeads.map(lead => ({
             id: lead._id,
@@ -193,13 +200,12 @@ const ExecutiveLead1 = () => {
     fetchLeadsAndUsers();
   }, [userId]);
 
-  const togglePopadd = () => {
+  const togglePopadd = (leadId) => {
     dispatch(setIsPopupVisible(true));  
+    dispatch(setSelectedLeadId(leadId));  
+   
   };
 
- 
-
-   
   const moveCard = async (draggedId, droppedStage) => {
     try {
       const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${draggedId}`, { newStatus: droppedStage });
@@ -260,7 +266,6 @@ const ExecutiveLead1 = () => {
 
   const handleWonDrop = async (item) => {
     try {
-     
       const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/update/${item.id}`, { status: 'won' });
       if (response.status === 200) {
         const updatedDeals = deals.map(deal =>
@@ -283,7 +288,8 @@ const ExecutiveLead1 = () => {
 return(
   <DndProvider backend={HTML5Backend}>
 <div className="main-content">
-        <div className='mt-4 ps-3 '>
+<PopupNotification leads={leads} />
+        <div className=' ps-3 '>
           <div className='dealscontainer mt-2'>
             {stages.map((stage, index) => (
               <DealBox
@@ -347,6 +353,7 @@ return(
         </div>
     
       </div>
+    
       </DndProvider>
 )
 }

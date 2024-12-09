@@ -5,7 +5,6 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const Lead = require('../modal/Lead')
 const Deal = require('../modal/Deal')
-
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
@@ -151,32 +150,23 @@ router.post('/create', async (req, res) => {
 });
 
 router.put('/update/:id', async (req, res) => {
-  const { id } = req.params;
-  const { status, contactperson1, budget, pipeline, property, username, contactperson2, contactnumber, comment, lostreason, lostcomment } = req.body;
-  try {
-    const updatedLead = await Lead.findByIdAndUpdate(id, {
-      status,
-      contactperson1,
-      budget,
-      pipeline,
-      property,
-      username,
-      contactperson2,
-      contactnumber,
-      comment,
-      lostreason,
-      lostcomment,
-    }, { new: true });
+    const { id } = req.params;
+    const { status, contactperson1, budget, pipeline, property, username, contactperson2, contactnumber, comment, lostreason, lostcomment, callbackTime, callbackDate} = req.body;
+    try {
+      const updatedLead = await Lead.findByIdAndUpdate(id, {
+        status, contactperson1, budget, pipeline, property, username, contactperson2, contactnumber,
+        comment,lostreason,lostcomment,callbackTime, callbackDate,
+      }, { new: true });
 
-    if (!updatedLead) {
-      return res.status(404).json({ message: 'Lead not found' });
+      if (!updatedLead) {
+        return res.status(404).json({ message: 'Lead not found' });
+      }
+
+      res.json(updatedLead);
+    } catch (error) {
+      console.error('Error updating lead:', error);
+      res.status(500).json({ message: 'Server error' });
     }
-
-    res.json(updatedLead);
-  } catch (error) {
-    console.error('Error updating lead:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
 });
 
 module.exports = router;

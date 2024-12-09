@@ -19,6 +19,7 @@ import { useParams } from 'react-router-dom';
 import {
   setUsers, setTotalLeads, setLeads, setStages, 
 } from '../../../redux/actions';
+import PopupNotification from '../../ExecutiveLead/PopupNotification';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
@@ -46,7 +47,8 @@ const ExecutiveDasboard = () => {
             dispatch(setUsers(usersData));
     
             const currentUser = usersData.find(user => user._id === userId);
-            const currentUserKey = currentUser?.fname;
+            const currentUserKey = currentUser?.id;
+            console.log(currentUserKey)
     
             const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
             const allLeads = leadsResponse.data;
@@ -165,6 +167,7 @@ const ExecutiveDasboard = () => {
 
   return (
     <div className='dashboard_maindiv'>
+      <PopupNotification leads={leads} />
     {/* <div className='dashboard_sidebar'>
      <div className='stick_div'>
 <div className='sidebar_lead_div'>

@@ -61,6 +61,14 @@ const LeadSchema = new mongoose.Schema({
   lostcomment: {
     type: String,
   },
+  callbackTime: {
+    type: String,
+    required: true
+  },
+  callbackDate: {
+    type: String,
+    required: true
+  },
 
 }, { timestamps: true });
 

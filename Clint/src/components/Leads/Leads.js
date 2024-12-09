@@ -51,7 +51,10 @@ const DealCard = ({ id, text,  setDragging, toggleAssign,  status, assignedto, t
             toggleAssign(id);
           }}/>
               <div>
-            <GoAlertFill className='deals_alerticon' />
+            <GoAlertFill className='deals_alerticon'
+            onClick={(e) => {
+              e.stopPropagation(); 
+            }} />
             </div>
         </div>
       </div>
@@ -153,7 +156,6 @@ const DealBox = ({ stage, deals,  moveCard, setDragging, toggleAssign, onDelete,
 };
 
 const Leads = () => {
- 
   const dispatch = useDispatch();
   const { userId } = useParams();
   const {
@@ -166,7 +168,6 @@ const Leads = () => {
     selectedLeadId,
     isAssignLead,
   } = useSelector((state) => state);
-
   const [isDragging, setIsDragging] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
@@ -315,12 +316,11 @@ const Leads = () => {
     );
     dispatch(setDeals(updatedDeals));
   };
-
-
+  
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className='mt-4 ps-3'>
-        <div className='dealscontainer mt-2'>
+      <div className='ps-3'>
+        <div className='dealscontainer'>
           {adminstages.map((stage, index) => (
             <DealBox
               key={index}
@@ -385,7 +385,7 @@ const Leads = () => {
          </div>
          
         {isDragging && (
-          <div className='buttons_div p-2'>
+          <div className='buttons_div'>
             <DeleteButton onDrop={handleDrop} />
             <LostButton onDrop={handleDrop} />
               <WonButton onDrop={handleWonDrop} />

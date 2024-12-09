@@ -35,12 +35,12 @@ const AssignPopup3 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo }) 
         try {
             alert(`Assigned successfully to: ${user.fname}`);
             const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${leadId}`, {
-                assignedto: `${user.fname}`
+                assignedto: `${user.id}`
             });
 
             if (response.status === 200) {
                 const updatedDeals = deals.map((deal) =>
-                    deal.id === leadId ? { ...deal, assignedto: `${user.fname}` } : deal
+                    deal.id === leadId ? { ...deal, assignedto: `${user.id}` } : deal
                 );
                 dispatch(setDeals(updatedDeals));
                 dispatch(setIsAssignLead(false));

@@ -20,6 +20,7 @@ import {
 import AddDeals from '../Leads/AddDeals';
 import ImportResult from '../Leads/ImportResult';
 import Addleads from '../DirectorLeads/Addleads';
+import { FaBell } from "react-icons/fa6";
 
 const TeamleadAbove = () => {
     const { userId } = useParams();
@@ -28,7 +29,16 @@ const TeamleadAbove = () => {
 
     const [currentUserKey, setCurrentUserKey] = useState(null);
     const [selectedName, setSelectedName] = useState('User');
+    const [matchingUserCount, setMatchingUserCount] = useState(0);
+    const [allleads, setAllLeads] = useState([]); 
+    const [filterlead, setFilterLead] = useState([]); 
+    const [callbackLeads, setCallbackLeads] = useState([]);
+    const [isBellDropdownOpen, setIsBellDropdownOpen] = useState(false);
 
+    const toggleBellDropdown = () => {
+      setIsBellDropdownOpen(!isBellDropdownOpen);
+  };
+    
     const {
        isPopupVisible,  isModalOpen, isDropdownOpen,  isAddLeads,
         isTeamDropdown, subUsers, executives, leads
@@ -60,7 +70,7 @@ const TeamleadAbove = () => {
                
                 const filteredLeads = leadsResponse.data.filter(lead => lead.assignedto === currentUserKey);
                 dispatch(setLeads(filteredLeads));
-              
+             
 
               } else {
                 console.error('Failed to fetch leads:', leadsResponse.data.message);
@@ -74,60 +84,100 @@ const TeamleadAbove = () => {
       
         fetchUsersAndLeads();
       
-      }, [userId, dispatch]);
+      }, [userId, dispatch, currentUserKey]);
+
+      useEffect(() => {
+        const fetchLeadsexecutive = async () => {
+          try {
+            // Fetch leads
+            const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
+            const fetchedLeads = leadsResponse.data;
+            setAllLeads(fetchedLeads);
       
-     const assignLeadsAutomatically = async () => {
-  if (executives.length === 0 || leads.length === 0) {
-    console.error("No executives or leads available for assignment.");
-    return;
-  }
+            // Filter executives to find the matching one
+            const matchingExecutives = executives.filter((executive) => executive.key === currentUserKey);
+      
+            if (matchingExecutives.length > 0) {
+              const matchingExecutiveId = matchingExecutives[0].id; // Assuming 'id' exists in executives
+      
+              // Filter leads where assignedto matches the matching executive's id
+              const filteredLeads = fetchedLeads.filter((lead) => lead.assignedto === matchingExecutiveId);
+              setFilterLead(filteredLeads);
+      
+              // Filter leads for "Call Back" status with matching callbackDate and callbackTime
+              const currentDate = new Date();
+              const formattedDate = currentDate.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+              console.log(formattedDate)
+              const formattedTime = currentDate.toTimeString().split(":").slice(0, 2).join(":"); // Format as HH:MM
+              const callbackLeads = filteredLeads.filter(
+                (lead) =>
+                lead.status === "Call Back" &&
+                lead.callbackDate <= formattedDate &&
+                lead.callbackTime <= formattedTime
+              );
+              console.log("Filtered Callback Leads:", callbackLeads);
+              // Optionally, update state for callback leads
+              setCallbackLeads(callbackLeads); // Create state for callback leads if needed
+            }
+            // Set matching user count
+            setMatchingUserCount(matchingExecutives.length);
+          } catch (error) {
+            console.error("Error fetching leads or calculating count:", error);
+          }
+        };
+      
+        fetchLeadsexecutive(); // Call the async function
+      }, [executives, currentUserKey]);
 
-  // Filter leads to include only those assigned to the current user
-  const filteredLeads = leads.filter(lead => lead.assignedto === currentUserKey);
 
-  if (filteredLeads.length === 0) {
-    console.error("No filtered leads available for assignment.");
-    return;
-  }
-
-  // Filter executives to only those whose key1 matches currentUserKey
-  const eligibleExecutives = executives.filter(executive => executive.key1 === currentUserKey);
-  console.log("Eligible Executives:", eligibleExecutives);
-
-  if (eligibleExecutives.length === 0) {
-    console.error("No eligible executives found for assignment.");
-    return;
-  }
-
-  let executiveIndex = 0;
-
-  try {
-    const updatedLeads = [...filteredLeads];
-
-    // Assign each lead to an eligible executive in a round-robin fashion
-    for (let i = 0; i < updatedLeads.length; i++) {
-      const lead = updatedLeads[i];
-      const executive = eligibleExecutives[executiveIndex];
-
-      lead.assignedto = executive.key1; // Assign executive's key1 to the lead
-
-      // API call to update the lead in the backend
-      await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${lead._id}`, {
-        assignedto: executive.fname,
-      });
-
-      // Rotate to the next eligible executive
-      executiveIndex = (executiveIndex + 1) % eligibleExecutives.length;
-    }
-
-    // Update the leads in the state
-    dispatch(setLeads(updatedLeads));
-    console.log("Leads assigned to executives successfully!");
-  } catch (error) {
-    console.error("Error assigning leads to executives:", error);
-  }
-};
-
+      const assignLeadsAutomatically = async () => {
+        if (executives.length === 0 || leads.length === 0) {
+            console.error("No executives or leads available for assignment.");
+            return;
+        }
+    
+        const filteredLeads = leads.filter(lead => lead.assignedto === currentUserKey);
+        if (filteredLeads.length === 0) {
+            console.error("No filtered leads available for assignment.");
+            return;
+        }
+    
+        const eligibleExecutives = executives.filter(executive => executive.key === currentUserKey);
+        
+    
+        if (eligibleExecutives.length === 0) {
+            console.error("No eligible executives found for currentUserKey:", currentUserKey);
+            return;
+        }
+    
+        let executiveIndex = 0; // Start assigning from the first executive
+    
+        try {
+            for (let i = 0; i < filteredLeads.length; i++) {
+                const lead = filteredLeads[i];
+                const executive = eligibleExecutives[executiveIndex];
+                
+                // Update the lead assignment
+                lead.assignedto = executive.id;
+    
+                // Call the API to update the lead's assignedto field
+                await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${lead._id}`, {
+                    assignedto: executive.id, // Use key1 to assign
+                });
+    
+                // Move to the next executive (round-robin)
+                executiveIndex = (executiveIndex + 1) % eligibleExecutives.length;
+            }
+    
+            // Update the state with the newly assigned leads
+            dispatch(setLeads(filteredLeads));
+            console.log("Leads distributed successfully among executives!");
+    
+        } catch (error) {
+            console.error("Error assigning leads:", error);
+        }
+    };
+    
       const togglePopadd = () => 
      dispatch(setIsPopupVisible(!isPopupVisible));
 
@@ -183,9 +233,6 @@ const TeamleadAbove = () => {
             <button className='automatic_button' onClick={assignLeadsAutomatically}>Assign Leads</button>
             </div>
             <div className='d-flex'>
-              <div className='me-3'>
-                <p className='ruptxt mt-1'>₨1,720,000.8 deals</p>
-              </div>
             
               <div className='users_button d-flex align-items-center justify-content-around me-5'>
                 <img className='teamlogo' src='/Teamlogo.webp' alt='team logo' />
@@ -211,6 +258,27 @@ const TeamleadAbove = () => {
       </div>
       </div>
       )}
+              </div>
+              <div className='me-3'>
+              <FaBell className='noti_bell' onClick={toggleBellDropdown} />
+              {callbackLeads.length > 0 && (
+  <span className="badge">{callbackLeads.length}</span>
+)}
+  {isBellDropdownOpen && (
+                        <div className="bell-dropdown">
+                            {callbackLeads.length > 0 ? (
+                                callbackLeads.map((lead) => (
+                                    <div key={lead.id} className="dropdown-item">
+                                        <p className="lead-name">
+                                            {lead.name} labsed call
+                                        </p>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="dropdown-empty">No Callback Leads</p>
+                            )}
+                        </div>
+                    )}
               </div>
             </div>
           </div>
