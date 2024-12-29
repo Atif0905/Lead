@@ -12,7 +12,6 @@ import { FaCircleUser } from "react-icons/fa6";
 import { IoMdShare } from "react-icons/io";
 import { FaEllipsisH } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
-import { FaCaretDown } from "react-icons/fa";
 import { useParams } from 'react-router-dom'; 
 import {
   setUsers, setTotalLeads, setLeads, setStages, 
@@ -21,11 +20,12 @@ import {
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const SubuserDashboard = () => {
-  const { userId } = useParams(); 
+  const { userId } = useParams();  // Extract `userId` from the URL parameters
   const [isDropdownList, setIsDropdownList] = useState(null);
   const [executiveFnames, setExecutiveFnames] = useState([]); 
 
   const toggleAdmin = (index) => {
+    // Toggle dropdown visibility based on the clicked index
     setIsDropdownList(prevIndex => (prevIndex === index ? null : index));
   };
 
@@ -35,23 +35,25 @@ const SubuserDashboard = () => {
     } = useSelector((state) => state);
   
     useEffect(() => {
+      // Fetch users and leads data when the component is mounted or userId changes
       const fetchUserAndLeads = async () => {
         try {
           const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
           if (usersResponse.data.status === 'ok') {
             const usersData = usersResponse.data.data;
             dispatch(setUsers(usersData));
-    
+           // Find the current user based on userId
             const currentUser = usersData.find(user => user._id === userId);
             const currentUserKey = currentUser?.key1;
             console.log(currentUserKey)
-    
+            // Fetch all leads
             const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
             const allLeads = leadsResponse.data;
+             // Filter leads assigned to the current user
             const filteredLeads = allLeads.filter(lead => lead.assignedto === currentUserKey);
             dispatch(setLeads(filteredLeads));
             dispatch(setTotalLeads(filteredLeads.length));
-
+           // Filter executives associated with the current user
             const executiveFnamesList = usersData
             .filter(user => user.key === currentUserKey && user.userType === "Executive")
           setExecutiveFnames(executiveFnamesList);
@@ -66,11 +68,11 @@ const SubuserDashboard = () => {
     
       fetchUserAndLeads();
     }, [userId]);
-  
+    // Get the number of leads by stage
     const getLeadsCountByStage = (stage) => {
       return (leads || []).filter(lead => lead.status === stage).length;
     };
-
+ // Get the percentage of leads by stage
     const getLeadsPercentageByStage = (stage) => {
       const stageCount = getLeadsCountByStage(stage);
       return totalLeads > 0 ? ((stageCount / totalLeads) * 100).toFixed(2) : 0;

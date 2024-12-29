@@ -5,14 +5,14 @@ const UserDetailPopup1 = ({ onClose, selectUser,  subUsers, leads, executives })
     const [matchingSubUsers, setMatchingSubUsers] = useState([]);
     const [matchedExecutives, setMatchedExecutives] = useState([]);
     const handleClick = (selectUser) => {
-    
+     // Find the sub-users whose key matches the selected user's key
       const matchedSubUsers = Array.isArray(subUsers)
         ? subUsers.filter(subUser => subUser.key === selectUser.key)
         : [];
   
-      
+       // Map the matched sub-users to extract necessary details
       const subUserDetails = matchedSubUsers.map(subUser => {
-       
+        // Find all leads assigned to the current sub-user
         const assignedLeads = Array.isArray(leads)
           ? leads.filter(lead => {
               return lead.assignedto === subUser.key1;
@@ -31,10 +31,11 @@ const UserDetailPopup1 = ({ onClose, selectUser,  subUsers, leads, executives })
     };
   
     const handleSubUserClick = (subUser) => {
-     
+       // Filter executives whose key matches the sub-user's key1
       const matchedExecutivesList = executives.filter(exec => exec.key === subUser.key1);
-      
+       // Map the matched executives to extract necessary details
       const executivesDetails = matchedExecutivesList.map(exec => {
+         // Find all leads assigned to the current executive
         const assignedLeads = Array.isArray(leads)
           ? leads.filter(lead => lead.assignedto === exec.fname)
           : [];

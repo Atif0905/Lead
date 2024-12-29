@@ -1,34 +1,36 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState} from 'react';
 import { useDispatch } from 'react-redux';
 import './Deals.css';
 import { FaUser } from "react-icons/fa";
 import axios from 'axios';
 
-const AddDeals = ({ leadId, setIsPopupVisible}) => {
+const AddDeals = ({ leadId, setAddDealShow}) => {
   const dispatch = useDispatch();
 
+  // Initializing formData to store form inputs.
   const [formData, setFormData] = useState({
     status: '',
     contactperson1: '', 
     budget: '', 
-   pipeline: '', 
+    pipeline: '', 
     property: '', 
-    username: '', 
     contactperson2: '', 
     contactnumber: '', 
     comment: '', 
     callbackTime: '',
     callbackDate: ''
   });
-
+  // stageColor is used for styling pipeline stages dynamically.
   const [stageColor, setStageColor] = useState('');
 
+   // handleChange updates formData based on user input and adjusts stageColor based on pipeline.
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value
     });
+      // Setting stageColor dynamically for visual pipeline representation.
     if (name === 'pipeline') {
       switch (value) {
         case 'Hot':
@@ -48,24 +50,25 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
- 
     try {
-      const response =  await axios.put(`${process.env.REACT_APP_PORT}/leads/update/${leadId}`, formData); 
-      console.log('Lead created:', response.data);
+      const response = await axios.post(`${process.env.REACT_APP_PORT}/leads/${leadId}`, 
+     formData);
+      // console.log('Lead created:', response.data);
+      // Resetting formData after successful submission.
       setFormData({
         status: '',
         contactperson1: '',
         budget: '',
         pipeline: '',
         property: '',
-        username: '',
         contactperson2: '',
         contactnumber: '',
         comment: '',
         callbackTime: '',
         callbackDate: '',
       });
-    
+       // Closing the modal using Redux dispatch.
+     dispatch(setAddDealShow(false));
     } catch (error) {
       console.error('Error creating lead:', error.response ? error.response.data : error.message);
     }
@@ -106,6 +109,7 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
                       name="callbackDate"
                       value={formData.callbackDate}
                       onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
@@ -118,6 +122,7 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
                       name="callbackTime"
                       value={formData.callbackTime}
                       onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
@@ -186,7 +191,7 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
                 <option value="Option 3">Option 3</option>
               </select>
             </div>
-            <div className="form-group">
+            {/* <div className="form-group">
               <label className='label_text'>Username</label><br />
               <div className='contact_field d-flex align-items-center'>
                 <input
@@ -197,7 +202,7 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
                   onChange={handleChange}
                 />
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div className='col-6 dealform2'>
@@ -251,7 +256,7 @@ const AddDeals = ({ leadId, setIsPopupVisible}) => {
           </div>
 
           <div className='bottomdeal_div'>
-            <button className='cancel_btn me-2' type="button" onClick={() => dispatch(setIsPopupVisible(false))}>Cancel</button>
+            <button className='cancel_btn me-2' type="button" onClick={() => dispatch(setAddDealShow(false))}>Cancel</button>
             <button className='save_btn' type="submit">Save</button>
           </div>
         </div>

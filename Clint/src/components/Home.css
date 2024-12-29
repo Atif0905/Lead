@@ -197,4 +197,21 @@ background-color: transparent;
   color: red;
   border: none;
 }
+.followupbtn_div{
+  margin-top: 1%;
+  margin-bottom: 5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+.follow_ups_btn{
+  width: 200px;
+  height: 45px;
+  border-radius: 5px;
+  border: none;
+  background-color: #211C52;
+  font-size: 14px;
+  color: white;
+}
 

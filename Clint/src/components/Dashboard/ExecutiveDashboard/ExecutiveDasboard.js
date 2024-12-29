@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Bar,  Pie} from 'react-chartjs-2';
-
 import {
   Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,  ArcElement,
 } from 'chart.js';
@@ -14,7 +13,6 @@ import { IoCaretDownSharp } from "react-icons/io5";
 import { IoMdShare } from "react-icons/io";
 import { FaEllipsisH } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
-import { FaCaretDown } from "react-icons/fa";
 import { useParams } from 'react-router-dom'; 
 import {
   setUsers, setTotalLeads, setLeads, setStages, 
@@ -24,12 +22,13 @@ import PopupNotification from '../../ExecutiveLead/PopupNotification';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const ExecutiveDasboard = () => {
-  const { userId } = useParams(); 
+  const { userId } = useParams(); // Get user ID from URL parameters
   const [isDropdownList, setIsDropdownList] = useState(null);
   const [isLostLead, setIsLostLead] = useState();
   const [isWonLead, setIsWonLead] = useState([]);
 
   const toggleAdmin = (index) => {
+     // Toggles dropdown for the specified index
     setIsDropdownList(prevIndex => (prevIndex === index ? null : index));
   };
 
@@ -39,32 +38,31 @@ const ExecutiveDasboard = () => {
     } = useSelector((state) => state);
 
     useEffect(() => {
+      // Fetch user and leads data on component mount
       const fetchUserAndLeads = async () => {
         try {
           const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
           if (usersResponse.data.status === 'ok') {
             const usersData = usersResponse.data.data;
             dispatch(setUsers(usersData));
-    
+           // Find current user based on userId from URL params
             const currentUser = usersData.find(user => user._id === userId);
-            const currentUserKey = currentUser?.id;
+            const currentUserKey = currentUser?.id; // Current user's unique key
             console.log(currentUserKey)
-    
+           // Fetch all leads
             const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
             const allLeads = leadsResponse.data;
-
+            // Filter leads assigned to the current user that are not "won" or "lost"
             const filteredLeads = allLeads.filter(lead => lead.assignedto === currentUserKey && lead.status !== "won" && lead.status !== "Lost");
-            
-    
             dispatch(setLeads(filteredLeads));
             dispatch(setTotalLeads(filteredLeads.length));
-
+           // Filter and count lost leads
             const lostLeads = allLeads.filter(
               lead => lead.assignedto === currentUserKey && lead.status === "Lost"
             );
             setIsLostLead(lostLeads.length);
         
-
+           // Filter and count won leads
             const wonLeads = allLeads.filter(
               lead => lead.assignedto === currentUserKey && lead.status === "won"
             );
@@ -80,15 +78,17 @@ const ExecutiveDasboard = () => {
     
       fetchUserAndLeads();
     }, [userId]);
-  
+  // Function to count leads by status (stage)
     const getLeadsCountByStage = (stage) => {
       return (leads || []).filter(lead => lead.status === stage).length;
     };
+    // Function to calculate percentage of leads in a specific stage
     const getLeadsPercentageByStage = (stage) => {
       const stageCount = getLeadsCountByStage(stage);
       return totalLeads > 0 ? ((stageCount / totalLeads) * 100).toFixed(2) : 0;
     };
 
+  // Data for bar chart
     const chartData = {
       labels: stages.map(stage => stage.slice(0, 5)),
       datasets: [
@@ -168,35 +168,7 @@ const ExecutiveDasboard = () => {
   return (
     <div className='dashboard_maindiv'>
       <PopupNotification leads={leads} />
-    {/* <div className='dashboard_sidebar'>
-     <div className='stick_div'>
-<div className='sidebar_lead_div'>
-  <p className='sidebar_txt'>Lead Created</p>
-  <FaCaretDown className='ms-1 admin_careticon' 
-   onClick={() =>toggleAdmin(1)}  />
-</div>
-{isDropdownList === 1 && (
-        <div className='admin_dropdown_menu'>
-          <p className='ms-1'>{totalLeads > 0 ? `${totalLeads} LEADS` : "(NO VALUE)"}</p>
-        </div>
-      )}
-<div className='sidebar_lead_div'>
-  <p className='sidebar_txt'>Lead Converted</p>
-  <FaCaretDown className='admin_careticon' 
-   onClick={() =>toggleAdmin(2)}  />
-</div>
-{isDropdownList === 2 && (
-        <div className='admin_dropdown_menu'>
-          {stages.map((stage, index) => (
-               <p key={index} className=''> 
-                 {stage} - {getLeadsPercentageByStage(stage)}%
-               </p>
-                 ))}
-        </div>
-      )}
-          </div>
-
-    </div> */}
+   
     <div className='dashboard_contentdiv'>
         <div className='d-flex align-items-center justify-content-between'>
     <h2>Executive Dashboard</h2>

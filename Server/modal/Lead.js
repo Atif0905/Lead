@@ -16,15 +16,11 @@ const LeadSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-   required: false
-  },
-  title: {
-    type: String,
     required: false
   },
   assignedto: {
     type: String,
-   required: false
+    required: false
   },
   contactperson1: {
     type: String,
@@ -39,10 +35,6 @@ const LeadSchema = new mongoose.Schema({
     required: false
   },
   property: {
-    type: String,
-    required: false
-  },
-  username: {
     type: String,
     required: false
   },
@@ -63,13 +55,34 @@ const LeadSchema = new mongoose.Schema({
   },
   callbackTime: {
     type: String,
-    required: true
   },
   callbackDate: {
     type: String,
-    required: true
   },
-
+  reason: {
+    type: String,
+  },
+  updates: [
+    {
+      status: String,
+      contactperson1: String,
+      budget: String,
+      pipeline: String,
+      property: String,
+      contactperson2: String,
+      contactnumber: String,
+      comment: String,
+      lostreason: String,
+      lostcomment: String,
+      callbackTime: String,
+      callbackDate: String,
+      reason: String,
+      updatedAt: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Lead', LeadSchema);

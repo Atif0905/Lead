@@ -31,7 +31,7 @@ const LeadCreatedEdit = () => {
       try {
         const leadsData = await fetchLeads(); // Use the API function
         dispatch(setLeads(leadsData));
-
+  // Calculate lead counts for users with `userType` as 'User
         const leadCountsByUser = users.filter(user => user.userType === 'User').map(user => {
           const count = leadsData.filter(lead => lead.assignedto === user.key).length;
           return { user, count };
@@ -47,29 +47,28 @@ const LeadCreatedEdit = () => {
       try {
         const usersData = await fetchUsers(); // Use the API function
         dispatch(setUsers(usersData));
-        
+        // Filter sub-users and executives from the user data and store it in a state.
         const subUsersData = usersData.filter(user => user.userType === 'SubUser');
         const executivesData = usersData.filter(user => user.userType === 'Executive');
-        
         dispatch(setSubUsers(subUsersData));
         dispatch(setExecutives(executivesData));
       } catch (error) {
         console.error('Error fetching users:', error);
       }
     };
-
     fetchLeadsData();
     fetchUsersData();
   }, [dispatch, users]);
 
+  // Handle selection of a user
   const handleClick = (user) => {
     setSelectedUser(user); 
     setSelectedSubUser(null); 
-
+ // Find sub-users whose `key` matches the selected user's `key`
     const matchedSubUsers = Array.isArray(subUsers)
       ? subUsers.filter(subUser => subUser.key === user.key)
       : [];
-
+ // Map sub-users to include their lead counts
     const subUserDetails = matchedSubUsers.map(subUser => {
       const assignedLeads = Array.isArray(leads)
         ? leads.filter(lead => lead.assignedto === subUser.key1)
@@ -82,19 +81,18 @@ const LeadCreatedEdit = () => {
         key1: subUser.key1,
       };
     });
-    setMatchingSubUsers(subUserDetails);
+    setMatchingSubUsers(subUserDetails); // Update state with sub-user details
   };
 
   const handleSubUserClick = (subUser) => {
     setSelectedSubUser(subUser);
-
+// Find executives whose `key` matches the selected sub-user's `key1`
     const matchedExecutivesList = executives.filter(exec => exec.key === subUser.key1);
-    
+       // Map executives to include their lead count
     const executivesDetails = matchedExecutivesList.map(exec => {
       const assignedLeads = Array.isArray(leads)
         ? leads.filter(lead => lead.assignedto === exec.fname)
-        : [];
-        
+        : [];  
       return {
         fname: exec.fname,
         lname: exec.lname,

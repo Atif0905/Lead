@@ -5,11 +5,11 @@ import PopupNotification from './ExecutiveLead/PopupNotification';
 
 const ExecutiveLead = () => {
   return (
-    <>
+    <div className='main-content'>
         <ExecutiveAbove/>
         <ExecutiveLead1/>
         <PopupNotification/>
-    </>
+    </div>
   )
 }
 

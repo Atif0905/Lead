@@ -6,7 +6,6 @@ const AssignPopup2 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo}) =
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const dispatch = useDispatch();
-    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -28,7 +27,6 @@ const AssignPopup2 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo}) =
                 setIsLoading(false);
             }
         };
-
         fetchData();
     }, [assignedTo]);
 
@@ -37,14 +35,14 @@ const AssignPopup2 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo}) =
             const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${leadId}`, {
                 assignedto: `${user.key1}`
             });
-
             if (response.status === 200 ) {
                 const updatedDeals = deals.map((deal) =>
-                    deal.id === leadId ? { ...deal, assignedto: `${user.key1}` } : deal
+                    deal.id === leadId ? { ...deal, assignedto: `${user.key1}`} : deal
                 );
                 dispatch(setDeals(updatedDeals));
                 dispatch(setIsAssignLead(false));
                 alert(`Assigned successfully to: ${user.fname} ${user.lname}`);
+                // window.location.reload()
             } else {
                 console.error("Failed to update lead:", response.data);
                 alert(`Failed to assign: ${response.data.message || 'Unknown error occurred'}`);
@@ -75,6 +73,7 @@ const AssignPopup2 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo}) =
                                     className='assign_button'
                                     onClick={async () => {
                                         await handleAssign(user);
+                                        window.location.reload(); 
                                         }}>
                                     Assign to
                                 </button>

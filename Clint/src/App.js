@@ -51,14 +51,12 @@ function App() {
           <>
            <UserDetails /> 
             <Adminsidebar /> 
-           
           </>
         )}
           {userType === "User" && (
           <>
             <UserDetails /> 
             <DirectorSidebar /> 
-          
           </>
         )}
   {userType === "SubUser" && (

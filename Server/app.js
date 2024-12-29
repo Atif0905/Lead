@@ -36,8 +36,9 @@ const Lead = mongoose.model("Lead");
 const leadsRoutes = require("./routes/leads");
 app.use("/leads", leadsRoutes);
 
-// User routes
+// This endpoint for creating register credential of users
 app.post("/register", async (req, res) => {
+
   const { fname, lname, email, password, userType, key , key1, executiveid } = req.body;
 
   const encryptedPassword = await bcrypt.hash(password, 10);
@@ -63,6 +64,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
+// This endpoint for creating login credential of users
 app.post("/login-user", async (req, res) => {
   const { email, password } = req.body;
 
@@ -111,6 +113,7 @@ app.post("/userData", async (req, res) => {
   }
 });
 
+//api to fetch all users
 app.get("/getAllUser", async (req, res) => {
   let query = {};
   const searchData = req.query.search;

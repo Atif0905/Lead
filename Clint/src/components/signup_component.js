@@ -17,6 +17,7 @@ export default function SignUp() {
   const [userData, setUserData] = useState("");
   const [keyData, setKeyData] = useState("");
   
+    // Effect to fetch all users and filter by userType
   useEffect(() => {
     axios.get(`${process.env.REACT_APP_PORT}/getAllUser`)
       .then((response) => {
@@ -33,13 +34,16 @@ export default function SignUp() {
       .catch((error) => console.error("Error fetching options:", error));
   }, []);
 
+   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Check secret key for admin registration
     if (userType === "Admin" && secretKey !== "Atif") {
       alert("Invalid Admin");
       return;
     }
     console.log(fname, lname, email, password, key1);
+     // Post request to register the user
     axios.post("http://localhost:5000/register", {
       fname,
       email,

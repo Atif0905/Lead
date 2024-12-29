@@ -86,7 +86,7 @@ right: 5px;
 
 .bell-dropdown {
   position: absolute;
-  top: 99%;
+  top: 100%;
   right: 1%;
   background-color: white;
   border: 1px solid #ccc;
@@ -96,6 +96,8 @@ right: 5px;
   width: 200px;
   max-height: 300px;
   overflow-y: auto;
+  padding: 15px;
+  scrollbar-width: none;
 }
 
 .dropdown-empty {
