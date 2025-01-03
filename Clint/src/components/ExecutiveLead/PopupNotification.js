@@ -2,11 +2,26 @@ import { useState, useEffect } from 'react';
 import { RxCross2 } from "react-icons/rx";
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import axios from 'axios';
 
-const PopupNotification = ({ leads }) => {
+const PopupNotification = ({ leads,  leadId  }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupLead, setPopupLead] = useState(null);
   const [shownLeads, setShownLeads] = useState(new Set());
+   const [updates, setUpdates] = useState([]);
+
+   useEffect(() => {   
+    const fetchLeadData = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_PORT}/leads/${leadId}`);
+        setUpdates(response.data.updates); 
+        console.log(updates)
+      } catch (error) {
+        console.error('Error fetching lead data:', error);
+      }
+    };
+    fetchLeadData();
+  }, [leadId]);
 
   useEffect(() => {
     AOS.init();
@@ -14,37 +29,41 @@ const PopupNotification = ({ leads }) => {
 
   useEffect(() => {
     const checkCallbackTime = () => {
+       //Function to format date into "YYYY-MM-DD" format
       const formatDate = (date) => {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
         const year = date.getFullYear();
         return `${year}-${month}-${day}`;
       };
-  
+    
       if (!leads || !Array.isArray(leads)) return;
-  
       const currentTime = new Date();
       const currentDate = formatDate(currentTime);
+
+        // Get current time in 24-hour "HH:mm" format
       const currentTimeStr = currentTime.toLocaleTimeString('en-US', {
         hour12: false,
         hour: '2-digit',
         minute: '2-digit',
-      });
-  
-      const leadWithMatchingDateTime = leads.find((lead) => {
+      }); 
+
+      // Find a lead that matches the current date and time for callback
+      const leadWithMatchingDateTime = updates.find((lead) => {
         const leadTime = new Date(`${lead.callbackDate}T${lead.callbackTime}`);
         return (
-          lead.callbackDate === currentDate &&
-          lead.status === 'Call Back' &&
-          !shownLeads.has(lead.id) &&
-          leadTime <= currentTime // Check if the callback time is now or has passed
+          lead.callbackDate === currentDate &&  // Match the callback date
+          lead.status === 'Call Back' && // Ensure the status is 'Call Back'
+          !shownLeads.has(lead.id) &&  // Ensure the lead hasn't already triggered a popup
+          leadTime <= currentTime // Ensure the callback time has passed
         );
       });
-  
+     
+      // If a matching lead is found, set it in the popup state
       if (leadWithMatchingDateTime) {
         setPopupLead(leadWithMatchingDateTime);
         setShowPopup(true);
-        setShownLeads((prev) => new Set(prev).add(leadWithMatchingDateTime.id));
+        setShownLeads((prev) => new Set(prev).add(leadWithMatchingDateTime.id)); // Add lead ID to the shown list
       }
   
       // Check if the popupLead's status has changed
@@ -53,16 +72,16 @@ const PopupNotification = ({ leads }) => {
         setPopupLead(null);
       }
     };
-  
+   // Set an interval to check for matching leads every second
   const intervalId = setInterval(checkCallbackTime, 1000);
-  
+     // Clean up the interval on component unmount
     return () => clearInterval(intervalId);
   }, [leads, popupLead, shownLeads]);
 
+ // Function to close the popup manually
   const closePopup = () => {
     setShowPopup(false);
   };
-
 
   return (
     <>

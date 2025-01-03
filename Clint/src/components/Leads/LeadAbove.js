@@ -5,11 +5,12 @@ import { faX } from '@fortawesome/free-solid-svg-icons';
 import './Deals.css';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import {
-  setUsers, setSubUsers, setExecutives, setIsLoading, setIsModalOpen, setIsPopupVisible,setIsDropdownOpen,setIsUserDropdown,setIsAddLeads,} from '../../redux/actions';
+import {setUsers, setSubUsers, setExecutives, setIsLoading, setIsModalOpen, setIsPopupVisible,setIsDropdownOpen,setIsUserDropdown,setIsAddLeads,} from '../../redux/actions';
 import AddDeals from './AddDeals';
 import ImportResult from './ImportResult';
 import Addleads from '../DirectorLeads/Addleads';
+import { RiArrowDownSFill } from "react-icons/ri";
+import { FaUserTie } from "react-icons/fa6";  
 
 const LeadAbove = () => {
   // Extract userId from URL parameters
@@ -17,13 +18,11 @@ const LeadAbove = () => {
 
   const dispatch = useDispatch();
   const {users, subUsers, executives, isPopupVisible, isModalOpen, isDropdownOpen, isUserDropdown,isAddLeads} = useSelector((state) => state);
-
   const [hoveredUserKey, setHoveredUserKey] = useState(null); 
   const [hoveredSubUserKey1, setHoveredSubUserKey1] = useState(null); 
   const [selectedName, setSelectedName] = useState('User');
   const [unassignedLeads, setUnassignedLeads] = useState([]);
   const [lastUserIndex, setLastUserIndex] = useState(0);
-  
   
   useEffect(() => {
     // Fetch users, subUsers, and executives from API and update state in redux store
@@ -153,36 +152,24 @@ console.log(remainingLeads)
   const handleSubUserMouseEnter = (subUserKey1) => setHoveredSubUserKey1(subUserKey1);
   const handleSubUserMouseLeave = () => setHoveredSubUserKey1(null);
 
-  
-
   return (
     <div className='mt-4 ps-3'>
       <div className='d-flex'>
-        <div className='buttdiv1'>
-          <div className='cont_butt'>
-            <img className='bar_chat' src='/bar_img.webp' alt='bar img' />
-          </div>
-          <div className='bar_butt'>
-            <img className='bar_chat' src='/Content.webp' alt='content img' />
-          </div>
-          <div className='cont_butt'>
-            <img className='bar_chat' src='/Rupee.webp' alt='rupee img' />
-          </div>
-        </div>
         <div className='buttdiv2'>
-          <div className='deal_butt1'>
+          <div className='d-flex align-items-center justify-content-center'>
             <p className='deal_butt1_txt'>
-              + <span>Deal</span>
+              + <span>Leads</span>
             </p>
           </div>
-          <div className='deal_butt2' onClick={toggleDropdown}>
-            <img className='arrow_down' src='/arrowdown.webp' alt='arrow down' />
+          <div className='d-flex align-items-center justify-content-center' onClick={toggleDropdown}>
+            <RiArrowDownSFill  className='arrow_down' />
           </div>
           {isDropdownOpen && (
             <div className='dropdown-content'>
               <div>
                 <p className='import_txt' onClick={toggleModal}>+ Import data</p>
                 <p className='import_txt' onClick={toggleAssignLeads}>+ Add Leads</p>
+                <p className='import_txt' onClick={handleAssignLeadsClick}>+ Automatic assign Leads</p>
               </div>
             </div>
           )}
@@ -191,22 +178,13 @@ console.log(remainingLeads)
 
       <div className='d-flex align-items-center justify-content-between mt-4'>
         <div>
-         <button className='automatic_button' onClick={handleAssignLeadsClick}>Assign Leads</button>
         </div>
-        <div className='d-flex'>
-          <div className='me-3'>
-            <p className='ruptxt mt-1'>₨ 1,720,000.8 deals</p>
-          </div>
+      
           <div className='users_button me-3'>
             <div className='users_butt1'>
-              <img className='adminmaleimg' src='/AdministratorMale.webp' alt='admin' />
+            <FaUserTie className='adminmaleimg'/>
               <p className='adminname'>{selectedName}</p>
-              <img
-                className='arrowblackimg'
-                src='/arrowblack.webp'
-                alt='arrow black'
-                onClick={toggleUserDropdown}
-              />
+              <RiArrowDownSFill className='arrowblackimg' onClick={toggleUserDropdown} />
               {isUserDropdown && (
                 <div className='users_dropdown'>
                   <div>
@@ -263,11 +241,9 @@ console.log(remainingLeads)
                 </div>
               )}
             </div>
-            <div className='users_butt2'>
-              <img className='callibrush' src='/CalliBrush.webp' alt='brush' />
-            </div>
+           
           </div>
-        </div>
+     
       </div>
 
       {isPopupVisible && (

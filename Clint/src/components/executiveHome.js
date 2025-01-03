@@ -6,7 +6,6 @@ import PopupNotification from './ExecutiveLead/PopupNotification';
 const ExecutiveHome = () => {
   
   return (
- 
       <div className="main-content">
         <ExecutiveDasboard/>
         <PopupNotification/>

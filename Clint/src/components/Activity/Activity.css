@@ -29,6 +29,7 @@ padding: 16px;
    .icon_img{
     width: 20px;
     height: 20px;
+    cursor: pointer;
    }
    .time_div{
     width: 100%;

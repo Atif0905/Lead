@@ -23,7 +23,8 @@ export default function UserDetails() {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const location = useLocation(); 
- 
+
+   // Mapping of paths to titles for navigation display
   const pathTitleMap = {
     "/admin-dashboard": "Admin Dashboard",
     "/adminleads": "Admin Leads",
@@ -47,6 +48,7 @@ export default function UserDetails() {
   const currentPath = getBasePath(location.pathname);
   const currentTitle = pathTitleMap[currentPath];
 
+   // Fetch user data and all user data for admin on component mount
   useEffect(() => {
     const token = window.localStorage.getItem("token");
     if (!token) {
@@ -55,7 +57,7 @@ export default function UserDetails() {
       window.location.href = "./login";
       return;
     }
-
+ // Fetch user data using token
     axios
       .post(`${process.env.REACT_APP_PORT}/userData`, { token })
       .then((response) => {
@@ -68,7 +70,7 @@ export default function UserDetails() {
           setUserData(data.data);
           setUserType(data.data.userType);
           setIsLoading(false);
-
+ // If user is admin, fetch data for all users
           if (data.data.userType === "Admin") {
             axios
               .get(`${process.env.REACT_APP_PORT}/allUserData`)
@@ -85,7 +87,7 @@ export default function UserDetails() {
   const toggleNavDropdown = () => {
     setShowDropdown(!showDropdown);
   };
-
+// Clear local storage and log out user
   const logOut = () => {
     window.localStorage.clear();
     window.location.href = "./login";
@@ -94,9 +96,9 @@ export default function UserDetails() {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
+ // Get initials for the user's avatar
   const initials = userData ? `${userData.fname.charAt(0)}${userData.lname.charAt(0)}` : "";
-
+ // Get background color based on user's initials
   const getBackgroundColor = (initials) => {
     const colors = [
       "#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A1", "#A1FF33", "#FF8333"
@@ -108,6 +110,7 @@ export default function UserDetails() {
     return colors[sum % colors.length];
   };
 
+ // Get text color for contrasting against background color
   const getContrastingTextColor = (bgColor) => {
     const color = bgColor.substring(1); // strip #
     const rgb = parseInt(color, 16); // convert rrggbb to decimal
@@ -121,6 +124,7 @@ export default function UserDetails() {
   const bgColor = getBackgroundColor(initials);
   const textColor = getContrastingTextColor(bgColor);
 
+  // Styling for the user dropdown avatar
   const dropdownStyle = {
     backgroundColor: bgColor,
     color: textColor,
@@ -137,6 +141,7 @@ export default function UserDetails() {
     justifyContent: "center",
   };
   
+   // Render navigation dropdown
   const renderDropdown = () => (
     <div className="sidebarabovediv">
       <div className="d-flex justify-content-between">

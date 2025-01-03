@@ -5,10 +5,10 @@ import Teamlead1 from './TeamLeads/Teamlead1'
 const TeamLead = () => {
   
   return (
-    <>
-<TeamleadAbove/>
+    <div className='main-content'>
+<TeamleadAbove />
 <Teamlead1/>
-    </>
+    </div>
   )
 }
 

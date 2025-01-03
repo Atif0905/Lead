@@ -159,7 +159,7 @@ const ScheduleActivity = () => {
               <div className='d-flex align-items-center justify-content-center'>
                 <FontAwesomeIcon  className='clock_img' icon={faMoneyCheck} />
                 </div>
-              <div className='prior_input d-flex align-items-center justify-content-around' onClick={toggleDropdown}>
+              <div className='prior_input d-flex align-items-center justify-content-around'>
                 <p className='mb-0'>Free</p>
                 <FontAwesomeIcon icon={faCaretDown} />
               </div>
@@ -171,13 +171,13 @@ const ScheduleActivity = () => {
             <textarea className='input_yellow' type='text'/>
             </div>
             </div>
-            <label className='note_txt'>Notes are necessary. (Give reasons ) </label>
+            <label className='note_txt'>Notes are necessary. (Give reasons )</label>
             <div className='mt-3 admin_div'>
               <div className='d-flex align-items-center justify-content-center'>
             <FontAwesomeIcon  className='clock_img' icon={faCircleUser} />
             </div>
             <div className='admin_input'>
-            <p className='mb-0'>Gaurav Tongar (YOU)</p>
+            <p className='mb-0'>(YOU)</p>
             <FontAwesomeIcon icon={faCaretDown} />
             </div>
             <div>
