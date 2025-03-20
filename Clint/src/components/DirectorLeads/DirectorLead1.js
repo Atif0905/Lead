@@ -36,14 +36,34 @@ const ItemTypes = {
     useEffect(() => {
       setDragging(isDragging);
     }, [isDragging, setDragging]);
-  
+    
+    const getBoxShadowColor = (status) => {
+      switch (status) {
+        case "Lead In":
+          return "0px 4px 5px rgba(0, 0, 255, 0.5)";
+        case "Contact Made":
+        case "won":
+          return "0px 4px 5px rgba(0, 128, 0, 0.5)"; 
+        case "Lost":
+        case "Not Interested":
+          return "0px 4px 5px rgba(255, 0, 0, 0.5)";
+        case "Switch Off":
+        case "Interested":
+        case "Call Back":
+          return "0px 4px 5px rgba(255, 255, 0, 0.5)";
+        default:
+          return "0px 4px 5px rgba(0, 0, 0, 0.1)"; 
+      }
+    };
     return (
       <div
         ref={drag}
         className='dealcard'
-        style={{ opacity: isDragging ? 0.5 : 1 }}>
+        style={{
+          opacity: isDragging ? 0.5 : 1,
+          boxShadow: getBoxShadowColor(status),
+        }}>
         <div className='dealcard_content'>
-          <p className='deal_head1'>{status}</p>
           <p className='deal_head2'>{assignedto}</p>
           <div className='d-flex justify-content-between'>
             <p className='deal_head3'>{text}</p> 

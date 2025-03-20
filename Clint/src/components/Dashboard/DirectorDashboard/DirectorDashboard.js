@@ -260,7 +260,7 @@ onClick={() =>toggleAdmin(2)}  />
 </div>
 </div>
 <div className='dashboard_card1'>
-<div className='dash_div3'>
+<div className='formhead'>
 <div className='d-flex'>
 <RiMoneyRupeeCircleFill  className='value_icon' />
 <h3 className='leadhead ms-2'>Lead conversion</h3>

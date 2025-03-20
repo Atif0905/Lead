@@ -94,20 +94,21 @@ transform: translate(-50%, -50%);
   padding: 7px;
 }
 .dealheading{
-font-size: 20px;
+font-size: 1.2vw;
 font-weight: 500;
-line-height: 23.14px;
+line-height: 1;
 text-align: left;
 color: #000000;
 }
 .dealcard{
 width: 100%;
-height: 150px;
+height: 100px;
 box-shadow: 0px 0px 2px 2px #00000026;
 background-color: #FFFFFF;
 margin-bottom: 10%;
 cursor: pointer;
 padding: 10px;
+border-radius:10px;
 }
 /* .dealcard:hover + .adddeal_button {
   display: block; 
@@ -122,24 +123,19 @@ padding: 10px;
  justify-content: center;
  align-items: center;
 }
-.deal_head1{
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 18.52px;
-  text-align: left;
-color: #000000;  
-}
+
 .deal_head2{
-font-size: 12px;
+font-size: 1.1vw;
 font-weight: 400;
-line-height: 13.8px;
+line-height: 1;
 text-align: left;
 color: #787878;
+font-family: "poppins";
 }
 .deal_head3{
-font-size: 12px;
+font-size: 1vw;
 font-weight: 700;
-line-height: 13.8px;
+line-height: 1;
 text-align: left;
 color: #787878;
 }
@@ -149,7 +145,7 @@ height: 100px;
 } 
 .dealcard_icon {
   width: 100%;
-  height: 50px;
+  height: 15px;
 display: flex;
 align-items: center;
 justify-content: space-between;
@@ -162,7 +158,7 @@ text-align: left;
 color: #787878;
 }
 .deals_usericon{
-font-size: 26px;
+font-size: 15px;
 cursor: pointer;
 }
 .deals_dlticon{
@@ -176,7 +172,7 @@ cursor: pointer;
     color: #000000;
     }
 .deals_alerticon{
-  font-size: 26px;
+  font-size: 15px;
 cursor: pointer;
 filter: drop-shadow(#DDB438CC 0px 4px 2px);
 }
@@ -197,5 +193,7 @@ background-color: transparent;
 .stage_dlt{
   color: red;
   border: none;
+  background: none;
+  margin-top: -8px;
 }
 

@@ -150,18 +150,8 @@ const LeadAbove = () => {
 
   return (
     <div className='mt-4 ps-3'>
+      <div className='d-flex align-items-center justify-content-between mt-4'>
       <div className='d-flex'>
-        <div className='buttdiv1'>
-          <div className='cont_butt'>
-            <img className='bar_chat' src='/bar_img.webp' alt='bar img' />
-          </div>
-          <div className='bar_butt'>
-            <img className='bar_chat' src='/Content.webp' alt='content img' />
-          </div>
-          <div className='cont_butt'>
-            <img className='bar_chat' src='/Rupee.webp' alt='rupee img' />
-          </div>
-        </div>
         <div className='buttdiv2'>
           <div className='deal_butt1' onClick={togglePopadd}>
             <p className='deal_butt1_txt'>
@@ -181,11 +171,8 @@ const LeadAbove = () => {
           )}
         </div>
       </div>
-
-      <div className='d-flex align-items-center justify-content-between mt-4'>
-        <div>
-         <button className='automatic_button' onClick={handleAssignLeadsClick}>Assign Leads</button>
-        </div>
+      <div >
+  
         <div className='d-flex'>
           <div className='me-3'>
             <p className='ruptxt mt-1'>₨ 1,720,000.8 deals</p>
@@ -262,7 +249,7 @@ const LeadAbove = () => {
           </div>
         </div>
       </div>
-
+      </div>            
       {isPopupVisible && (
         <div className='popup'>
           <div className='popup_content'>

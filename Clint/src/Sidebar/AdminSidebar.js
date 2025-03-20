@@ -27,7 +27,7 @@ const Adminsidebar = () => {
      
     <div className='excecutiveside'>
             <div>
-              <img className='sidebarlogo' src='' alt='logo' />
+              <img className='sidebarlogo' src='/llogo.jpeg' alt='logo' />
             </div>
             <div className='d-flex iconss'>
             <div className={`sideicon_div ${isActive(`/adminleads/${userId}`) ? 'active' : ''}`}>

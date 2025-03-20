@@ -287,7 +287,7 @@ const AdminDashboard = () => {
         </div>
         <div className='dash_content1 mt-5'>
 <div className='dashboard_card1'>
-<div className='dash_div1'>
+<div className='formhead'>
   <div className='d-flex'>
   <MdMyLocation className='value_icon' />
     <h3 className='leadhead ms-2'>Lead created by user</h3>
@@ -310,7 +310,7 @@ const AdminDashboard = () => {
     </div>
 </div>
 <div className='dashboard_card1'>
-<div className='dash_div1'>
+<div className='formhead'>
   <div className='d-flex'>
   <MdMyLocation className='value_icon' />
     <h3 className='leadhead ms-2'>Lead converted</h3>
@@ -328,7 +328,7 @@ const AdminDashboard = () => {
     </div>
 </div>
 <div className='dashboard_card1'>
-  <div className='dash_div3'>
+  <div className='formhead'>
     <div className='d-flex'>
     <RiMoneyRupeeCircleFill  className='value_icon' />
 <h3 className='leadhead ms-2'>Lead conversion</h3>
@@ -347,7 +347,7 @@ const AdminDashboard = () => {
         </div>
         <div className='dash_content2 mt-2'>
 <div className='dashboard_card1'>
-<div className='dash_div1'>
+<div className='formhead'>
   <div className='d-flex'>
   <RiMoneyRupeeCircleFill  className='value_icon' />
     <h3 className='leadhead ms-2'>Deals won over time </h3>
@@ -365,7 +365,7 @@ const AdminDashboard = () => {
     </div>
 </div>
 <div className='dashboard_card1'>
-<div className='dash_div1'>
+<div className='formhead'>
   <div className='d-flex'>
   <RiMoneyRupeeCircleFill  className='value_icon' />
     <h3 className='leadhead ms-2'>Average value of won </h3>
@@ -386,7 +386,7 @@ const AdminDashboard = () => {
     </div>
 </div>
 <div className='dashboard_card1'>
-<div className='dash_div1'>
+<div className='formhead'>
   <div className='d-flex'>
   <RiMoneyRupeeCircleFill className='value_icon' />
     <h3 className='leadhead ms-2'>Deal Duration</h3>
@@ -414,7 +414,7 @@ const AdminDashboard = () => {
         </div>
         <div className='dash_content1 mt-2'>
 <div className='dashboard_card1'>
-<div className='dash_div1'>
+<div className='formhead'>
   <div className='d-flex'>
   <SlCalender  className='value_icon' />
     <h3 className='leadhead ms-2'>Activities Completed </h3>
@@ -432,7 +432,7 @@ const AdminDashboard = () => {
     </div>
 </div>
 <div className='dashboard_card1'>
-<div className='dash_div1'>
+<div className='formhead'>
   <div className='d-flex'>
   <MdMyLocation className='value_icon' />
     <h3 className='leadhead ms-2'>Deals lost by Reason </h3>
@@ -453,7 +453,7 @@ const AdminDashboard = () => {
     </div>
 </div>
 <div className='dashboard_card1'>
-  <div className='dash_div1'>
+  <div className='formhead'>
     <div className='d-flex'>
     <RiMoneyRupeeCircleFill  className='value_icon' />
 <h3 className='leadhead ms-2'>Deal Progress </h3>
