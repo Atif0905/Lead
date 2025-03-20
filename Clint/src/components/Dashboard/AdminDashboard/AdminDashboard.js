@@ -13,7 +13,6 @@ import { IoMdShare } from "react-icons/io";
 import { FaEllipsisH } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
 import dayjs from 'dayjs';
-
 import {
   setUsers, setSubUsers, setTotalLeads, setExecutives, setAdminStages, setSelectedUser, setIsPopupVisible, setLeads
 } from '../../../redux/actions';
@@ -32,28 +31,29 @@ const AdminDashboard = () => {
   const [wonLeads, setWonLeads] = useState([]);
   const [timeDifferences, setTimeDifferences] = useState([]);
 
-  const toggleAdmin = (index) => {
-    setIsDropdownList(prevIndex => (prevIndex === index ? null : index));
-  };
-
+ 
   const dispatch = useDispatch();
 
+  // Fetching data from Redux store
   const {
   subUsers, selectedUser, executives,  users,  totalLeads,   adminstages=[], isPopupVisible, leads
   } = useSelector((state) => state);
 
+  const toggleAdmin = (index) => {
+    setIsDropdownList(prevIndex => (prevIndex === index ? null : index));
+  };
 
+ // Toggle user dropdown visibility
   const toggleDropdown = () => {
     setIsDropdownVisible(!isDropdownVisible);
   };
-
+ // Show user detail popup
   const showPopup = (user) => {
     const userCount = leadCountsByUser.find(item => item.user._id === user._id)?.count || 0;
     setSelectUser({ ...user, count: userCount });
     dispatch(setIsPopupVisible(true));
-
   };
-
+   // Close user detail popup
   const closePopup = () => {
     dispatch(setIsPopupVisible(false));
     dispatch(setisPopupShow(false));
@@ -63,15 +63,16 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+          // Fetch leads data and dispatch to Redux store
         const leadsData = await fetchLeads(); 
         dispatch(setLeads(leadsData));
-
+       // Calculate total leads
         const totalLeads = leadsData.length;
         dispatch(setTotalLeads(totalLeads));
-
+        // Filter and store won leads
         const wonLeads = leadsData.filter((lead) => lead.status === 'won');
         setWonLeads(wonLeads);
-
+       // Calculate time differences for won leads
         const timeDiffs = leadsData
           .filter((lead) => lead.status === 'won') 
           .map((lead) => {
@@ -80,9 +81,8 @@ const AdminDashboard = () => {
             const diffDays = updatedAt.diff(createdAt, 'day'); 
             return { label: lead.assignedto || 'Lead', timeTaken: diffDays }; 
           });
-
         setTimeDifferences(timeDiffs);
-
+         // Calculate stage counts and percentages
         const counts = adminstages.reduce((acc, stage) => {
           const count = leadsData.filter(lead => lead.status === stage).length;
           acc[stage] = {
@@ -92,7 +92,7 @@ const AdminDashboard = () => {
           return acc;
         }, {});
         setStageCounts(counts);
-
+// Calculate lead counts grouped by users
         const leadCountsByUser = users.filter(user => user.userType === 'User').map(user => {
           const count = leadsData.filter(lead => lead.assignedto === user.key).length;
           return { user, count };
@@ -104,9 +104,11 @@ const AdminDashboard = () => {
     };
    const fetchUsersData = async () => {
       try {
+        // Fetch users data and dispatch to Redux store
         const usersData = await fetchUsers();  // Use fetchUsers API function
         dispatch(setUsers(usersData));
 
+        // Separate users by user type and dispatch to Redux store
         const subUsersData = usersData.filter(user => user.userType === 'SubUser');
         const executivesData = usersData.filter(user => user.userType === 'Executive');
         dispatch(setSubUsers(subUsersData));
@@ -119,15 +121,16 @@ const AdminDashboard = () => {
     fetchUsersData();
   }, [dispatch, adminstages, users]);
 
-
+// Get lead counts for a specific status
   const getLeadsCountByStage = (adminstage) => {
     return (leads || []).filter(lead => lead.status === adminstage).length;
   };
+    // Get lead percentages for a specific status
   const getLeadsPercentageByStage = (adminstage) => {
     const stageCount = getLeadsCountByStage(adminstage);
     return totalLeads > 0 ? ((stageCount / totalLeads) * 100).toFixed(2) : 0;
   };
-
+ // Chart data configuration for stages
   const chartData = {
     labels: adminstages.map(adminstage => adminstage.slice(0, 7)),
     datasets: [
@@ -151,7 +154,7 @@ const AdminDashboard = () => {
       }
     ]
   };
-
+// Chart options for stages
   const options = {
     responsive: true,
     plugins: {

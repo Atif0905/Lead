@@ -14,8 +14,10 @@ import {
   } from '../../redux/actions';
 import AddDeals from '../Leads/AddDeals';
 import ImportResult from '../Leads/ImportResult';
+import { RiArrowDownSFill } from "react-icons/ri";
 
 const ExecutiveAbove = () => {
+    // Extract userId from URL parameters
     const { userId } = useParams();
 
     const dispatch = useDispatch();
@@ -25,7 +27,6 @@ const ExecutiveAbove = () => {
 
 
       useEffect(() => {
-   
         const fetchUsers = async () => {
           dispatch(setIsLoading(true));
           try {
@@ -59,28 +60,17 @@ const ExecutiveAbove = () => {
       const toggleDropdown = () => dispatch(setIsDropdownOpen(!isDropdownOpen));
 
   return (
-    <div className='main-content'>
+
         <div className='mt-4 p-3'>
         <div className='d-flex'>
-            <div className='buttdiv1'>
-              <div className='cont_butt'>
-                <img className='bar_chat' src='/bar_img.webp' alt='bar img' />
-              </div>
-              <div className='bar_butt'>
-                <img className='bar_chat' src='/Content.webp' alt='content img' />
-              </div>
-              <div className='cont_butt'>
-                <img className='bar_chat' src='/Rupee.webp' alt='rupee img' />
-              </div>
-            </div>
             <div className='buttdiv2'>
-              <div className='deal_butt1' onClick={togglePopadd}>
+              <div className='d-flex align-items-center justify-content-center'>
                 <p className='deal_butt1_txt'>
-                  + <span>Deal</span>
+                  + <span>Lead</span>
                 </p>
               </div>
-              <div className='deal_butt2' onClick={toggleDropdown}>
-                <img className='arrow_down' src='/arrowdown.webp' alt='arrow down' />
+              <div className='d-flex align-items-center justify-content-center' onClick={toggleDropdown}>
+                 <RiArrowDownSFill  className='arrow_down' />
               </div>
               {isDropdownOpen && (
                 <div className='dropdown-content' onClick={toggleModal}>
@@ -128,8 +118,6 @@ const ExecutiveAbove = () => {
           )}
   
         </div>
-
-    </div>
   )
 }
 

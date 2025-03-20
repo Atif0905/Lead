@@ -4,8 +4,9 @@ import axios from 'axios';
 
 const MovetoForm = ({ deal, setIsFormVisible , onStatusUpdate }) => {
   const [stage, setStage] = useState("Select"); 
-  const leadId = deal?.id; 
+  const leadId = deal?.id; // Extract lead ID from the deal object
 
+   // Function to handle the form submission
   const handleSubmit = async (e) => {
     e.preventDefault(); 
     
@@ -19,7 +20,7 @@ const MovetoForm = ({ deal, setIsFormVisible , onStatusUpdate }) => {
         status: stage, 
       });
       console.log('Lead updated successfully:', response.data);
-      onStatusUpdate(stage, leadId);
+      onStatusUpdate(stage, leadId); // Trigger callback to update the status in the parent component
       setIsFormVisible(false);
     } catch (error) {
       console.error('Error updating lead:', error);

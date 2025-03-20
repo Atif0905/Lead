@@ -9,7 +9,7 @@ const ImportData = () => {
   return (
     <div className='main-content'>
     <div className='tools-maindiv'>
-        <div className='tools_sidebar'>
+  <div className='tools_sidebar'>
 <div className='d-flex data_div align-items-center'>
 <IoIosDownload  className='import_icons'/>
 <p className='ms-3 import_txt'>Import data</p>

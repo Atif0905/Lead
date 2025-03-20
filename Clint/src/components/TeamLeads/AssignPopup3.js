@@ -11,13 +11,14 @@ const AssignPopup3 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo }) 
         const fetchData = async () => {
             setIsLoading(true);
             try {
+                   // Fetching all users from the API
                 const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
                 if (usersResponse.data.status === "ok") {
-                  
+                  // Filter users by 'Executive' userType and matching key with assignedTo
                     const matchingUsers = usersResponse.data.data.filter(user => 
                         user.userType === 'Executive' && user.key === assignedTo
                     );
-                    setUsers(matchingUsers);
+                    setUsers(matchingUsers); // Store the filtered users
                 } else {
                     console.error("Failed to fetch users:", usersResponse.data.message);
                 }
@@ -28,22 +29,24 @@ const AssignPopup3 = ({ leadId, setIsAssignLead, deals, setDeals, assignedTo }) 
             }
         };
 
-        fetchData();
-    }, [assignedTo]);
+        fetchData(); // Call the fetchData function
+    }, [assignedTo]); // Effect will re-run when assignedTo changes
 
     const handleAssign = async (user) => {
         try {
             alert(`Assigned successfully to: ${user.fname}`);
             const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${leadId}`, {
-                assignedto: `${user.fname}`
+                assignedto: `${user.id}`  // Pass the selected user's ID
             });
 
             if (response.status === 200) {
                 const updatedDeals = deals.map((deal) =>
-                    deal.id === leadId ? { ...deal, assignedto: `${user.fname}` } : deal
+                    deal.id === leadId ? { ...deal, assignedto: `${user.id}` } : deal
                 );
-                dispatch(setDeals(updatedDeals));
+                dispatch(setDeals(updatedDeals));  // Dispatch updated deals list to Redux
                 dispatch(setIsAssignLead(false));
+                alert(`Assigned successfully to: ${user.fname} ${user.lname}`);
+                window.location.reload();
             } else {
                 console.error("Failed to update lead:", response.data);
                 alert(`Failed to assign: ${response.data.message || 'Unknown error occurred'}`);

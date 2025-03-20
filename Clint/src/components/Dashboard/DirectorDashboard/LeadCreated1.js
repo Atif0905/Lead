@@ -7,6 +7,7 @@ import {
 } from '../../../redux/actions';
 
 const LeadCreated1 = () => {
+  // Extracting the userId from the URL parameters
   const { userId } = useParams(); 
   const [currentUser, setCurrentUser] = useState(null);
   const [executiveNames, setExecutiveNames] = useState([]); // State for executive names
@@ -16,7 +17,7 @@ const LeadCreated1 = () => {
   const {
     subUsers, users, leads, totalLeads,
   } = useSelector((state) => state);
-
+ // Fetching user and lead data when the component is mounted or when userId changes
   useEffect(() => {
     const fetchUserAndLeads = async () => {
       try {
@@ -24,14 +25,14 @@ const LeadCreated1 = () => {
         if (usersResponse.data.status === 'ok') {
           const usersData = usersResponse.data.data;
           dispatch(setUsers(usersData));
-
+     // Find the current user based on userId
           const currentUser = usersData.find(user => user._id === userId);
           setCurrentUser(currentUser);
           const currentUserKey = currentUser?.key;
 
           const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
           const allLeads = leadsResponse.data;
-
+  // Filter the sub-users based on the current user's key and userType === 'SubUser'
           const filteredSubUsers = usersData.filter(user => user.key === currentUserKey && user.userType === 'SubUser');
           dispatch(setSubUsers(filteredSubUsers));
 
@@ -47,10 +48,10 @@ const LeadCreated1 = () => {
     };
     fetchUserAndLeads();
   }, [userId, dispatch]);
-
+// Handle click event on a subUser to display the corresponding executives
   const handleUserClick = (key1) => {
     const executives = users.filter(user => user.key === key1 && user.userType === 'Executive');
-    setExecutiveNames(executives); // Store the executive objects
+    setExecutiveNames(executives); // Update the executiveNames state with the matching executives
   };
 
   return (

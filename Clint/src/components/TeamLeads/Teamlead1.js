@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -11,7 +11,7 @@ import { FaUserAlt, FaPlus } from 'react-icons/fa';
 import { GoAlertFill } from 'react-icons/go';
 import AssignPopup3 from './AssignPopup3';
 import {
-  setUsers, setDeals, setIsLoading, setStages, setNewStage, setSubUsers, setExecutives,  setIsAddLeads,  setIsAddingStage,  setSelectedLeadId, setIsAssignLead, setIsPopupVisible, setIsDragging, setIsModalOpen, setIsDropdownOpen, setIsTeamDropdown,
+  setUsers, setDeals, setIsLoading, setStages, setNewStage, setSubUsers, setExecutives,  setIsAddLeads,  setIsAddingStage,  setSelectedLeadId, setIsAssignLead,  setIsModalOpen, setIsDropdownOpen, 
 } from '../../redux/actions';
 import TeamMovetoForm from './TeamMovetoForm';
 import TeamDltForm from './TeamDltForm';
@@ -19,12 +19,14 @@ import TeamLostForm from './TeamLostForm';
 import AddDeals from '../Leads/AddDeals';
 import ImportResult from '../Leads/ImportResult';
 import Addleads from '../DirectorLeads/Addleads';
+import ViewFollowups from '../Leads/ViewFollowups';
+import PopupForm from '../Leads/PopupForm';
 
 const ItemTypes = {
     CARD: 'card',
   };
   
-  const DealCard = ({ id, text,  setDragging, toggleAssign2, status, assignedto}) => {
+  const DealCard = ({ id, text,  setDragging, toggleAssign2, status, assignedto, togglePopadd}) => {
     const [{ isDragging }, drag] = useDrag({
       type: ItemTypes.CARD,
       item: { id, text, status, assignedto},
@@ -41,7 +43,8 @@ const ItemTypes = {
       <div
         ref={drag}
         className='dealcard'
-        style={{ opacity: isDragging ? 0.5 : 1 }}>
+        style={{ opacity: isDragging ? 0.5 : 1 }}
+        onClick={() => togglePopadd(id)}>
         <div className='dealcard_content'>
           <p className='deal_head1'>{status}</p>
           <p className='deal_head2'>{assignedto}</p>
@@ -140,9 +143,10 @@ const ItemTypes = {
               toggleAssign2={toggleAssign2}
               onDealDelete={deleteDeal}  
               handleDeleteDeal={handleDeleteDeal}
+              togglePopadd={togglePopadd}
             />
           ))}
-        <div className='adddeal_button' onClick={togglePopadd}>
+        <div className='adddeal_button'>
           <FaPlus />
         </div>
       </div>
@@ -152,13 +156,13 @@ const ItemTypes = {
 const Teamlead1 = () => {
   const { userId } = useParams();
   const dispatch = useDispatch();
-  const navigate = useNavigate(); 
+
   const {
-    users, isAddLeads, deals,   isLoading,   stages, newStage, executives, isAddingStage,  selectedLeadId,  isAssignLead,  isPopupVisible,  isModalOpen, isDropdownOpen, isUserDropdown, isTeamDropdown, isDragging,
+    users, isAddLeads, deals,   stages, newStage,  isAddingStage,  selectedLeadId,  isAssignLead,    isModalOpen,
   } = useSelector((state) => state);
 
   const [currentUserKey, setCurrentUserKey] = useState(null);
- 
+  const [isDragging, setIsDragging] = useState(false);
   const [filteredSubUser, setFilteredSubUser] = useState(null);
   const [currentUserName, setCurrentUserName] = useState(null);
   const [selectedName, setSelectedName] = useState('User');
@@ -167,6 +171,11 @@ const Teamlead1 = () => {
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [formType, setFormType] = useState(''); 
+  const [activeComponent, setActiveComponent] = useState(null);
+  const [selectedLeadData, setSelectedLeadData] = useState(null); 
+  const [addDealShow, setAddDealShow] = useState('')
+  const [isPopupFormVisible, setIsPopupFormVisible] = useState(false);
+   const [currentDeal, setCurrentDeal] = useState(null)
   
     useEffect(() => {
       const savedStages = JSON.parse(localStorage.getItem('dealStages')) || stages;
@@ -227,7 +236,12 @@ const Teamlead1 = () => {
       
   }, [userId]);
 
-    const togglePopadd = () => dispatch(setIsPopupVisible(!isPopupVisible));
+    const togglePopadd = (leadId) => {
+            const leadData = deals.find((deal) => deal.id === leadId);
+            if (leadData) setSelectedLeadData(leadData);
+            dispatch(setSelectedLeadId(leadId));  
+            dispatch(setAddDealShow(true)); 
+          };
   
     const toggleAssign2 = (leadId, assignedTo) => {
       dispatch(setSelectedLeadId(leadId));
@@ -251,19 +265,39 @@ const Teamlead1 = () => {
         dispatch(setIsDropdownOpen(false));
       }
 
-    const moveCard = async (draggedId, droppedStage) => {
-      try {
-        const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${draggedId}`, { newStatus: droppedStage });
-        const updatedLead = response.data;
-  
-        const updatedDeals = deals.map((deal) =>
-          deal.id === draggedId ? { ...deal, status: droppedStage } : deal
+      const moveCard = async (draggedId, droppedStage) => {
+        // Find the dragged deal
+        const draggedDeal = deals.find(deal => deal.id === draggedId);
+        if (!draggedDeal) return;
+      
+        // Set the current deal and dropped stage for the popup form
+        setCurrentDeal({ ...draggedDeal, newStatus: droppedStage, newReason: '' });
+        setIsPopupFormVisible(true); // Show the popup form
+      };
+
+    // Function to handle popup form show when we drag lead card from one stage to another stage.
+  const handlePopupFormSubmit = async (formData) => {
+    try {
+      // Update the lead on the server
+      const response = await axios.post(
+        `${process.env.REACT_APP_PORT}/leads/${currentDeal.id}`,
+        { ...formData, status: currentDeal.newStatus}
+      );
+  // console.log(response)
+      if (response.status === 200) {
+        // Update the local deals state
+        const updatedDeals = deals.map(deal =>
+          deal.id === currentDeal.id
+            ? { ...deal, ...formData, status: currentDeal.newStatus }
+            : deal
         );
         dispatch(setDeals(updatedDeals));
-      } catch (error) {
-        console.error('Error moving card:', error);
+        setIsPopupFormVisible(false); // Close the popup form
       }
-    };
+    } catch (error) {
+      console.error('Error updating deal:', error);
+    }
+  };
 
     const handleAddStage = (e) => {
       e.preventDefault();
@@ -313,7 +347,6 @@ const Teamlead1 = () => {
     };
     
     const handleStatusUpdate = (newStatus, leadId) => {
-      
       const updatedDeals = deals.map((deal) => 
         deal.id === leadId ? { ...deal, status:newStatus } : deal
       );
@@ -322,7 +355,6 @@ const Teamlead1 = () => {
 
     const handleWonDrop = async (item) => {
       try {
-       
         const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/update/${item.id}`, { status: 'won' });
         if (response.status === 200) {
           const updatedDeals = deals.map(deal =>
@@ -342,11 +374,9 @@ const Teamlead1 = () => {
       dispatch(setDeals(updatedDeals));
     };
     return (
-      <div className="main-content">
       <DndProvider backend={HTML5Backend}>
-        <div className='mt-4 ps-3'> 
-        
-          <div className='dealscontainer mt-2'>
+        <div className='ps-3'> 
+          <div className='dealscontainer'>
             {stages.map((stage, index) => (
               <DealBox
                 key={index}
@@ -362,6 +392,14 @@ const Teamlead1 = () => {
                 handleDeleteDeal={handleDeleteDeal}
               />
             ))}
+
+{isPopupFormVisible && (
+  <PopupForm
+    deal={currentDeal}
+    onSubmit={handlePopupFormSubmit}
+    onClose={() => setIsPopupFormVisible(false)}
+  />
+)}
             <div className="add-stage-form mt-2">
               {!isAddingStage ? (
                 <button className='add-stage-button' onClick={() => dispatch(setIsAddingStage(true))}> <FaPlus /></button>
@@ -380,22 +418,39 @@ const Teamlead1 = () => {
             </div>
           </div>
 
-
-          {isPopupVisible && (
-            <div className='popup'>
-              <div className='popup_content'>
-                <div className='d-flex align-items-center justify-content-between adddeal_div'>
-                  <h2 className='add_deal'>Add Deals</h2>
-                  <FontAwesomeIcon className='close_img' icon={faX} onClick={togglePopadd} />
-                </div>
-               <AddDeals/>
-                <div className='bottomdeal_div'>
-                  <button className='cancel_btn me-2' onClick={togglePopadd}>Cancel</button>
-                  <button className='save_btn'>Save</button>
-                </div>
-              </div>
+          {addDealShow && (
+        <div className='popup'>
+          <div className='popup_content'>
+            <div className='d-flex align-items-center justify-content-between adddeal_div'>
+              <h2 className='add_deal'>Add Deals</h2>
+              <FontAwesomeIcon className='close_img' icon={faX} onClick={() => dispatch(setAddDealShow(false))}  />
             </div>
-          )}
+            <div className=' followupbtn_div'>
+            <button className='follow_ups_btn'  
+           onClick={() => setActiveComponent('ViewFollowups')}>
+           View Followups
+            </button>
+            <button className='follow_ups_btn' 
+             onClick={() => setActiveComponent('AddDeals')}>
+            Add Followups
+            </button>
+            </div>
+            {activeComponent === 'AddDeals' && (
+          <AddDeals
+            leadId={selectedLeadId}
+            setAddDealShow={setAddDealShow}
+          />
+        )}
+           {activeComponent === 'ViewFollowups' && (
+          <ViewFollowups
+            leadId={selectedLeadId}
+            setAddDealShow={setAddDealShow}
+            leadData={selectedLeadData}
+          />
+        )}
+          </div>
+        </div>
+      )}
   
          {isModalOpen && (
             <div className='modal'>
@@ -439,9 +494,9 @@ const Teamlead1 = () => {
               </div>
             </div>
           )}
-
+ </div>
           {isDragging && (
-            <div className='buttons_div p-2'>
+            <div className='buttons_div'>
                 <DeleteButton onDrop={handleDrop} />
                 <LostButton onDrop={handleDrop} />
                 <WonButton onDrop={handleWonDrop} />
@@ -473,9 +528,9 @@ const Teamlead1 = () => {
           setIsFormVisible={setIsFormVisible}
           onStatusUpdate={handleStatusUpdate}/>
          )}
-        </div>
+       
       </DndProvider>
-      </div>
+   
   )
 }
 

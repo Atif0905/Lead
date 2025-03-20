@@ -6,83 +6,32 @@
     cursor: pointer;
     text-align: left;
   }
-  .buttdiv1{
-    width: 180px;
-    height: 42px;
-    background-color: #FFFFFF;
-    border: 1px solid #78787880;
-    box-shadow: 0px 2px 4px 0px #00000040;
-    display: flex;
-    border-radius: 5px;
-  }
-  .bar_chat{
-    width: 33px;
-    height: 24px;
-  }
-  .cont_butt{
-    width: 60px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .bar_butt{
-    width: 60px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-left: 1px solid #78787880;
-    border-right: 1px solid #78787880;
-  }
+
   .buttdiv2{
+    padding: 0px 10px 0px 10px;
     width: 117px;
     height: 42px;
     background-color: #359A53;
     border-radius: 5px;
     display: flex;
-    margin-left: 18px;
     position: relative;
+    justify-content: space-between;
+    cursor: pointer;
   }
-  .deal_butt1{
-    width: 78px;
-    height: 100%;
-    border-right: 1px solid #FFFFFF;
-display: flex;
-align-items: center;
-justify-content: center;
-cursor: pointer;
-  }
+
   .deal_butt1_txt{
-    margin-top: 12px;
+    margin-top: 15px;
 font-size: 16px;
 font-weight: 400;
 line-height: 23.17px;
 text-align: center;
 color: #FFFFFF;
   }
-  .deal_butt2{
-    width: 39px;
-    height: 100%;
-    display: flex;
-   justify-content: center;
-   align-items: center;
-  }
   .arrow_down{
-    width: 13px;
-    height: 12px;
-    cursor: pointer;
+    font-size: 1.5rem;
+    color: #FFFFFF;
   }
-  .automatic_button{
-    padding: 5px 10px 5px 10px;
-width: auto;
-height: auto;
-border: 1px solid #787878;
-border-radius: 5px;
-background-color: #FFFFFF;
-font-size: 14px;
-  }
- 
+
   .users_button{
     width: 163px;
     height: 34px;
@@ -99,9 +48,8 @@ text-align: left;
 color: #787878;
   }
   .users_butt1{
-    width: 120px;
+    width: 100%;
     height: 100%;
-    border-right: 1px solid #000000;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -119,8 +67,7 @@ color: #787878;
     height: 22px;
   }
   .arrowblackimg{
-    width: 13px;
-    height: 12px;
+    font-size: 1.5rem;
     cursor: pointer;
   }
   .adminname{
@@ -157,9 +104,11 @@ color: #787878;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
    justify-content: center;
+   align-items: center;
   z-index: 1000;
  padding-bottom: 5px;
 }
+
 .modal {
   position: fixed;
   top: 0;
@@ -189,25 +138,24 @@ color: #787878;
     background-color: white;
     width: 28%;
   }
-
   .dltbtnpopup_content {
     background-color: white;
     width: 42%;
     z-index: 1001;
   }
-
 .popup_content {
   background-color: white;
-  width: 58%;
+  width: 60%;
   height: 100%;
   overflow-y: scroll;
   scrollbar-width: none;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1001;
 }
+
 .modal_content {
     background-color: white;
-    width: 40%;
+    width: 35%;
     z-index: 1000;
   }
 .add_deal{
@@ -217,12 +165,21 @@ line-height: 27.77px;
 text-align: left;
 color: #000000;
 }
+<<<<<<< HEAD
 .close_img {
   font-size: 24px;
+=======
+.close_img{
+  font-size: 20px;
+>>>>>>> 42d578a765bac2a5b3aecff6ff22d0500fa6a79e
   cursor: pointer;
   position: absolute;
   top: 10px;
   right: 10px;
+}
+.noti_bell{
+  margin-top: 5px;
+  font-size: 24px;
 }
 .adddeal_div{
   padding: 10px 20px;
@@ -322,11 +279,11 @@ border: none;
 border-radius: 6px;
 }
 .save_btn{
-  width: 125px;
-  height: 50px;
+  width: 120px;
+  height: 45px;
   background-color: #211C52;
   text-align: center;
-  font-size: 20px;
+  font-size: 16px;
 font-weight: 400;
 line-height: 23.14px;
 color: #FFFFFF;
@@ -365,20 +322,43 @@ color: #211C52;
     height: auto;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
+    padding-left: 5px;
     top: 100%;
   }
-  /* .subusers_dropdown{
+  .dropdown-stagescontent{
+    padding: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: absolute;
     background-color: #f1f1f1;
-    width: 117px;
+    width: 100%;
+    right: 1px;
     height: auto;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
-    top: 10%;
-  } */
+    top: 110%;
+  }
+  .stages-item{
+    list-style: none;
+    text-align: left;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .swaplead_card{
+    width: 100%;
+    height: auto;
+    border: 1px solid rgb(205, 200, 200);
+    margin-bottom: 3%;
+    margin-top: 1%;
+    padding: 5px;
+  }
+  .swap_grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 20px
+  }
+ 
   .users_dropdown{
     display: flex;
     align-items: left;
@@ -390,7 +370,7 @@ color: #211C52;
     padding: 15px 15px 0px 15px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
-    top: 101%;
+    top: 110%;
   }
   .users_hover{
   width: 100%;
@@ -416,9 +396,7 @@ font-weight: 400;
 line-height: 23.17px;
 cursor: pointer;
   }
-  .dropdown-content:hover {
-    background-color: #ddd;
-  }
+
   .importdeal_div{
     width: 100%;
     height: 43px;
@@ -472,22 +450,23 @@ line-height: 16.2px;
   }
  .buttons_div{
   width: 100%;
-  height: auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-gap: 20px;
-  position: fixed;
+  grid-gap: 30px;
+  padding: 0px 30px 0px 30px;
+  position: sticky;
   bottom: 0;
-  height: 74px;
+  height: 55px;
   box-shadow: 0px 0px 4px 4px #00000040;
   background-color: #FFFFFF;
   align-items: center;
  }
  .dlt_btn{
   width: 100%;
-  height: 56px;
+  height: 100%;
+  padding: 10px 0px 10px 0px;
   border-radius: 6px;
-font-size: 24px;
+font-size: 18px;
 font-weight: 400;
 line-height: 27.77px;
 text-align: center;
@@ -497,9 +476,10 @@ border: none;
  }
  .lost_btn{
   width: 100%;
-  height: 56px;
+  height: 100%;
+  padding: 10px 0px 10px 0px;
   border-radius: 6px;
-  font-size: 24px;
+  font-size: 18px;
 font-weight: 400;
 line-height: 27.77px;
 text-align: center;
@@ -509,9 +489,10 @@ border: none;
  }
  .won_btn{
   width: 100%;
-  height: 56px;
+  height: 100%;
+  padding: 10px 0px 10px 0px;
   border-radius: 6px;
-  font-size: 24px;
+  font-size: 18px;
 font-weight: 400;
 line-height: 27.77px;
 text-align: center;
@@ -573,9 +554,7 @@ border: none;
   z-index: 1;
   top: 130%;
 }
-.input_assign{
-  width: 100%;
-}
+
 .dealcardbtn{
   width: 100%;
   height: 150px;
@@ -657,9 +636,57 @@ border: none;
 }
 .input_assign{
   width: 100%;
-  height: 53px;
+  height: 40px;
   border: 1px solid #000000;
 margin-bottom: 10px;
 border-radius: 6px;
 padding-left: 2%;
+}
+
+.formcontainer{
+padding: 0px 10px 0px 10px;
+}
+
+
+
+
+.popup-form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-form {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.popup-form h3 {
+  margin-bottom: 15px;
+}
+
+.popup-form label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.popup-form input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+}
+
+.popup-form button {
+  margin-right: 10px;
 }

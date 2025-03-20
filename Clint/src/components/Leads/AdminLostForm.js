@@ -3,6 +3,7 @@ import './Deals.css';
 import axios from 'axios'
 
 const AdminLostForm = ({ deal, setIsFormVisible , onUpdateDeal}) => {
+   // Extract the ID of the lead from the passed deal object
     const leadId = deal?.id;
   
     const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ const AdminLostForm = ({ deal, setIsFormVisible , onUpdateDeal}) => {
           [name]: value,
         });
       };
-
+  // Handles form submission and updates the lead's status to "Lost"
       const handleSubmit = async (e) => {
         e.preventDefault();
     
@@ -27,7 +28,7 @@ const AdminLostForm = ({ deal, setIsFormVisible , onUpdateDeal}) => {
          
           const updatedDeal = response.data;
           onUpdateDeal(updatedDeal);
-
+         // Reset the form data and close the form
           setFormData({
             status: 'Lost',
             lostreason: '',

@@ -22,11 +22,13 @@ import UserDetailPopup1 from './UserDetailPopup1';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const DirectorDashboard = () => {
+    // Fetch userId from the URL parameters
     const { userId } = useParams(); 
     const [selectUser, setSelectUser] = useState(null);
     const [isDropdownList, setIsDropdownList] = useState(null);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  
+
+  // Function to toggle the dropdown list visibility
     const toggleAdmin = (index) => {
       setIsDropdownList(prevIndex => (prevIndex === index ? null : index));
     };
@@ -46,7 +48,7 @@ const DirectorDashboard = () => {
       const closePopup = () => {
         dispatch(setIsPopupVisible(false));
       }
-  
+    // Fetch users and leads data when the component mounts or userId changes
     useEffect(() => {
       const fetchUserAndLeads = async () => {
         try {
@@ -54,10 +56,10 @@ const DirectorDashboard = () => {
           if (usersResponse.data.status === 'ok') {
             const usersData = usersResponse.data.data;
             dispatch(setUsers(usersData));
-    
+        // Find the current user based on userId
             const currentUser = usersData.find(user => user._id === userId);
             const currentUserKey = currentUser?.key;
-    
+    // Fetch leads and filter based on the current user's key
             const leadsResponse = await axios.get(`${process.env.REACT_APP_PORT}/leads`);
             const allLeads = leadsResponse.data;
            
@@ -74,22 +76,23 @@ const DirectorDashboard = () => {
       };
       fetchUserAndLeads();
     }, [userId]);
-  
+   // Function to get the count of leads by stage
     const getLeadsCountByStage = (stage) => {
       return (leads || []).filter(lead => lead.status === stage).length;
     };
   
-
+ // Function to get the percentage of leads by stage
     const getLeadsPercentageByStage = (stage) => {
       const stageCount = getLeadsCountByStage(stage);
       return totalLeads > 0 ? ((stageCount / totalLeads) * 100).toFixed(2) : 0;
     };
-  
+   // Get the current user key for filtering
     const currentUserKey = users.find(user => user._id === userId)?.key;
+      // Filter users by matching key and userType 'SubUser'
     const matchingSubUsers = users.filter(users => 
         users.key === currentUserKey && users.userType === 'SubUser' 
     );
-    
+    // Chart data configuration for the bar chart
     const chartData = {
       labels: stages.map(stage => stage.slice(0, 7)),
       datasets: [

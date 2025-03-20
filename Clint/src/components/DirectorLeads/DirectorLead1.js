@@ -8,23 +8,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import { FaUserAlt, FaPlus } from 'react-icons/fa';
 import { GoAlertFill } from 'react-icons/go';
-import ImportResult from '../Leads/ImportResult';
-import AddDeals from '../Leads/AddDeals';
 import AssignPopup2 from './AssignPopup2';
-import Addleads from './Addleads';
 import { useParams } from 'react-router-dom';
 import {
-  setUsers, setIsAddLeads, setDeals, setLeads, setIsLoading, setStages, setNewStage,  setIsAddingStage,  setSelectedLeadId, setIsAssignLead, setIsPopupVisible, setIsModalOpen, setIsDropdownOpen, setIsUserDropdown, setIsTeamDropdown,
+  setUsers, setDeals, setLeads, setIsLoading, setStages, setNewStage,  setIsAddingStage,  setSelectedLeadId, setIsAssignLead, setIsPopupVisible,
 } from '../../redux/actions';
 import DirDeleteForm from './DirDeleteForm';
 import DirLostForm from './DirLostForm';
 import DirMovetoForm from './DirMovetoForm';
+import AddDeals from '../Leads/AddDeals';
+import ViewFollowups from '../Leads/ViewFollowups';
+import PopupForm from '../Leads/PopupForm';
 
 const ItemTypes = {
     CARD: 'card',
   };
   
-  const DealCard = ({ id, text,  setDragging, toggleAssign1,  status, assignedto}) => {
+  const DealCard = ({ id, text, setDragging, toggleAssign1,  status, updates, assignedto, togglePopadd}) => {
     const [{ isDragging }, drag] = useDrag({
       type: ItemTypes.CARD,
       item: { id, text, status, assignedto },
@@ -32,6 +32,8 @@ const ItemTypes = {
         isDragging: monitor.isDragging(),
       }),
     });
+
+    const lastStatus = updates && updates.length > 0 ? updates[updates.length - 1].status : status;
   
     useEffect(() => {
       setDragging(isDragging);
@@ -59,11 +61,18 @@ const ItemTypes = {
       <div
         ref={drag}
         className='dealcard'
+<<<<<<< HEAD
         style={{
           opacity: isDragging ? 0.5 : 1,
           boxShadow: getBoxShadowColor(status),
         }}>
         <div className='dealcard_content'>
+=======
+        style={{ opacity: isDragging ? 0.5 : 1 }}
+        onClick={() => togglePopadd(id)}>
+        <div className='dealcard_content'>
+          <p className='deal_head1'>{lastStatus}</p>
+>>>>>>> 42d578a765bac2a5b3aecff6ff22d0500fa6a79e
           <p className='deal_head2'>{assignedto}</p>
           <div className='d-flex justify-content-between'>
             <p className='deal_head3'>{text}</p> 
@@ -131,8 +140,7 @@ const ItemTypes = {
     );
   };
   
-  
-  const DealBox = ({ stage, deals, moveCard, setDragging, togglePopadd, toggleAssign1, onDelete, deleteDeal, handleDeleteDeal }) => {
+  const DealBox = ({ stage, deals, moveCard, setDeals, setDragging, togglePopadd, toggleAssign1, onDelete, deleteDeal, handleDeleteDeal }) => {
     const [, drop] = useDrop({
       accept: ItemTypes.CARD,
       drop: (item) => moveCard(item.id, stage),
@@ -145,8 +153,18 @@ const ItemTypes = {
           <button className='stage_dlt' onClick={() => onDelete(stage)}>Delete</button>
         </div>
         {deals
-          .filter((deal) => deal.status === stage )
-          .map((deal) => (
+        .map((deal) => {
+          // Determine lastStatus and update deal.status
+          const lastStatus =
+            deal.updates && deal.updates.length > 0
+              ? deal.updates[deal.updates.length - 1].status
+              : deal.status;
+
+          deal.status = lastStatus; // Update deal.status with lastStatus
+
+          // Filter deals for the current stage
+          if (lastStatus === stage) {
+            return (
             <DealCard
               key={deal.id}
               id={deal.id}
@@ -154,16 +172,22 @@ const ItemTypes = {
               assignedto={deal.assignedto}
               status={deal.status}
               text={deal.text}
+              deal={deal}
               email={deal.email}
               title={deal.title}
               moveCard={moveCard}
+              setDeals={setDeals}
               setDragging={setDragging}
               toggleAssign1={toggleAssign1}
               onDealDelete={deleteDeal} 
               handleDeleteDeal={handleDeleteDeal}
+              togglePopadd={togglePopadd}
             />
-          ))}
-        <div className='adddeal_button' onClick={togglePopadd}>
+          );
+        }
+        return null; // Skip deals that don't match the current stage
+      })}
+        <div className='adddeal_button'>
           <FaPlus />
         </div>
       </div>
@@ -171,14 +195,11 @@ const ItemTypes = {
   };
 
 const DirectorLead1 = () => {
-  
   const { userId } = useParams();
   const dispatch = useDispatch();
   const {
-    users, isAddLeads, deals, leads, stages, newStage,  isAddingStage,  selectedLeadId,  isAssignLead,  isPopupVisible,  isModalOpen, isDropdownOpen, isUserDropdown, isTeamDropdown
+    users,  deals,  stages, newStage, isAddingStage,  selectedLeadId,  isAssignLead,   
   } = useSelector((state) => state);
-
-   
     const [currentUserKey, setCurrentUserKey] = useState(null);
     const [filteredSubUser, setFilteredSubUser] = useState(null);
     const [assignedTo, setAssignedTo] = useState('');
@@ -186,8 +207,12 @@ const DirectorLead1 = () => {
     const [selectedDeal, setSelectedDeal] = useState(null);
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [formType, setFormType] = useState(''); 
+     const [activeComponent, setActiveComponent] = useState(null);
+      const [selectedLeadData, setSelectedLeadData] = useState(null); 
+      const [addDealShow, setAddDealShow] = useState('')
+        const [isPopupFormVisible, setIsPopupFormVisible] = useState(false);
+        const [currentDeal, setCurrentDeal] = useState(null);
    
-  
     useEffect(() => {
       const savedStages = JSON.parse(localStorage.getItem('dealStages')) || stages;
       dispatch(setStages(savedStages));
@@ -201,7 +226,6 @@ const DirectorLead1 = () => {
       const fetchUserAndLeads = async () => {
         dispatch(setIsLoading(true));
         try {
-        
           const usersResponse = await axios.get(`${process.env.REACT_APP_PORT}/getAllUser`);
           if (usersResponse.data.status === 'ok') {
             const usersData = usersResponse.data.data;
@@ -223,8 +247,13 @@ const DirectorLead1 = () => {
               status: lead.status,
               stage: 'Lead In',
               assignedto: lead.assignedto || [],
+              updates: lead.updates.map(update => ({
+                status: update.status,
+                reason: update.reason,
+              })),
             }));
             dispatch(setDeals(formattedDeals));
+            console.log(formattedDeals)
           } else {
             console.error('Failed to fetch users:', usersResponse.data.message);
           }
@@ -238,33 +267,55 @@ const DirectorLead1 = () => {
       fetchUserAndLeads();
     }, [userId]);
   
-    const togglePopadd = () => dispatch(setIsPopupVisible(!isPopupVisible));
+      const togglePopadd = (leadId) => {
+        const leadData = deals.find((deal) => deal.id === leadId);
+        if (leadData) setSelectedLeadData(leadData);
+        dispatch(setSelectedLeadId(leadId));  
+        dispatch(setAddDealShow(true)); 
+      };
   
     const toggleAssign1 = (leadId, assignedto) => {
       dispatch(setSelectedLeadId(leadId));
       setAssignedTo(assignedto);
       const selectedDeal = deals.find(deal => deal.id === leadId);
       if (selectedDeal) {
-        
         const subUser = users.find(user => user.userType === 'SubUser' && user.key === selectedDeal.assignedto);
         setFilteredSubUser(subUser);
       }
      dispatch(setIsAssignLead(true));
+    }; 
+
+    const handlePopupFormSubmit = async (formData) => {
+      try {
+        // Update the lead on the server
+        const response = await axios.post(
+          `${process.env.REACT_APP_PORT}/leads/${currentDeal.id}`,
+          { ...formData, status: currentDeal.newStatus}
+        );
+    // console.log(response)
+        if (response.status === 200) {
+          // Update the local deals state
+          const updatedDeals = deals.map(deal =>
+            deal.id === currentDeal.id
+              ? { ...deal, ...formData, status: currentDeal.newStatus }
+              : deal
+          );
+          dispatch(setDeals(updatedDeals));
+          setIsPopupFormVisible(false); // Close the popup form
+        }
+      } catch (error) {
+        console.error('Error updating deal:', error);
+      }
     };
   
-  
     const moveCard = async (draggedId, droppedStage) => {
-      try {
-        const response = await axios.put(`${process.env.REACT_APP_PORT}/leads/move/${draggedId}`, { newStatus: droppedStage });
-        const updatedLead = response.data;
-  
-        const updatedDeals = deals.map((deal) =>
-          deal.id === draggedId ? { ...deal, status: droppedStage } : deal
-        );
-        dispatch(setDeals(updatedDeals));
-      } catch (error) {
-        console.error('Error moving card:', error);
-      }
+      // Find the dragged deal
+      const draggedDeal = deals.find(deal => deal.id === draggedId);
+      if (!draggedDeal) return;
+    
+      // Set the current deal and dropped stage for the popup form
+      setCurrentDeal({ ...draggedDeal, newStatus: droppedStage, newReason: '' });
+      setIsPopupFormVisible(true); // Show the popup form
     };
   
     const handleAddStage = (e) => {
@@ -342,10 +393,9 @@ const DirectorLead1 = () => {
     };
   
     return (
-    <div className='main-content'>
       <DndProvider backend={HTML5Backend}>
-        <div className='mt-4 ps-3'>
-          <div className='dealscontainer mt-2'>
+        <div className='ps-3'>
+          <div className='dealscontainer'>
             {stages.map((stage, index) => (
               <DealBox
                 key={index}
@@ -358,10 +408,20 @@ const DirectorLead1 = () => {
                 onDelete={handleDeleteStage}
                 onDealDelete={deleteDeal} 
                 users={users}  
+                setDeals={setDeals}
                 handleDeleteDeal={handleDeleteDeal}
                 onStatusUpdate={handleStatusUpdate}
               />
             ))}
+
+{isPopupFormVisible && (
+  <PopupForm
+    deal={currentDeal}
+    onSubmit={handlePopupFormSubmit}
+    onClose={() => setIsPopupFormVisible(false)}
+  />
+)}
+
             <div className="add-stage-form mt-2">
               {!isAddingStage ? (
                 <button className='add-stage-button' onClick={() => dispatch(setIsAddingStage(true))}> <FaPlus /></button>
@@ -379,6 +439,40 @@ const DirectorLead1 = () => {
               )}
             </div>
           </div>
+          {addDealShow && (
+        <div className='popup'>
+          <div className='popup_content'>
+            <div className='d-flex align-items-center justify-content-between adddeal_div'>
+              <h2 className='add_deal'>Add Deals</h2>
+              <FontAwesomeIcon className='close_img' icon={faX} onClick={() => dispatch(setAddDealShow(false))}  />
+            </div>
+            <div className=' followupbtn_div'>
+            <button className='follow_ups_btn'  
+           onClick={() => setActiveComponent('ViewFollowups')}>
+           View Followups
+            </button>
+            <button className='follow_ups_btn' 
+             onClick={() => setActiveComponent('AddDeals')}>
+            Add Followups
+            </button>
+            </div>
+            {activeComponent === 'AddDeals' && (
+          <AddDeals
+            leadId={selectedLeadId}
+            setAddDealShow={setAddDealShow}
+          />
+        )}
+           {activeComponent === 'ViewFollowups' && (
+          <ViewFollowups
+            leadId={selectedLeadId}
+            setAddDealShow={setAddDealShow}
+            leadData={selectedLeadData}
+          />
+        )}
+          </div>
+        </div>
+      )}
+         </div>
   
           {isAssignLead && (
             <div className='modal'>
@@ -387,20 +481,20 @@ const DirectorLead1 = () => {
                   <h2 className='import_deal'>Assign Leads</h2>
                   <FontAwesomeIcon className='close_img' icon={faX} onClick={() => dispatch(setIsAssignLead(false))} />
                 </div>
-                <AssignPopup2 
-                  leadId={selectedLeadId} 
-                  setIsAssignLead={setIsAssignLead} 
-                  deals={deals} 
-                  setDeals={setDeals} 
-                  assignedTo={assignedTo}
-                  currentUserKey={currentUserKey}
-                />
+                  <AssignPopup2 
+                    leadId={selectedLeadId} 
+                    setIsAssignLead={setIsAssignLead} 
+                    deals={deals}
+                    setDeals={setDeals} 
+                    assignedTo={assignedTo}
+                    currentUserKey={currentUserKey}
+                  />
               </div>
             </div>
           )}
 
           {isDragging && (
-            <div className='buttons_div p-2'>
+            <div className='buttons_div'>
                <DeleteButton onDrop={handleDrop} />
                <LostButton onDrop={handleDrop} />
                <WonButton onDrop={handleWonDrop} />
@@ -432,9 +526,9 @@ const DirectorLead1 = () => {
           setIsFormVisible={setIsFormVisible}
           onStatusUpdate={handleStatusUpdate}/>
          )}
-        </div>
+     
       </DndProvider>
-      </div>
+     
   )
 }
 

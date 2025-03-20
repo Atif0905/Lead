@@ -3,7 +3,7 @@ import '../Leads/Deals.css';
 import axios from 'axios';
 
 const LostForm = ({ deal, setIsFormVisible , onUpdateDeal}) => {
-  const leadId = deal?.id;
+  const leadId = deal?.id;  // Extract lead ID from the deal object
 
   const [formData, setFormData] = useState({
     status: 'Lost', 

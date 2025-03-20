@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 
@@ -57,13 +57,10 @@ const AssignPopup = ({ leadId, setIsAssignLead, deals, setDeals}) => {
       setIsAssignLead(false); 
     }
   };
-
-
-
   return (
     <div className='container'>
-      <h2>Assign</h2>
-      <div className='p-3'>
+      <h4>Assign</h4>
+      <div className=''>
         {isLoading ? (
           <p>Loading users...</p>
         ) : (
