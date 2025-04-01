@@ -176,20 +176,11 @@ console.log(remainingLeads)
           )}
         </div>
       </div>
-<<<<<<< HEAD
-      <div >
-  
-        <div className='d-flex'>
-          <div className='me-3'>
-            <p className='ruptxt mt-1'>₨ 1,720,000.8 deals</p>
-          </div>
-=======
 
       <div className='d-flex align-items-center justify-content-between mt-4'>
         <div>
         </div>
       
->>>>>>> 42d578a765bac2a5b3aecff6ff22d0500fa6a79e
           <div className='users_button me-3'>
             <div className='users_butt1'>
             <FaUserTie className='adminmaleimg'/>

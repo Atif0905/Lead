@@ -22,11 +22,7 @@ const ItemTypes = {
   CARD: 'card',
 };
 
-<<<<<<< HEAD
-const DealCard = ({ id, text, setDragging, toggleAssign, status, assignedto, togglePopadd }) => {
-=======
 const DealCard = ({ id, text,  setDragging, toggleAssign,  status, updates,assignedto, togglePopadd}) => {
->>>>>>> 42d578a765bac2a5b3aecff6ff22d0500fa6a79e
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.CARD,
     item: { id, text, status, assignedto },
@@ -65,31 +61,6 @@ const DealCard = ({ id, text,  setDragging, toggleAssign,  status, updates,assig
   return (
     <div
       ref={drag}
-<<<<<<< HEAD
-      className="dealcard"
-      style={{
-        opacity: isDragging ? 0.5 : 1,
-        boxShadow: getBoxShadowColor(status),
-      }}
-      onClick={() => togglePopadd(id)}
-    >
-      <div className="dealcard_content">
-        <p className="deal_head2">Assigned to {assignedto}</p>
-        <div className="d-flex justify-content-between">
-          <p className="deal_head3">{text}</p>
-        </div>
-        <div className="dealcard_icon">
-          <FaUserAlt
-            className="deals_usericon"
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleAssign(id);
-            }}
-          />
-          <div>
-            <GoAlertFill className="deals_alerticon" />
-          </div>
-=======
       className='dealcard'
       style={{ opacity: isDragging ? 0.5 : 1 }}
       onClick={() => togglePopadd(id)}>
@@ -110,18 +81,12 @@ const DealCard = ({ id, text,  setDragging, toggleAssign,  status, updates,assig
               e.stopPropagation(); 
             }} />
             </div>
->>>>>>> 42d578a765bac2a5b3aecff6ff22d0500fa6a79e
         </div>
       </div>
     </div>
   );
 };
-<<<<<<< HEAD
-
-
-=======
   // Function to handle Delete button
->>>>>>> 42d578a765bac2a5b3aecff6ff22d0500fa6a79e
 const DeleteButton = ({ onDrop }) => {
   const [, drop] = useDrop({
     accept: ItemTypes.CARD,
@@ -470,15 +435,9 @@ const Leads = () => {
         {addDealShow && (
         <div className='popup'>
           <div className='popup_content'>
-<<<<<<< HEAD
-            <div className='formback'>
-              <h2 className='formhead'>Add Deals</h2>
-              <FontAwesomeIcon className='close_img' icon={faX} onClick={() => dispatch(setIsPopupVisible(false))}  />
-=======
             <div className='d-flex align-items-center justify-content-between adddeal_div'>
               <h2 className='add_deal'>Add Deals</h2>
               <FontAwesomeIcon className='close_img' icon={faX} onClick={() => dispatch(setAddDealShow(false))}  />
->>>>>>> 42d578a765bac2a5b3aecff6ff22d0500fa6a79e
             </div>
             <div className=' followupbtn_div'>
             <button className='follow_ups_btn'  

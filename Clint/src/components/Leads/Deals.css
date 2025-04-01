@@ -165,13 +165,8 @@ line-height: 27.77px;
 text-align: left;
 color: #000000;
 }
-<<<<<<< HEAD
-.close_img {
-  font-size: 24px;
-=======
 .close_img{
   font-size: 20px;
->>>>>>> 42d578a765bac2a5b3aecff6ff22d0500fa6a79e
   cursor: pointer;
   position: absolute;
   top: 10px;

@@ -61,18 +61,10 @@ const ItemTypes = {
       <div
         ref={drag}
         className='dealcard'
-<<<<<<< HEAD
-        style={{
-          opacity: isDragging ? 0.5 : 1,
-          boxShadow: getBoxShadowColor(status),
-        }}>
-        <div className='dealcard_content'>
-=======
         style={{ opacity: isDragging ? 0.5 : 1 }}
         onClick={() => togglePopadd(id)}>
         <div className='dealcard_content'>
           <p className='deal_head1'>{lastStatus}</p>
->>>>>>> 42d578a765bac2a5b3aecff6ff22d0500fa6a79e
           <p className='deal_head2'>{assignedto}</p>
           <div className='d-flex justify-content-between'>
             <p className='deal_head3'>{text}</p> 
